@@ -88,12 +88,13 @@ sPDFTitle = name[0] + "____" + currentDate;
      y->SetLabelSize(0.035);
     }
     else{
-      if(sTitle != "ContinuityTest_All_Passed-Failed" && sTitle != "InsulationTest_All_Passed-Failed")  h[i]->Draw("same p");
-      else h[i]->Draw(" same hist");
+     // if(sTitle != "ContinuityTest_All_Passed-Failed" && sTitle != "InsulationTest_All_Passed-Failed") 
+     // else h[i]->Draw(" same hist");
+      h[i]->Draw("same p");
       h[i]->SetMarkerColor(i+3);
       h[i]->SetMarkerStyle(22);
       h[i]->SetMarkerSize(1.5);
-      h[i]->SetLineColor(kRed);
+  //    h[i]->SetLineColor(kRed);
     }
     }
     text.DrawLatexNDC(0.15, 0.92, (sTitle).c_str());
@@ -142,7 +143,8 @@ l->SetTextSize(0.018);
 if(sTitle != "ContinuityTest_All_Passed-Failed" && sTitle != "InsulationTest_All_Passed-Failed") l->AddEntry(h[0], name[0], "p");
 else{  l->AddEntry(h[0], name[0], "l");}
 for(int i=1; i<IterationTest; ++i){
-  l->AddEntry(h[i], name[i], "p");
+ if(sTitle != "ContinuityTest_All_Passed-Failed" && sTitle != "InsulationTest_All_Passed-Failed") l->AddEntry(h[i], name[i], "p");
+ else  l->AddEntry(h[i], name[i], "p");
 }
 l->Draw("same");
 //leg->Draw("same");
@@ -332,11 +334,10 @@ for(int j=0; j<IterationTest; j++){
   lineMean[j]->Draw("same");
 }
 }
-/*
+
 if(IterationTest == 1) c_plot->SaveAs("./output/plots/SingleCable/" + sPDFTitle + ".pdf");
 else if(IterationTest >1) c_plot->SaveAs("./output/plots/CheckCable/" + sPDFTitle + ".pdf");
-*/
- c_plot->SaveAs("prova_report.pdf");
+
  //std::system("pdftk " + sInputTestDir + name[0] + ".pdf ./output/plots/" + sPDFTitle + ".pdf output ./output/report/" + sPDFTitle + ".pdf" );
 }
 

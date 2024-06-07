@@ -70,7 +70,6 @@ Float_t FindMax(TTree *tree, Int_t Cable, TString Option){
  return max;
 }
 
-// Option = "HV_Cont, HV_Ins, LV_Cont, LV_ins"
 Float_t FindMin(TTree *tree, Int_t Cable, TString Option){
     Option.ToUpper();
     Float_t min;
@@ -138,16 +137,15 @@ void start(){
 * ÆÆÆÆÆ              ÆÆ   ÆÆ   ÆÆÆ   ÆÆ       ÆÆ    ÆÆÆ    *
 * ÆÆÆÆÆ              ÆÆ   ÆÆ    ÆÆ   ÆÆ       ÆÆ     ÆÆ    *
 * ÆÆÆÆÆÆ                                                   *
-*   ÆÆÆÆÆÆ                                                 *   
-*      ÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆ                                   *                                                         *  
+*   ÆÆÆÆÆÆ  https://github.com/ldellape/CMScables   v.2    *   
+*      ÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆ                                   *                                                         
 * )"+currentDate + R"(                                     *
 ************************************************************ )";                               
 
 
 
 std::cout << green << textCMS  << reset << std::endl;
- //   std::this_thread::sleep_for(std::chrono::seconds(3));
-
+std::cout<< green << "Test su cavo PS-PP1" << reset <<std::endl;
 
 }
 
