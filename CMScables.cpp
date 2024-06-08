@@ -14,12 +14,8 @@
 //#include "./src/DefineHistograms.h"
 #include "./include/user_func.h"
 #include "./include/input.h"
-#include "./src/ReadTestOutput.cpp"
-#include "./src/plotting.cpp"
-#include "./src/WritePDF.cpp"
 
-
-int CMScables(){
+int main(){
 
 InsulationTest = false;
 ContinuityTest = false;
@@ -57,7 +53,7 @@ std::cout<<"Test Processati   "<<std::endl;
       std::cout<<j+1<< "-" << name[j]<<std::endl;
     }
 
-std::this_thread::sleep_for(std::chrono::seconds(1));
+//std::this_thread::sleep_for(std::chrono::seconds(1));
 
 //********************************
 fill_HVcables(HVcables);
@@ -119,17 +115,17 @@ for(int i=0; i<IterationTest; i++){
  ResMinHV_ins[i] = FindMin(ContinuityTree, i, "HV_ins");
  ResMaxLV_ins[i] = FindMax(ContinuityTree, i, "LV_ins");
  ResMinLV_ins[i] = FindMin(ContinuityTree, i, "LV_ins");
- h_passedHV_Cont[i] = new TH1I(Form("h_passedHV_Cont%i",i), Form("h_passedHV_Cont%i",i), 2, 0, 2);  
- h_passedLV_Cont[i] = new TH1I(Form("h_passedLV_Cont%i",i), Form("h_passedLV_Cont%i",i), 2, 0, 2);
- h_passedCont_tot[i] = new TH1I(Form("h_passedCont_tot%i",i), Form("h_passedCont_tot%i",i), 2, 0, 2);
+ h_passedHV_Cont[i] = new TH1F(Form("h_passedHV_Cont%i",i), Form("h_passedHV_Cont%i",i), 2, 0, 2);  
+ h_passedLV_Cont[i] = new TH1F(Form("h_passedLV_Cont%i",i), Form("h_passedLV_Cont%i",i), 2, 0, 2);
+ h_passedCont_tot[i] = new TH1F(Form("h_passedCont_tot%i",i), Form("h_passedCont_tot%i",i), 2, 0, 2);
  hCont_ResChannel_HV[i] = new TH1F(Form("hCont_ResChannel_HV%i", i), Form("hCont_ResChannel_HV%i",i), NumberHVcables + NumberHVRTNwires + NumberSensorWire, 0 , NumberHVcables + NumberHVRTNwires + NumberSensorWire);
  hCont_ResChannel_LV[i] = new TH1F(Form("hCont_ResChannel_LV%i",i), Form("hCont_ResChannel_LV%i",i), NumberLVcables, 0 , NumberLVcables );
  hCont_ResHV[i] = new TH1F(Form("hCont_ResHV%i",i), Form("hCont_ResHV%i", i),100, ResMinHV_cont[i]-0.1, ResMaxHV_cont[i]+0.1);
  hCont_ResLV[i] = new TH1F(Form("hCont_ResLV%i",i), Form("hCont_ResLV%i", i), 100, ResMinLV_cont[i]-0.1,  ResMaxLV_cont[i]+0.1);
 
- h_passedHV_Ins[i] = new TH1I(Form("h_passedHV_Ins%i",i), Form("h_passedHV_Ins%i",i), 2, 0, 2);
- h_passedLV_Ins[i] = new TH1I(Form("h_passedLV_Ins%i",i), Form("h_passedLV_Ins%i",i), 2, 0, 2);
- h_passedIns_tot[i] = new TH1I(Form("h_passedIns_tot%i",i), Form("h_passedIns_tot%i",i), 2, 0, 2);
+ h_passedHV_Ins[i] = new TH1F(Form("h_passedHV_Ins%i",i), Form("h_passedHV_Ins%i",i), 2, 0, 2);
+ h_passedLV_Ins[i] = new TH1F(Form("h_passedLV_Ins%i",i), Form("h_passedLV_Ins%i",i), 2, 0, 2);
+ h_passedIns_tot[i] = new TH1F(Form("h_passedIns_tot%i",i), Form("h_passedIns_tot%i",i), 2, 0, 2);
  hIns_ResHV[i] = new TH1F(Form("hIns_ResHV%i", i), Form("hIns_ResHV%i", i), 100, ResMinHV_ins[i] - 0.1, ResMaxHV_ins[i] + 0.1);
  hIns_ResLV[i] = new TH1F(Form("hIns_ResLV%i", i), Form("hIns_ResLV%i", i), 100, ResMinLV_ins[i] - 0.1, ResMaxLV_ins[i] + 0.1);
  hIns_ResChannel_LV[i] = new TH1F(Form("hIns_ResChannel_LV%i",i), Form("hIns_ResChannel_LV%i",i), NumberLVcables, 0 , NumberLVcables);
@@ -217,28 +213,26 @@ std::cout<<"*****************************************"<<std::endl;
 std::this_thread::sleep_for(std::chrono::seconds(2));
 
 // histograms for resistence versus time //
-if(Ins_Time){
+
 std::cout << "ins" << std::endl;
 int Iteration = 0;
 std::vector<double> ResTime[NumberLVcables];
 std::vector<double> x[NumberLVcables];
 for(const auto& pair : LVcables){
     std::string line;
-    std::cout << ("./input/Cable01/VALORI/" + pair.first + std::to_string(pair.second) + ".ini").c_str() << std::endl;
-
-    std::ifstream inputTimeResolution((pair.first + std::to_string(pair.second) + ".ini").c_str());
+    std::cout << ("./input/FULL_TEST_su_cavo_ps_pp1_V3/Cable01/VALORI/07_05_2024_15_30_3/" + pair.first + std::to_string(pair.second) + ".ini").c_str() << std::endl;
+    std::system(("sed -i 's/=/ /g' ./input/FULL_TEST_su_cavo_ps_pp1_V3/Cable01/VALORI/07_05_2024_15_30_3/" + pair.first + std::to_string(pair.second) + ".ini" ).c_str());
+    std::ifstream inputTimeResolution(("./input/FULL_TEST_su_cavo_ps_pp1_V3/Cable01/VALORI/07_05_2024_15_30_3/" + pair.first + std::to_string(pair.second) + ".ini").c_str());
     if (!inputTimeResolution.is_open()) {
         std::cerr << "Failed to open file: " << pair.first + std::to_string(pair.second) + ".ini" << std::endl;
         // Handle the error or continue to the next iteration
         continue;
     }
     while(std::getline(inputTimeResolution, line)){
-        std::cout << "ok";
         std::stringstream ss(line);
-        double a;
-        if (ss >> a) { // Read a double from the line
-            std::cout<<a<<std::endl;
-            ResTime[Iteration].push_back(a);
+        double number_acquisition, value;
+        if (ss >> number_acquisition >> value) { // Read a double from the line
+            ResTime[Iteration].push_back(value);
         } else {
             std::cerr << "Failed to read a double from line: " << line << std::endl;
             // Handle the error or continue to the next iteration
@@ -247,13 +241,26 @@ for(const auto& pair : LVcables){
     }
     ++Iteration;
 }
+TCanvas *c_TimeAcquisition = new TCanvas();
+TCanvas *c_TimeAcquisition2 = new TCanvas();
+
+std::cout<<Iteration << std::endl;
+
 for(int i = 0; i < Iteration; i++){
-    for(int ii = 0; ii < ResTime[i].size(); ii++){
+    for(int ii = 0; ii < int(ResTime[i].size()); ii++){
         x[i].push_back(ii);
     }
     grRes_Time[i] = new TGraph(ResTime[i].size(), &x[i][0], &ResTime[i][0]);
+    if(i==0) grRes_Time[i]->Draw("A*");
+    else{ grRes_Time[i]->SetMarkerColor(i); grRes_Time[i]->Draw("A* same"); }
 }
-}
+c_TimeAcquisition->cd();
+grRes_Time[0]->Draw("A*");
+c_TimeAcquisition2->cd();
+grRes_Time[1]->Draw("A*");
+c_TimeAcquisition->SaveAs("timeacquisition.png");
+c_TimeAcquisition2->SaveAs("timeacquis.png");
+
 //***************************************
 
 

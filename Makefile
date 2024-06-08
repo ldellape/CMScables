@@ -1,33 +1,34 @@
 CXX = g++
-CXXFLAGS = -Wall -I include $(shell root-config --cflags)
+CXXFLAGS = -Wall -I include -I src $(shell root-config --cflags)
+LDFLAGS = $(shell root-config --libs)
 
-INCLUDEDIR = ./include
-SRCDIR = ./src
-OBJ_DIR = ./build
-TARGET = $(OBJ_DIR)/execute_cables
+SRCDIR = src
+OBJDIR = build
 
-# List of source files including def_variables.cpp in the src directory
-SRCS = main.cpp $(wildcard $(SRCDIR)/*.cpp)
-OBJS = $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(notdir $(SRCS)))
+TARGET = CMScables
 
-ROOTGLIBS = $(shell root-config --glibs)
-ROOTLIBS = $(shell root-config --libs)
+SOURCES = $(wildcard $(SRCDIR)/*.cpp)
+OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SOURCES))
 
-# default
+# Default rule
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(ROOTLIBS) $(ROOTGLIBS)
+# Rule to link the objects and create the executable
+$(TARGET): $(OBJECTS) $(OBJDIR)/CMScables.o
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(OBJ_DIR)/%.o: $(SRCDIR)/%.cpp
-	@mkdir -p $(OBJ_DIR)
+# Rule to compile CMScables.cpp
+$(OBJDIR)/CMScables.o: CMScables.cpp
+	@mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/main.o: main.cpp
-	@mkdir -p $(OBJ_DIR)
+# Rule to compile each source file
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	@mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+# Clean rule
 clean:
-	rm -f $(TARGET) $(OBJ_DIR)/*.o
+	rm -rf $(TARGET) $(OBJDIR)
 
 .PHONY: all clean

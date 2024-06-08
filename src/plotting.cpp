@@ -1,10 +1,9 @@
 #include <string>
 #include <vector>
 #include "../include/root.h"
-#include "../include/user_func.h"
+#include "../include/def_variables.h"
 
-template<typename T> 
-void plotting(std::vector<T*> &h, std::string sTitle, Int_t number_pad){
+void plotting(std::vector<TH1F*> &h, std::string sTitle, Int_t number_pad){
   std::cout<<sTitle<<std::endl;
     // choosing subcanvas //
     TPad *pad = (TPad*) c_plot->cd(number_pad);
@@ -241,7 +240,6 @@ for(int j=0; j<IterationTest; j++){
   if(sTitle == "ContinuityTest_ResistenceHV"){
         for(int k=0; k<100; k++){
          if(OverThreshHV[k] != 0 ){
-         cout<<"okok"<<endl;
          TLatex textOverThresh;
          textOverThresh.SetTextSize(0.02);
          textOverThresh.DrawLatex((x->GetBinWidth(1)*(k-1)), ThreshContHV-0.25, Form("Over T. %.2e", OverThreshHV[k]) );
@@ -287,7 +285,6 @@ for(int j=0; j<IterationTest; j++){
    if(sTitle == "InsulationTest_HV_Resistence"){
     for(int k=0; k<100; k++){
          if(BelowThreshHV[k] != 0 ){
-         cout<<"okok"<<endl;
          TLatex textBelowThresh;
          textBelowThresh.SetTextSize(0.02);
          if(k<4){

@@ -4,6 +4,19 @@
 #include "def_variables.h"
 #include "root.h"
 
+void plotting(std::vector<TH1F*> &h, std::string sTitle, Int_t number_pad);
+void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v);
+void fill_LVcables_RTN(std::vector<std::pair<std::string,Int_t>> &v);
+void fill_HVcables(std::vector<std::pair<std::string, Int_t>> &v);
+void fill_HVcables_RTN(std::vector<std::pair<std::string, Int_t>> &v);
+void fill_DRAINcables(std::vector<std::pair<std::string, Int_t>> &v);
+void fill_Tsensors(std::vector<std::pair<std::string, Int_t>> &v);
+Float_t FindMax(TTree *tree, Int_t Cable, TString Option);
+Float_t FindMin(TTree *tree, Int_t Cable, TString Option);
+void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j);
+void WritePDF(std::vector<TCanvas*> &canvas, std::string sPDFTitle);
+
+void start();
 
 void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v){
     std::string name = "LV";
@@ -17,7 +30,6 @@ void fill_LVcables_RTN(std::vector<std::pair<std::string,Int_t>> &v){
     v.push_back(make_pair(name, i+1));
     }
 }
-
 void fill_HVcables(std::vector<std::pair<std::string, Int_t>> &v){
     std::string name = "HV_RTN";
     for(int i=0; i<NumberHVcables; ++i){
@@ -30,7 +42,6 @@ void fill_HVcables_RTN(std::vector<std::pair<std::string, Int_t>> &v){
     v.push_back(make_pair(name, i+1));
     }
 }
-
 void fill_DRAINcables(std::vector<std::pair<std::string, Int_t>> &v){
     std::string name = "D";
     for(int i=0; i<NumberDrainWire; ++i){

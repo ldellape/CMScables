@@ -6,13 +6,14 @@
 //#define windows
 
 // list of commands to be execute //
-
+std::vector<std::string> listAndChooseFiles();
+void TestType();
+void TimeAcquisition();
 
 std::vector<std::string> listAndChooseFiles() {
     std::cout << sInputTestDir << std::endl;
     Int_t number_test = 0;
     Int_t number_test2 = 0;
-    Int_t first_choice;
     std::string command, remove_temp;
     TString str;
     std::vector<std::string> TestTemp;
@@ -44,7 +45,7 @@ std::vector<std::string> listAndChooseFiles() {
         }
         std::system(remove_temp.c_str());
         std::cout << "************** Which cable to use? (enter number) *****************" << std::endl;
-        for (int ii = 0; ii < FileName.size(); ++ii) {
+        for (int ii = 0; ii < int(FileName.size()); ++ii) {
             std::cout << "Nr. " << FileName[ii].first << "   " << FileName[ii].second << std::endl;
         }
          std::cout << "*******************************************************************" << std::endl;
@@ -76,7 +77,7 @@ std::vector<std::string> listAndChooseFiles() {
         std::system(("powershell Remove-Item -Path " + sInputTestDir + FileName[number_test - 1].second + "\\tempFileName2.txt").c_str());
 #endif
 
-        for (int i = 0; i < FileName2.size(); ++i) {
+        for (int i = 0; i < int(FileName2.size()); ++i) {
             std::cout << "Nr. " << FileName2[i].first << "   " << FileName2[i].second << std::endl;
         }
         std::cout << "Which test (enter number)? " << std::endl;

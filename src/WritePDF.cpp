@@ -1,6 +1,5 @@
 #include <vector>
 #include "../include/root.h"
-#include "../include/def_variables.h"
 
 void WritePDF(std::vector<TCanvas*> &canvas, std::string sPDFTitle){
     TPDF report(("./output/pdf_ceetis/" + sPDFTitle + ".pdf").c_str());
