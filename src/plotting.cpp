@@ -172,7 +172,7 @@ else if(sTitle == "ContinuityTest_ResistenceLV"){
   y->SetRangeUser(0,1.3);
   y->SetTitle("R[#Omega]");
 
-  lineThresh = new TLine(x->GetXmin(), ThreshContLV, x->GetXmax(), ThreshContLV);
+lineThresh = new TLine(x->GetXmin(), ThreshContLV, x->GetXmax(), ThreshContLV);
   lineThresh->SetLineColor(46);
 lineThresh->SetLineStyle(kDashed);
 lineThresh->Draw("same");

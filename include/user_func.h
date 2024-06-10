@@ -5,6 +5,7 @@
 #include "root.h"
 
 void plotting(std::vector<TH1F*> &h, std::string sTitle, Int_t number_pad);
+void plottingGraph(std::vector<TGraph*> &gr, Int_t Iteration, Int_t LVchannel);
 void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v);
 void fill_LVcables_RTN(std::vector<std::pair<std::string,Int_t>> &v);
 void fill_HVcables(std::vector<std::pair<std::string, Int_t>> &v);
@@ -15,7 +16,6 @@ Float_t FindMax(TTree *tree, Int_t Cable, TString Option);
 Float_t FindMin(TTree *tree, Int_t Cable, TString Option);
 void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j);
 void WritePDF(std::vector<TCanvas*> &canvas, std::string sPDFTitle);
-
 void start();
 
 void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v){
@@ -148,9 +148,9 @@ void start(){
 * ÆÆÆÆÆ              ÆÆ   ÆÆ   ÆÆÆ   ÆÆ       ÆÆ    ÆÆÆ    *
 * ÆÆÆÆÆ              ÆÆ   ÆÆ    ÆÆ   ÆÆ       ÆÆ     ÆÆ    *
 * ÆÆÆÆÆÆ                                                   *
-*   ÆÆÆÆÆÆ  https://github.com/ldellape/CMScables   v.2.1  *   
+*   ÆÆÆÆÆÆ  https://github.com/ldellape/CMScables   v.2.3  *   
 *      ÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆ                                   *                                                         
-* )"+currentDate + R"(                                     *
+* )"+currentDate + R"(                                      *
 ************************************************************ )";                               
 
 

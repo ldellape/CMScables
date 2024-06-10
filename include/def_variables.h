@@ -10,7 +10,7 @@ extern TString sPDFTitle;
 extern std::string currentDate;
 
 extern std::vector<std::string> TestName;
-
+extern std::vector<std::string> TestNameTimeAcquisition;
 extern const int MaxCables;
 extern const std::string sInputTestDir;
 extern const std::string sInputTimeAcquisition;
@@ -57,6 +57,7 @@ extern std::vector<std::tuple<double,double,double,double,double, std::string, d
 extern std::vector<std::tuple<double,double,double,double,double, std::string, double>> ParametersInsulation;
 
 extern TCanvas *c_plot;
+extern std::vector<TCanvas*> c_graph;
 
 extern std::vector<TH1F*> h_passedHV_Cont;
 extern std::vector<TH1F*> h_passedLV_Cont;
@@ -73,11 +74,11 @@ extern std::vector<TH1F*> hIns_ResLV;
 extern std::vector<TH1F*> hIns_ResTot;
 extern std::vector<TH1F*> hIns_ResChannel_LV;
 extern std::vector<TH1F*> hIns_ResChannel_HV;
+extern std::vector<TGraph*> grRes_Time[100];
 extern float OverThreshLV[];
 extern float OverThreshHV[];
 extern float BelowThreshHV[];
 extern float BelowThreshLV[];
-extern TGraph *grRes_Time[];
 extern Float_t ResMaxHV_ins[];
 extern Float_t ResMaxLV_ins[];
 extern Float_t ResMinHV_ins[];

@@ -32,7 +32,12 @@ std::cout<<"****************************************"<<std::endl;
 // per inserire test manualmente commentare da qui: //
 TestName = listAndChooseFiles();
 TestType();
-//if(test_type != 0) TimeAcquisition();
+IterationTest = TestName.size();
+if(test_type != 0){
+Ins_Time = TimeAcquisition();
+TestNameTimeAcquisition = DirTimeAcquisition();
+//if(Ins_Time){ std::cout << "ok" << std::endl; TestNameTimeAcquisition = listAndChooseFilesTimeAcquisition();}
+}
 // a qui //
 
 // e inserire manualmente i path in questo modo e scegliere il tipo di test: //
@@ -43,7 +48,6 @@ TestType();
 
 
 
-IterationTest = TestName.size();
 std::cout<<"*****************************************"<<std::endl;
 
 std::cout<<"Test Processati   "<<std::endl;
@@ -212,60 +216,59 @@ for(int i=0; i<InsulationTree->GetEntries(); ++i){
 std::cout<<"*****************************************"<<std::endl;
 std::this_thread::sleep_for(std::chrono::seconds(2));
 
-// histograms for resistence versus time //
+/*
+//*******Histogram for Resistance Versus Time Acquisition*********
+if (Ins_Time) {
+std::vector<TGraph*> grRes_Time[IterationTest];
+    for(int i = 0; i < IterationTest; ++i) {
+    grRes_Time[i] = std::vector<TGraph*>(100, nullptr);     
+}
+float OverThreshHV[100] = {0};
+    std::vector<std::vector<double>> ResTime(NumberLVcables);
+    std::vector<std::vector<double>> x(NumberLVcables);
 
-std::cout << "ins" << std::endl;
-int Iteration = 0;
-std::vector<double> ResTime[NumberLVcables];
-std::vector<double> x[NumberLVcables];
-for(const auto& pair : LVcables){
-    std::string line;
-    std::cout << ("./input/FULL_TEST_su_cavo_ps_pp1_V3/Cable01/VALORI/07_05_2024_15_30_3/" + pair.first + std::to_string(pair.second) + ".ini").c_str() << std::endl;
-    std::system(("sed -i 's/=/ /g' ./input/FULL_TEST_su_cavo_ps_pp1_V3/Cable01/VALORI/07_05_2024_15_30_3/" + pair.first + std::to_string(pair.second) + ".ini" ).c_str());
-    std::ifstream inputTimeResolution(("./input/FULL_TEST_su_cavo_ps_pp1_V3/Cable01/VALORI/07_05_2024_15_30_3/" + pair.first + std::to_string(pair.second) + ".ini").c_str());
-    if (!inputTimeResolution.is_open()) {
-        std::cerr << "Failed to open file: " << pair.first + std::to_string(pair.second) + ".ini" << std::endl;
-        // Handle the error or continue to the next iteration
-        continue;
-    }
-    while(std::getline(inputTimeResolution, line)){
-        std::stringstream ss(line);
-        double number_acquisition, value;
-        if (ss >> number_acquisition >> value) { // Read a double from the line
-            ResTime[Iteration].push_back(value);
-        } else {
-            std::cerr << "Failed to read a double from line: " << line << std::endl;
-            // Handle the error or continue to the next iteration
-            continue;
+    for (int k = 0; k < IterationTest; k++) {
+        int Iteration = 0;
+        for (const auto& pair : LVcables) {
+            std::string line;
+            std::cout << (TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini").c_str() << std::endl;
+            std::ifstream inputTimeResolution((TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini").c_str());
+
+            if (inputTimeResolution.is_open()) {
+                ++Iteration;
+                while (std::getline(inputTimeResolution, line)) {
+                    std::stringstream ss(line);
+                    double number_acquisition, value;
+                    if (ss >> number_acquisition >> value) { // Read a double from the line
+                        ResTime[Iteration - 1].push_back(value);
+                    }
+                }
+                inputTimeResolution.close();
+            }
         }
+
+        for (int i = 0; i < Iteration; i++) {
+            for (int ii = 0; ii < int(ResTime[i].size()); ii++) {
+                x[i].push_back(ii);
+            }
+            grRes_Time[i] = new TGraph(int(ResTime[i].size()), &x[i][0], &ResTime[i][0]); // graph for each LV cable 
+        }
+
+        plottingGraph(grRes_Time[k], k, grRes_Time.size());  
+        std::cout<< "number of graphs : " << std::cout << grRes_Time.size() << std::endl;
+        c_graph[k] = new TCanvas(Form("c_graph%i", k + 1), Form("c_graph%i", k + 1), 3000, 1000);
+        c_graph[k]->Divide(grRes_Time.size());
+        grRes_Time.clear();
     }
-    ++Iteration;
 }
-TCanvas *c_TimeAcquisition = new TCanvas();
-TCanvas *c_TimeAcquisition2 = new TCanvas();
-
-std::cout<<Iteration << std::endl;
-
-for(int i = 0; i < Iteration; i++){
-    for(int ii = 0; ii < int(ResTime[i].size()); ii++){
-        x[i].push_back(ii);
-    }
-    grRes_Time[i] = new TGraph(ResTime[i].size(), &x[i][0], &ResTime[i][0]);
-    if(i==0) grRes_Time[i]->Draw("A*");
-    else{ grRes_Time[i]->SetMarkerColor(i); grRes_Time[i]->Draw("A* same"); }
-}
-c_TimeAcquisition->cd();
-grRes_Time[0]->Draw("A*");
-c_TimeAcquisition2->cd();
-grRes_Time[1]->Draw("A*");
-c_TimeAcquisition->SaveAs("timeacquisition.png");
-c_TimeAcquisition2->SaveAs("timeacquis.png");
-
-//***************************************
+*/
 
 
-//**********Drawing Plots****************
-//***************************************
+// ***************************************
+
+
+// **********Drawing Plots****************
+// ***************************************
 
 gErrorIgnoreLevel = kWarning;
 std::cout<<"************ Creating PDF...**************" <<std::endl;
@@ -306,8 +309,8 @@ std::cout<<" number of Plots "<<CanvasPlots.size()<<std::endl;
 //plotting(h_passedHV_Cont ,"ContinuityTest_HV_Passed-Failed");
 }
 gErrorIgnoreLevel = kPrint;
-std::string PDF_Name = "ContinuityPDF";
-WritePDF(CanvasPlots, "ContinuityPDF");
+//std::string PDF_Name = "ContinuityPDF";
+//WritePDF(CanvasPlots, "ContinuityPDF"); not fully implemented yet
 
 
 // writing out histograms //
@@ -336,11 +339,7 @@ if(test_type == 1 || test_type == 2){
  hIns_ResChannel_LV[i]->Write();
 }
 }
-if(Ins_Time){
- for(int j=0; j<NumberLVcables; j++){
- grRes_Time[j]->Write(); 
- }
-}
+
 f_OutPut->Write();
 std::cout<<"*******************************************"<<std::endl;
 std::cout<<"Output: "<<std::endl;
@@ -348,8 +347,8 @@ std::cout<<"\033[32mroot histograms have been saved in "<< sOutputRoot << sPDFTi
 std::cout<<"\033[32mpdf has been saved as ./output/report/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
 f_OutPut->Close();
 
-
-gROOT->ProcessLine(".q");
 return 0;
+gROOT->ProcessLine(".q");
+
 
 }

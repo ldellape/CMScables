@@ -4,31 +4,35 @@ LDFLAGS = $(shell root-config --libs)
 
 SRCDIR = src
 OBJDIR = build
+DEPDIR = .deps
 
 TARGET = CMScables
 
 SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SOURCES))
+DEPS = $(patsubst $(SRCDIR)/%.cpp,$(DEPDIR)/%.d,$(SOURCES))
 
-# Default rule
+
 all: $(TARGET)
 
-# Rule to link the objects and create the executable
 $(TARGET): $(OBJECTS) $(OBJDIR)/CMScables.o
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-# Rule to compile CMScables.cpp
 $(OBJDIR)/CMScables.o: CMScables.cpp
 	@mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Rule to compile each source file
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	@mkdir -p $(OBJDIR)
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(DEPDIR)/%.d
+	@mkdir -p $(OBJDIR) $(DEPDIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean rule
+-include $(DEPS)
+
+$(DEPDIR)/%.d: $(SRCDIR)/%.cpp
+	@mkdir -p $(DEPDIR)
+	$(CXX) $(CXXFLAGS) -M $< -MF $@ -MT $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$<)
+
 clean:
-	rm -rf $(TARGET) $(OBJDIR)
+	rm -rf $(TARGET) $(OBJDIR) $(DEPDIR)
 
 .PHONY: all clean

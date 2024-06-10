@@ -3,7 +3,9 @@ root v6.X.X
 pdftk server 
 
 COME RUNNARE:
-da terminale ---> "root -l CMScables.cpp"
+chmod u+rwx install.sh 
+./install.sh
+./CMScables
 
 
 *************************************************************************************
@@ -25,7 +27,7 @@ Se si scelgono più di un test il nome dei file output è quello del primo test 
 
 *************************************************************************************
 TODO:
--aggiungere nome del report da terminale 
+-aggiungere nome del report da terminale (??)
 -plot resistenza vs tempo
 *************************************************************************************
 
