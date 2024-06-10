@@ -1,3 +1,5 @@
+// DECLARATION OF GLOBALE VARIABLES 
+
 #ifndef DEF_VARIABLES_H
 #define DEF_VARIABLES_H
 
@@ -5,16 +7,19 @@
 #include <string>
 #include <vector>
 
-extern Int_t IterationTest;
-extern TString sPDFTitle;
-extern std::string currentDate;
-
-extern std::vector<std::string> TestName;
-extern std::vector<std::string> TestNameTimeAcquisition;
-extern const int MaxCables;
+// input-output paths //
 extern const std::string sInputTestDir;
 extern const std::string sInputTimeAcquisition;
 extern const std::string sOutputRoot;
+
+extern Int_t IterationTest; // number of cable to be test
+extern TString sPDFTitle; // final pdf name 
+extern std::string currentDate; 
+
+// vectors of paths to cable to be test //
+extern std::vector<std::string> TestName;
+extern std::vector<std::string> TestNameTimeAcquisition;
+extern const int MaxCables;
 
 extern const int NumberHVcables;
 extern const int NumberLVcables;
@@ -74,7 +79,7 @@ extern std::vector<TH1F*> hIns_ResLV;
 extern std::vector<TH1F*> hIns_ResTot;
 extern std::vector<TH1F*> hIns_ResChannel_LV;
 extern std::vector<TH1F*> hIns_ResChannel_HV;
-extern std::vector<TGraph*> grRes_Time[100];
+extern std::vector<TGraph*> grRes_Time[];
 extern float OverThreshLV[];
 extern float OverThreshHV[];
 extern float BelowThreshHV[];
@@ -91,8 +96,5 @@ extern const char *labelsContHV[];
 extern const char *labelsContLV[];
 extern const char *labelsInsHV[];
 extern const char *labelsInsLV[];
-
-extern std::vector<TCanvas*> CanvasPlots;
-extern std::vector<TCanvas*> IsolationPlots;
 
 #endif // DEF_VARIABLES_H

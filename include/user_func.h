@@ -4,8 +4,13 @@
 #include "def_variables.h"
 #include "root.h"
 
+// functions defined in src directory //
 void plotting(std::vector<TH1F*> &h, std::string sTitle, Int_t number_pad);
 void plottingGraph(std::vector<TGraph*> &gr, Int_t Iteration, Int_t LVchannel);
+void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j);
+void WritePDF(std::vector<TCanvas*> &canvas, std::string sPDFTitle);
+
+// functions in this header files //
 void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v);
 void fill_LVcables_RTN(std::vector<std::pair<std::string,Int_t>> &v);
 void fill_HVcables(std::vector<std::pair<std::string, Int_t>> &v);
@@ -14,9 +19,8 @@ void fill_DRAINcables(std::vector<std::pair<std::string, Int_t>> &v);
 void fill_Tsensors(std::vector<std::pair<std::string, Int_t>> &v);
 Float_t FindMax(TTree *tree, Int_t Cable, TString Option);
 Float_t FindMin(TTree *tree, Int_t Cable, TString Option);
-void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j);
-void WritePDF(std::vector<TCanvas*> &canvas, std::string sPDFTitle);
 void start();
+
 
 void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v){
     std::string name = "LV";
@@ -56,7 +60,7 @@ void fill_Tsensors(std::vector<std::pair<std::string, Int_t>> &v){
 }
 
 
-// Option = "HV_Cont, HV_Ins, LV_Cont, LV_ins"
+// FindMax, FindMin --> automatic setting of histograms //
 Float_t FindMax(TTree *tree, Int_t Cable, TString Option){
     Option.ToUpper();
     Float_t max;
@@ -104,6 +108,8 @@ Float_t FindMin(TTree *tree, Int_t Cable, TString Option){
     }
  return min;
 }
+
+
 
 void start(){
 /*

@@ -2,6 +2,7 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+
 #define linux
 //#define windows
 
@@ -10,6 +11,9 @@ std::vector<std::string> listAndChooseFiles();
 void TestType();
 Bool_t TimeAcquisition();
 std::vector<std::string> listAndChooseFilesTimeAcquisition();
+std::vector<std::string> DirTimeAcquisition();
+
+
 
 std::vector<std::string> listAndChooseFiles() {
     std::cout << sInputTestDir << std::endl;

@@ -304,8 +304,6 @@ plotting(hIns_ResChannel_LV , "InsulationTest_LV_Resistence",4);
 //plotting(h_passedLV_Cont , "ContinuityTest_LV_Passed-Failed");
 plotting(hCont_ResChannel_HV,"ContinuityTest_ResistenceHV",5);
 plotting(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV",6);
-std::cout<<" number of Plots "<<CanvasPlots.size()<<std::endl;
-
 //plotting(h_passedHV_Cont ,"ContinuityTest_HV_Passed-Failed");
 }
 gErrorIgnoreLevel = kPrint;

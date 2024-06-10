@@ -1,3 +1,4 @@
+// inizialization of global variables //
 #include "../include/def_variables.h"
 
 Int_t IterationTest;
@@ -89,5 +90,4 @@ const char *labelsContLV[NumberLVcables];
 const char *labelsInsHV[NumberHVcables + NumberHVRTNwires + NumberSensorWire];
 const char *labelsInsLV[NumberLVcables];
 
-std::vector<TCanvas*> CanvasPlots;
-std::vector<TCanvas*> IsolationPlots(MaxCables*4, nullptr);
+
