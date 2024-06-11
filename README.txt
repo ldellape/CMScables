@@ -1,6 +1,6 @@
 COSA SERVE (in lab D3 già installati):
 root v6.X.X
-pdftk server 
+PyPDF2 (https://pypdf2.readthedocs.io/en/3.x/)
 
 COME RUNNARE:
 chmod u+rwx install.sh 

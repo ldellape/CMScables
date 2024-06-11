@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ROOT_VERSION=$(root-config --version)
+PYTHON_VERSION=$(python3 --version)
 BUILD="build_CMScables"
 EXEC="CMScables"
 
