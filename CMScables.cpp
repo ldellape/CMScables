@@ -23,21 +23,23 @@ Ins_Time = false;
 test_type = 2;
 start();
 std::this_thread::sleep_for(std::chrono::seconds(3));
-
+std::cout<<"*****************************************"<<std::endl;
 std::cout<<"Input Directory ---> " ;
 std::cout<<sInputTestDir<<std::endl;
-std::cout<<"Histograms will be saved in -----> " << sOutputRoot << std::endl; 
+std::cout<<"Histograms will be saved in -----> ./output/rootFiles/" << std::endl; 
+std::cout<<"Plots will be saved in -----> ./output/plots/" << std::endl; 
+std::cout<<"Final Report will be saved in -----> ./output/report" << std::endl; 
 std::cout<<"****************************************"<<std::endl;
 
 // per inserire test manualmente commentare da qui: //
 TestName = listAndChooseFiles();
 TestType();
 IterationTest = TestName.size();
-if(test_type != 0){
-Ins_Time = TimeAcquisition();
-TestNameTimeAcquisition = DirTimeAcquisition();
+//if(test_type != 0){
+//Ins_Time = TimeAcquisition();
+//TestNameTimeAcquisition = DirTimeAcquisition();
 //if(Ins_Time){ std::cout << "ok" << std::endl; TestNameTimeAcquisition = listAndChooseFilesTimeAcquisition();}
-}
+//}
 // a qui //
 
 // e inserire manualmente i path in questo modo e scegliere il tipo di test: //
@@ -337,22 +339,37 @@ if(test_type == 1 || test_type == 2){
  hIns_ResChannel_LV[i]->Write();
 }
 }
+std::cout<<"*******************************************"<<std::endl;
+TString CreateReport;
+std::cout<<"Do you want to create the final report? (y/n)" <<std::endl;
+std::cin>>CreateReport;
 
 f_OutPut->Write();
 std::cout<<"*******************************************"<<std::endl;
 std::cout<<"Output: "<<std::endl;
 std::cout<<"\033[32mroot histograms have been saved in "<< sOutputRoot << sPDFTitle<<".root\033[0m"<<std::endl;
-std::cout<<"\033[32mpdf has been saved as ./output/report/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
+std::cout<<"\033[32mplot pdf has been saved as ./output/report/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
 f_OutPut->Close();
 
-std::cout<<" creating df file output..." <<std::endl;
-std::string sReportOutput = "./output/report/";
-std::string sInputPlots = "./output/plots/SingleCable/";
-std::string commandPython = "python3 WritePDF.py "+ sReportOutput + "prova.pdf ./input/pdf_ceetis/Cable03_09_05_2024_10_36_51.pdf " + sInputPlots +"Cable01_07_05_2024_15_30_3____11_06_2024.pdf";
-std::cout<<commandPython<<std::endl;
-std::system((commandPython).c_str());
+std::cout<<"*****************************************"<<std::endl;
 
 
+if(CreateReport == "y"){
+std::cout<<"*****************************************"<<std::endl;
+std::cout<<"creating Final Report..." <<std::endl;
+std::cout<<"*****************************************"<<std::endl;
+
+std::string PythonCommand;
+if(IterationTest == 1){
+    PythonCommand = "python3 WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/SingleCable/" + sPDFTitle + ".pdf"; 
+}
+else if(IterationTest > 1){
+    PythonCommand = "python3 WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/CheckCable/" + sPDFTitle + ".pdf"; 
+}
+std::cout<< PythonCommand << std::endl;
+std::system((PythonCommand).c_str());
+std::cout<<"\033[32mFinal REPORT saved as ./output/report/"+ sPDFTitle +"\033[0m" <<std::endl;
+}
 return 0;
 gROOT->ProcessLine(".q");
 

@@ -11,11 +11,7 @@ def merge_pdfs(output_path, pdf_list):
     merger.close()
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python merge_pdfs.py output.pdf input1.pdf input2.pdf ...")
-        sys.exit(1)
-
     output_path = sys.argv[1]
     pdfs = sys.argv[2:]
     merge_pdfs(output_path, pdfs)
-    print(f"PDFs merged into '{output_path}'")
+#    print(f"PDFs merged into '{output_path}'")

@@ -133,7 +133,7 @@ void start(){
     int second = dt.GetSecond();
     
     // Format the date and time string
-    currentDate = Form("%02d_%02d_%04d %02d:%02d:%02d", day, month, year, hour, minute, second);    
+    currentDate = Form("%02d_%02d_%04d_%02d_%02d_%02d", day, month, year, hour, minute, second);    
     const std::string red = "\033[33m";
     const std::string green = "\033[92m";
     // ANSI escape code to reset the color
@@ -154,7 +154,7 @@ void start(){
 * ÆÆÆÆÆ              ÆÆ   ÆÆ   ÆÆÆ   ÆÆ       ÆÆ    ÆÆÆ    *
 * ÆÆÆÆÆ              ÆÆ   ÆÆ    ÆÆ   ÆÆ       ÆÆ     ÆÆ    *
 * ÆÆÆÆÆÆ                                                   *
-*   ÆÆÆÆÆÆ  https://github.com/ldellape/CMScables   v.2.4  *   
+*   ÆÆÆÆÆÆ  https://github.com/ldellape/CMScables   v.2.6  *   
 *      ÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆ                                   *                                                         
 * )"+currentDate + R"(                                      *
 ************************************************************ )";                               
@@ -163,7 +163,6 @@ void start(){
 
 std::cout << green << textCMS  << reset << std::endl;
 std::cout<< green << "Test su cavo PS-PP1" << reset <<std::endl;
-
 std::system("mkdir -p ./output/plots && mkdir -p ./output/plots/SingleCable && mkdir -p ./output/plots/CheckCable && mkdir -p ./output/report" );
 
 }

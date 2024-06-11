@@ -16,7 +16,6 @@ std::vector<std::string> DirTimeAcquisition();
 
 
 std::vector<std::string> listAndChooseFiles() {
-    std::cout << sInputTestDir << std::endl;
     Int_t number_test = 0;
     Int_t number_test2 = 0;
     std::string command, remove_temp;
@@ -81,11 +80,11 @@ std::vector<std::string> listAndChooseFiles() {
 #elif defined _WIN32
         std::system(("powershell Remove-Item -Path " + sInputTestDir + FileName[number_test - 1].second + "\\tempFileName2.txt").c_str());
 #endif
-
+        std::cout <<"************** Which test to use? (enter number) ******************" << std::endl;
         for (int i = 0; i < int(FileName2.size()); ++i) {
             std::cout << "Nr. " << FileName2[i].first << "   " << FileName2[i].second << std::endl;
         }
-        std::cout << "Which test (enter number)? " << std::endl;
+        std::cout << "*******************************************************************" << std::endl;
         std::cin >> number_test2;
         TestTemp.push_back(sInputTestDir + FileName[number_test - 1].second + "/" + FileName2[number_test2 - 1].second);
         number_test = 0;
@@ -105,6 +104,7 @@ std::vector<std::string> listAndChooseFiles() {
 void TestType() {
     std::cout << "0 for continuity test, 1 for insulation test, 2 for both: " << std::endl<<std::endl;
     std::cin >> test_type;
+    std::cout<<"*****************************************"<<std::endl;
     if (test_type == 0) {
         ContinuityTest = true;
         std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST\033[0m" << std::endl<<std::endl;

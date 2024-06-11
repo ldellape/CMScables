@@ -3,7 +3,7 @@ CXXFLAGS = -Wall -I include -I src $(shell root-config --cflags)
 LDFLAGS = $(shell root-config --libs)
 
 SRCDIR = src
-OBJDIR = build_CMScables
+OBJDIR = build
 DEPDIR = .deps
 
 TARGET = CMScables
