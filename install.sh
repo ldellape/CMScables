@@ -1,8 +1,11 @@
 #!/bin/bash
 
 ROOT_VERSION=$(root-config --version)
-BUILD="build"
+BUILD="build_CMScables"
 EXEC="CMScables"
+LIBHARU_VERSION="libharu-RELEASE_2_3_0"
+
+pip install pyPDF2
 
 if [ $ROOT_VERSION==6.* ]; then 
 echo "root version :$ROOT_VERSION"

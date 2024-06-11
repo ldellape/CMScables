@@ -345,6 +345,14 @@ std::cout<<"\033[32mroot histograms have been saved in "<< sOutputRoot << sPDFTi
 std::cout<<"\033[32mpdf has been saved as ./output/report/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
 f_OutPut->Close();
 
+std::cout<<" creating df file output..." <<std::endl;
+std::string sReportOutput = "./output/report/";
+std::string sInputPlots = "./output/plots/SingleCable/";
+std::string commandPython = "python3 WritePDF.py "+ sReportOutput + "prova.pdf ./input/pdf_ceetis/Cable03_09_05_2024_10_36_51.pdf " + sInputPlots +"Cable01_07_05_2024_15_30_3____11_06_2024.pdf";
+std::cout<<commandPython<<std::endl;
+std::system((commandPython).c_str());
+
+
 return 0;
 gROOT->ProcessLine(".q");
 
