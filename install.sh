@@ -3,7 +3,6 @@
 ROOT_VERSION=$(root-config --version)
 BUILD="build_CMScables"
 EXEC="CMScables"
-LIBHARU_VERSION="libharu-RELEASE_2_3_0"
 
 pip install pyPDF2
 
