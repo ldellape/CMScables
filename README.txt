@@ -1,6 +1,6 @@
 COSA SERVE:
 root v6.X.X
-python3 
+python3.x 
 
 COME RUNNARE:
 chmod u+rwx install.sh 
