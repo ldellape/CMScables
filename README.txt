@@ -1,6 +1,6 @@
-COSA SERVE (in lab D3 già installati):
+COSA SERVE:
 root v6.X.X
-PyPDF2 (https://pypdf2.readthedocs.io/en/3.x/)
+python3.x 
 
 COME RUNNARE:
 git clone https://github.com/ldellape/CMScables
@@ -28,6 +28,7 @@ Se si scelgono più di un test il nome dei file output è quello del primo test 
 TODO:
 -aggiungere nome del report da terminale (serve??)
 -plot resistenza vs tempo (Da aggiungere in coda al report o separato??)
+- processare in automatico l'ultimo test creato nella directory di input 
 *************************************************************************************
 
 
