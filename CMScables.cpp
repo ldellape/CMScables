@@ -11,7 +11,6 @@
 #include <tuple>
 #include "./include/root.h"
 #include "./include/def_variables.h"
-//#include "./src/DefineHistograms.h"
 #include "./include/user_func.h"
 #include "./include/input.h"
 
@@ -32,9 +31,9 @@ std::cout<<"Final Report will be saved in -----> ./output/report" << std::endl;
 std::cout<<"****************************************"<<std::endl;
 
 // per inserire test manualmente commentare da qui: //
-TestName = listAndChooseFiles();
-TestType();
-IterationTest = TestName.size();
+//TestName = listAndChooseFiles();
+//TestType();
+//IterationTest = TestName.size();
 //if(test_type != 0){
 //Ins_Time = TimeAcquisition();
 //TestNameTimeAcquisition = DirTimeAcquisition();
@@ -47,7 +46,6 @@ IterationTest = TestName.size();
 //TestName.push_back("./input/FULL_TEST_su_cavo_ps_pp1_V3/Cable01/Cable01_09_05_2024_12_11_9.txt");
 //TestName.push_back("./input/FULL_TEST_su_cavo_ps_pp1_V3/Cable02/Cable02_06_05_2024_11_50_37.txt");
 //test_type = 2 ;  // 0 for continuity, 1 for isolation, 2 for both 
-
 
 
 std::cout<<"*****************************************"<<std::endl;
@@ -361,10 +359,10 @@ std::cout<<"*****************************************"<<std::endl;
 
 std::string PythonCommand;
 if(IterationTest == 1){
-    PythonCommand = "python3 WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/SingleCable/" + sPDFTitle + ".pdf"; 
+    PythonCommand = "python3 ./src/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/SingleCable/" + sPDFTitle + ".pdf"; 
 }
 else if(IterationTest > 1){
-    PythonCommand = "python3 WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/CheckCable/" + sPDFTitle + ".pdf"; 
+    PythonCommand = "python3 ./src/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/CheckCable/" + sPDFTitle + ".pdf"; 
 }
 std::cout<< PythonCommand << std::endl;
 std::system((PythonCommand).c_str());

@@ -3,6 +3,7 @@ root v6.X.X
 PyPDF2 (https://pypdf2.readthedocs.io/en/3.x/)
 
 COME RUNNARE:
+git clone https://github.com/ldellape/CMScables
 chmod u+rwx install.sh 
 ./install.sh
 ./CMScables
