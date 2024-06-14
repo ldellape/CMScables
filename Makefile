@@ -35,4 +35,12 @@ $(DEPDIR)/%.d: $(SRCDIR)/%.cpp
 clean:
 	rm -rf $(TARGET) $(OBJDIR) $(DEPDIR)
 
+OPTION ?= NONE
+
+ifeq ($(OPTION), AUTO_TEST)
+	CXXFLAGS+=-DAUTO_TEST
+else ifeq ($(OPTION), INTER_TEST)
+	CXXFLAGS+=-DINTER_TEST
+endif
+
 .PHONY: all clean

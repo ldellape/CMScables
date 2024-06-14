@@ -59,7 +59,10 @@ extern std::vector<std::pair<std::string,Int_t>> TSensor;
 extern std::vector<std::pair<std::string,Int_t>> Drain;
 
 extern std::vector<std::tuple<double,double,double,double,double, std::string, double>> ParametersContinuity;
-extern std::vector<std::tuple<double,double,double,double,double, std::string, double>> ParametersInsulation;
+extern std::vector<std::tuple<double,double,double,double,double, double, double>> ParametersInsulationInitial;
+extern std::vector<std::tuple<double,double,double>> ParametersInsulationLV;
+extern std::vector<std::tuple<double,double,double,double>> ParametersInsulationHV;
+extern std::vector<std::tuple<double,double,double,double>> ParametersInsulationTsensor;
 
 extern TCanvas *c_plot;
 extern std::vector<TCanvas*> c_graph;

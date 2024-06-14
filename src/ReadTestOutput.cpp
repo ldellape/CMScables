@@ -16,38 +16,34 @@ void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j){
     std::vector<std::tuple<std::string, std::string, double, double>> insulationData;
     Bool_t FirstTree = false;
     Bool_t SecondTree = false;
-    Bool_t ParContTest = false;
-    Bool_t ParInsTest = false;
-    double i, Thresh, Trise, Twait, Tmeas, Vlimit;
+    double i, Thresh, Trise, Twait, Tmeas, Vlimit, V, Vramp;
     double r, B;
-    std::string AR;
+    std::string AR, str1, str2;
+    int lineCounter=0;
 
     while(std::getline(inputFile, line)){
       std::istringstream iss(line);
      if(line.find("ContinuityTest") != std::string::npos){
         FirstTree = true;
         SecondTree = false;
-        ParContTest = true;
-        ParInsTest = false;
      }
      else if (line.find("InsulationTest") != std::string::npos){
         FirstTree = false;
         SecondTree = true;
-        ParContTest = false;
-        ParInsTest = true;
      }
      else{
-        // parameters for test //
-        // results of the test //
-        std::string str1, str2;
-        std::istringstream iss(line);
-        if(ParContTest || ParInsTest){
-            if(iss>> i >> Thresh >> Trise >> Twait >> Tmeas >> AR >> Vlimit){
-               if(FirstTree) ParametersContinuity.push_back(std::make_tuple(i,Thresh, Trise, Twait, Tmeas, AR, Vlimit));
-               }
-             //  else if(SecondTree) ParametersContinuity.push_back(std::make_tuple(i,Thresh, Trise, Twait, Tmeas, AR, Vlimit));
-               ParContTest = false;
-               ParInsTest = false;
+        if(lineCounter<5){
+            if(lineCounter==0 && iss >> i >> Thresh >> Trise >> Twait >> Tmeas >> AR >> Vlimit)
+            ParametersContinuity.push_back(std::make_tuple(i,Thresh,Trise,Twait,Tmeas,AR,Vlimit));
+            else if(lineCounter==1 && iss >> V >> Thresh >> Trise >> Twait >> Tmeas >> i >> Vramp)
+            ParametersInsulationInitial.push_back(std::make_tuple(V, Thresh, Trise, Twait, Tmeas, i, Vramp));
+            else if(lineCounter==2 && iss>> Trise >> Twait >> Tmeas)
+            ParametersInsulationLV.push_back(std::make_tuple(Trise, Twait,  Tmeas));
+            else if(lineCounter == 3 && iss >> V >> Thresh >> Trise >> Tmeas)
+            ParametersInsulationHV.push_back(std::make_tuple(V, Thresh, Trise, Tmeas));
+            else if(lineCounter == 4 && iss>> V >> Thresh >> Trise >> Tmeas)
+            ParametersInsulationTsensor.push_back(std::make_tuple(V, Thresh, Trise, Tmeas));
+            lineCounter++;
         }
         
         else{
@@ -101,6 +97,11 @@ void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j){
         cableIns = j;
         InsulationTree->Fill();
     }    
+      for(const auto&it : ParametersInsulationHV){
+        std::cout<<" Param : "<<std::get<1>(it);
+        std::cout<<" Param : "<<std::get<2>(it);
+      
+      }
     }
     
     }

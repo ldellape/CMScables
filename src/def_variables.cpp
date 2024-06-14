@@ -51,7 +51,10 @@ std::vector<std::pair<std::string,Int_t>> TSensor;
 std::vector<std::pair<std::string,Int_t>> Drain;
 
 std::vector<std::tuple<double,double,double,double,double, std::string, double>> ParametersContinuity;
-std::vector<std::tuple<double,double,double,double,double, std::string, double>> ParametersInsulation;
+std::vector<std::tuple<double,double,double,double,double, double, double>> ParametersInsulationInitial;
+std::vector<std::tuple<double,double,double>> ParametersInsulationLV;
+std::vector<std::tuple<double,double,double,double>> ParametersInsulationHV;
+std::vector<std::tuple<double,double,double,double>> ParametersInsulationTsensor;
 
 TCanvas *c_plot;
 std::vector<TCanvas*> c_graph(100, nullptr);

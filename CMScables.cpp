@@ -14,7 +14,14 @@
 #include "./include/user_func.h"
 #include "./include/input.h"
 
+#ifdef AUTO_TEST
+#define AutoTest 
+#elif defined(INTER_TEST)
+#define InterTest
+#endif
+
 int main(){
+ std::string pathTEST;
 
 InsulationTest = false;
 ContinuityTest = false;
@@ -30,33 +37,47 @@ std::cout<<"Plots will be saved in -----> ./output/plots/" << std::endl;
 std::cout<<"Final Report will be saved in -----> ./output/report" << std::endl; 
 std::cout<<"****************************************"<<std::endl;
 
-// per inserire test manualmente commentare da qui: //
-//TestName = listAndChooseFiles();
-//TestType();
-//IterationTest = TestName.size();
+#ifdef InterTest
+ TestName = listAndChooseFiles();
+ TestType();
+ IterationTest = TestName.size();
 //if(test_type != 0){
 //Ins_Time = TimeAcquisition();
 //TestNameTimeAcquisition = DirTimeAcquisition();
 //if(Ins_Time){ std::cout << "ok" << std::endl; TestNameTimeAcquisition = listAndChooseFilesTimeAcquisition();}
 //}
-// a qui //
-
-// e inserire manualmente i path in questo modo e scegliere il tipo di test: //
-//TestName.push_back("./input/FULL_TEST_su_cavo_ps_pp1_V3/Cable01/Cable01_09_05_2024_11_24_47.txt");
-//TestName.push_back("./input/FULL_TEST_su_cavo_ps_pp1_V3/Cable01/Cable01_09_05_2024_12_11_9.txt");
-//TestName.push_back("./input/FULL_TEST_su_cavo_ps_pp1_V3/Cable02/Cable02_06_05_2024_11_50_37.txt");
-//test_type = 2 ;  // 0 for continuity, 1 for isolation, 2 for both 
-
-
-std::cout<<"*****************************************"<<std::endl;
+#elif defined(AutoTest)
+/*
+ std::string commandTXT = "cd " + sInputTestDir + " && find . -type f -name \"*.txt\" -exec stat --format='%Y %n' {} + | sort -nr | head -n 1 | cut -d' ' -f2- > temp";
+ std::system(commandTXT.c_str());
+ std::ifstream pathTemp((sInputTestDir + "temp").c_str());
+ std::string recentTEST;
+ while(std::getline(pathTemp, recentTEST)){
+    std::cout<<" line: " << recentTEST<<std::endl;
+    pathTEST = sInputTestDir + recentTEST;
+ }
+  TestName.push_back(pathTEST);
+  */
+  TestName.push_back("/afs/cern.ch/user/l/ldellape/cavi/input/FULL_TEST_su_cavo_ps_pp1_V3/Cable01/prova.txt");
+  std::cout<<TestName.size() << std::endl;
+  //pathTemp.close();
+  //std::system(("cd " + sInputTestDir + " && rm temp").c_str());
+  test_type=2;
+#endif
 
 std::cout<<"Test Processati   "<<std::endl;
- TString name[IterationTest];
-    for(int j=0; j<IterationTest; j++){
+std::cout<<TestName[0] << std::endl;
+TString name[IterationTest];
+ for(int j=0; j<IterationTest; j++){
       name[j] = TestName[j].substr( TestName[j].rfind("/") +1, TestName[j].rfind(".") - TestName[j].rfind("/")-1);
       std::cout<<j+1<< "-" << name[j]<<std::endl;
     }
-
+std::cout<<"*****************************************"<<std::endl;
+std::cout<<"preparing text files..." <<std::endl;
+for(int i=0; i<int(TestName.size()); i++){
+    std::string commandPy = "python3 ./src/ManageTXT.py " + TestName[i];
+    std::system(commandPy.c_str());
+}
 //std::this_thread::sleep_for(std::chrono::seconds(1));
 
 //********************************
@@ -293,6 +314,7 @@ plotting(h_passedCont_tot ,"ContinuityTest_All_Passed-Failed", 3);
 plotting(hCont_ResChannel_HV,"ContinuityTest_ResistenceHV", 4);
 plotting(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV", 5);
 }
+
 if(test_type == 2){
 plotting(h_passedCont_tot ,"ContinuityTest_All_Passed-Failed",1);
 plotting(h_passedIns_tot , "InsulationTest_All_Passed-Failed",2);
@@ -345,7 +367,7 @@ std::cin>>CreateReport;
 f_OutPut->Write();
 std::cout<<"*******************************************"<<std::endl;
 std::cout<<"Output: "<<std::endl;
-std::cout<<"\033[32mroot histograms have been saved in "<< sOutputRoot << sPDFTitle<<".root\033[0m"<<std::endl;
+std::cout<<"\033[32mroot histograms have been saved in "<< sOutputRoot << sPDFTitle <<".root\033[0m"<<std::endl;
 std::cout<<"\033[32mplot pdf has been saved as ./output/report/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
 f_OutPut->Close();
 
@@ -357,6 +379,7 @@ std::cout<<"*****************************************"<<std::endl;
 std::cout<<"creating Final Report..." <<std::endl;
 std::cout<<"*****************************************"<<std::endl;
 
+sPDFTitle = "prova_report";
 std::string PythonCommand;
 if(IterationTest == 1){
     PythonCommand = "python3 ./src/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/SingleCable/" + sPDFTitle + ".pdf"; 

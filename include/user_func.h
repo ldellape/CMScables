@@ -154,7 +154,7 @@ void start(){
 * ÆÆÆÆÆ              ÆÆ   ÆÆ   ÆÆÆ   ÆÆ       ÆÆ    ÆÆÆ    *
 * ÆÆÆÆÆ              ÆÆ   ÆÆ    ÆÆ   ÆÆ       ÆÆ     ÆÆ    *
 * ÆÆÆÆÆÆ                                                   *
-*   ÆÆÆÆÆÆ  https://github.com/ldellape/CMScables   v.2.7  *   
+*   ÆÆÆÆÆÆ  https://github.com/ldellape/CMScables   v.3.0  *   
 *      ÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆ                                   *                                                         
 * )"+currentDate + R"(                                      *
 ************************************************************ )";                               

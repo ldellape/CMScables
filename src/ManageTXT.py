@@ -9,13 +9,21 @@ filename = sys.argv[1]
 
 modified_line = []
 
+with open(filename, 'r') as file:   
+    first_line = file.readline().strip()
+    if "Ambient Temperature" not in first_line:
+     print("Text file already in the right format")
+     sys.exit(1)
 with open(filename, 'r') as file:
     lines = file.readlines()
 
 filtered_lines = []
 param_lines = []
+tsensors_lines = []
+Insulation_test_index = None
 
-for line in lines:
+
+for index, line in enumerate(lines):
     line = line.strip() 
 
     if re.search(r'\b(Passed|Failed)\b', line):
@@ -28,6 +36,7 @@ for line in lines:
         filtered_lines.append("ContinuityTest")
     elif "INSULATION TEST" in line:
         filtered_lines.append("InsulationTest")
+        Insulation_test_index = len(filtered_lines) - 1
     elif "Tmeas=" in line:
         line = line.replace("Current", "")
         line = line.replace("Threshold","")
@@ -42,14 +51,28 @@ for line in lines:
         line = line.replace("Ohm","")
         line = line.replace("=","")
         line = line.replace("MOh", "")
-        line = line.replace("Voltage")
+        line = line.replace("GOh", "")
+        line = line.replace("Voltage", "")
+        line = line.replace("k","")
+        line = line.replace(",",".")
+        line = line.replace("Oh","")
         line = line.replace("V","")
         param_lines.append(line)        
+    if re.search(r'Tsensor\d', line) and Insulation_test_index is not None and index > Insulation_test_index:
+        tsensors_lines.append(line)
 
-#    elif re.search(r'\b()')
+
+phr_index = None
+for i, line in enumerate(filtered_lines):
+    if "PHR" in line:
+        print("ok")
+        phr_index = i 
+
+if phr_index > Insulation_test_index:
+  filtered_lines = filtered_lines[:phr_index+1] + tsensors_lines +filtered_lines[phr_index + 1:]
 
 final_lines = param_lines + filtered_lines
-filtered_text = '\n'.join(filtered_lines)
+filtered_text = '\n'.join(final_lines)
 
 with open(filename, 'w') as file:
     file.write(filtered_text)

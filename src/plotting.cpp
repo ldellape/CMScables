@@ -115,7 +115,9 @@ sPDFTitle = name[0] + "____" + currentDate;
         textParIns.DrawLatexNDC(0.01, 0.02, "Parameters : V=50 V, Thresh.= 100 M #Omega, T_{rise} = 1 s, T_{wait} = 8 s, T_{meas} = 8 s, i_{lim}= 1.95 mA, V_{ramp}=120 V/s");
       }
       else if(sTitle == "InsulationTest_HV_Resistence"){
-        textParIns.DrawLatexNDC(0.01, 0.02, "Initial Parameters : V=1.2 kV, Thresh.= 1 G #Omega, T_{rise} = 10 s, T_{wait} = 8 s, T_{meas} = 1 s, i_{lim}= 1.95 mA, V_{ramp}=120 V/s");
+        for(auto& it : ParametersInsulationInitial){
+        textParIns.DrawLatexNDC(0.01, 0.02, Form("Initial Parameters : V=%d kV, Thresh.= %d G #Omega, T_{rise} = %d s, T_{wait} = %d s, T_{meas} = %d s, i_{lim}= %d mA, V_{ramp}= %d V/s", int(std::get<0>(it)), int(std::get<1>(it)), int(std::get<2>(it)), int(std::get<3>(it)), int(std::get<4>(it)), int(std::get<6>(it))));
+        }
         TLine *lineTsensor = new TLine(4*x->GetBinWidth(2), 0, 4*x->GetBinWidth(2), 1e+12);
         lineTsensor->SetLineWidth(1);
         lineTsensor->SetLineStyle(kDashed);
@@ -123,14 +125,18 @@ sPDFTitle = name[0] + "____" + currentDate;
         TLatex textTsensor[2];
         textTsensor[0].SetTextSize(0.02);
         textTsensor[0].SetTextFont(52);
-        textTsensor[0].DrawLatex(0.3*x->GetBinWidth(2), 1e+07 , "V=50V, Thresh=100 M #Omega");
+        for(auto&it : ParametersInsulationTsensor){
+        textTsensor[0].DrawLatex(0.3*x->GetBinWidth(2), 1e+07 , Form("V=%dV, Thresh=%d M #Omega", int(std::get<0>(it)), int(std::get<1>(it))));
+        }
         textTsensor[1].SetTextSize(0.02);
         textTsensor[1].SetTextFont(52);
         textTsensor[1].DrawLatex(0.3*x->GetBinWidth(2), 0.4*1e+07 , "T_{rise}=1s, T_{meas}=100 2s");
         TLatex textHVcable;
         textHVcable.SetTextSize(0.02);
         textHVcable.SetTextFont(52);
-        textHVcable.DrawLatex(8*x->GetBinWidth(2), 1e+07, "T_{rise}=1 s, T_{wait}=8 s, T_{meas}=8 s" );
+        for(auto&it : ParametersInsulationHV){
+        textHVcable.DrawLatex(8*x->GetBinWidth(2), 1e+07, Form("T_{rise}=%d s, T_{wait}=%d s, T_{meas}=%d s", int(std::get<0>(it)), int(std::get<1>(it)), int(std::get<2>(it)) ));
+        }
       }
 
     }
@@ -332,8 +338,8 @@ for(int j=0; j<IterationTest; j++){
 }
 }
 
-if(IterationTest == 1) c_plot->SaveAs("./output/plots/SingleCable/" + sPDFTitle + ".pdf");
-else if(IterationTest >1) c_plot->SaveAs("./output/plots/CheckCable/" + sPDFTitle + ".pdf");
+if(IterationTest == 1) c_plot->SaveAs("./output/plots/SingleCable/prova.pdf");
+else if(IterationTest >1) c_plot->SaveAs("./output/plots/CheckCable/prova.pdf");
 
  //std::system("pdftk " + sInputTestDir + name[0] + ".pdf ./output/plots/" + sPDFTitle + ".pdf output ./output/report/" + sPDFTitle + ".pdf" );
 }
