@@ -19,7 +19,7 @@ void fill_DRAINcables(std::vector<std::pair<std::string, Int_t>> &v);
 void fill_Tsensors(std::vector<std::pair<std::string, Int_t>> &v);
 Float_t FindMax(TTree *tree, Int_t Cable, TString Option);
 Float_t FindMin(TTree *tree, Int_t Cable, TString Option);
-void start();
+void start(int number_arg, char *argument[]);
 
 
 void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v){
@@ -111,7 +111,7 @@ Float_t FindMin(TTree *tree, Int_t Cable, TString Option){
 
 
 
-void start(){
+void printlogo(){
 /*
     std::cout << "  *******************************************" << std::endl;
     std::cout << "  *                                         *" << std::endl;
@@ -124,7 +124,7 @@ void start(){
     std::cout<< "-------------------------------------------- "<< std::endl; 
     */
     
-     TDatime dt;
+    TDatime dt;
     int day = dt.GetDay();
     int year = dt.GetYear();
     int month = dt.GetMonth();
@@ -154,11 +154,11 @@ void start(){
 * ÆÆÆÆÆ              ÆÆ   ÆÆ   ÆÆÆ   ÆÆ       ÆÆ    ÆÆÆ    *
 * ÆÆÆÆÆ              ÆÆ   ÆÆ    ÆÆ   ÆÆ       ÆÆ     ÆÆ    *
 * ÆÆÆÆÆÆ                                                   *
-*   ÆÆÆÆÆÆ  https://github.com/ldellape/CMScables   v.3.0  *   
+*   ÆÆÆÆÆÆ  https://github.com/ldellape/CMScables   v.4.0  *   
 *      ÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆ                                   *                                                         
 * )"+currentDate + R"(                                      *
-************************************************************ )";                               
-
+************************************************************ )"; 
+                              
 
 
 std::cout << green << textCMS  << reset << std::endl;
@@ -166,8 +166,76 @@ std::cout<< green << "Test su cavo PS-PP1" << reset <<std::endl;
 std::system("mkdir -p ./output/plots && mkdir -p ./output/plots/SingleCable && mkdir -p ./output/plots/CheckCable && mkdir -p ./output/report" );
 
 }
+void start(int number_arg, char *argument[]){
+    Bool_t ValidOption= false;
+    for (int i = 1; i < number_arg; ++i) {
+    std::string arg = argument[i];
+    std::string inputPath;
+    std::string outputPath;
+    if(arg== "--help" || arg=="-h"){
+        std::cout<<" CMScables --help, -h : print this message"<<std::endl;
+        std::cout<<" CMScables --doc, -D : print documentation on what it is expected as input and what you can expect as output"<<std::endl;
+ std::cout<<" CMScables --input/-I <path> --mode/-M [OPTION]: perform test giving the input text file, path should be of type CableXX/TEST_NAME.txt " << std::endl;
+        std::cout<<"[OPTION] = 0 for continuity test, 1 for isolation test, 2 for both. Default is continuity test" <<std::endl;
+        gROOT->ProcessLine(".q");
+    }
+    else if(arg == "--doc" || arg == "-D"){
+        std::ifstream readme("doc");
+        std::string readme_line;
+        std::cout<<" to change mode: "<<std::endl;
+        std::cout<<" rm -r build;"<<std::endl;
+        std::cout<<" make; (or make OPTION=AUTO_TEST)" <<std::endl<<std::endl;
+        while(std::getline(readme, readme_line)){
+        if(readme_line.find("COSA SERVE:") != std::string::npos ){
+            break;
+        }
+        else std::cout<<readme_line<<std::endl;
+        }
+        readme.close();
+        gROOT->ProcessLine(".q");
+    }
+    else if(arg == "--input" || arg=="-I") {
+     while (i + 1 < number_arg && argument[i + 1][0] != '-') {
+                inputPath = argument[++i];
+                TestName.push_back((sInputTestDir + inputPath).c_str());
+                std::cout << inputPath << std::endl;
+            }
+    CommandLine = true;
+    ValidOption=true;
+    } 
+    else if((arg == "--mode" || arg=="-M") && CommandLine==true){
+        test_type = std::stoi(argument[++i]);
+        if(test_type==0){
+         std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST\033[0m" << std::endl<<std::endl;
+         ContinuityTest=true;
+        }
+        else if(test_type==1){
+         InsulationTest=true;
+         std::cout << "Plotting Histograms for ----> \033[32mISOLATION TEST\033[0m" << std::endl<<std::endl;
+        }
+        else if(test_type ==2){
+         ContinuityTest=true;
+         InsulationTest=true;
+         std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST && ISOLATION TEST\033[0m" << std::endl;
+        }
+        else if(test_type != 0 && test_type != 1 && test_type != 2){
+        std::cout<<"Mode not found! "<<std::endl;
+        std::cout<<"possible tests are: "<<std::endl;
+        std::cout<<"0 for continuity, 1 for isolation, 2 for both"<<std::endl;
+        gROOT->ProcessLine(".q");
+        }
+    }
+    else if(!ValidOption){
+        std::cout<<" command not found, possible command are: "<<std::endl;
+        std::cout<<" CMScables --help, -h : print this message"<<std::endl;
+        std::cout<<" CMScables --doc, -D : print documentation on what it is expected as input and what you can expect as output"<<std::endl;
+        std::cout<<" CMScables --input/-I <path> --mode/-M [OPTION]: perform test giving the input text file, path should be of type CableXX/TEST_NAME.txt " << std::endl;
+        std::cout<<"[OPTION] = 0 for continuity test, 1 for isolation test, 2 for both. Default is continuity test" <<std::endl;
+        gROOT->ProcessLine(".q");
+    }
+    }
 
-
+}
 
 
 

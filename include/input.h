@@ -1,10 +1,8 @@
 #include<cstdlib>
+
 #ifndef INPUT_H
 #define INPUT_H
 
-
-#define linux
-//#define windows
 
 // list of commands to be execute //
 std::vector<std::string> listAndChooseFiles();
@@ -26,13 +24,8 @@ std::vector<std::string> listAndChooseFiles() {
 
     while (number_test != -1) {
         // Platform-specific command to list files and store in tempFilesName.txt
-#ifdef linux
         command = "cd " + sInputTestDir + " && ls > tempFilesName.txt";
         remove_temp = "rm " + sInputTestDir + "tempFilesName.txt";
-#elif defined _WIN32
-        command = "powershell Get-ChildItem -Path " + sInputTestDir + " -Name > " + sInputTestDir + "tempFilesName.txt";
-        remove_temp = "powershell Remove-Item -Path " + sInputTestDir + "tempFilesName.txt";
-#endif
         std::system(command.c_str());
 
         std::ifstream inputFile((sInputTestDir + "tempFilesName.txt").c_str());
@@ -55,12 +48,8 @@ std::vector<std::string> listAndChooseFiles() {
          std::cout << "*******************************************************************" << std::endl;
 
         std::cin >> number_test;
-
-#ifdef linux
         command = "cd " + sInputTestDir + FileName[number_test - 1].second + " && ls *.txt > tempFileName2.txt";
-#elif defined _WIN32
-        command = "powershell Get-ChildItem -Path " + sInputTestDir + FileName[number_test - 1].second + " -Filter \"*.txt\" -Name > " + sInputTestDir + FileName[number_test - 1].second + "\\tempFileName2.txt";
-#endif
+
         std::system(command.c_str());
 
         std::ifstream inputFile2((sInputTestDir + FileName[number_test - 1].second + "/tempFileName2.txt").c_str());
@@ -75,11 +64,8 @@ std::vector<std::string> listAndChooseFiles() {
             }
             inputFile2.close();
         }
-#ifdef linux
         std::system(("rm " + sInputTestDir + FileName[number_test - 1].second + "/tempFileName2.txt").c_str());
-#elif defined _WIN32
-        std::system(("powershell Remove-Item -Path " + sInputTestDir + FileName[number_test - 1].second + "\\tempFileName2.txt").c_str());
-#endif
+
         std::cout <<"************** Which test to use? (enter number) ******************" << std::endl;
         for (int i = 0; i < int(FileName2.size()); ++i) {
             std::cout << "Nr. " << FileName2[i].first << "   " << FileName2[i].second << std::endl;

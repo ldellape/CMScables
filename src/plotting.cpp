@@ -9,7 +9,6 @@ void plotting(std::vector<TH1F*> &h, std::string sTitle, Int_t number_pad){
     TPad *pad = (TPad*) c_plot->cd(number_pad);
     pad->Draw();    
     TLatex text;
-    TLine *lineThresh;
     TLine *lineMean[IterationTest];
     TLatex textThresh;
     TLatex textMean[IterationTest], textLenght[IterationTest], textStdDev[IterationTest];
@@ -49,98 +48,161 @@ for(int j=0; j<IterationTest; j++){
 sPDFTitle = name[0] + "____" + currentDate;
 
 //*********SET LABELS***********************//
-    text.SetTextSize(0.03);
-    char const *labels[2]={"Failed", "Passed"};
-    auto *x = h[0]->GetXaxis();
-    auto *y = h[0]->GetYaxis();
-    if((h[0]->GetNbinsX())== 2){
-     for(int i=1; i<3; i++){
-      x->SetBinLabel(i,labels[i-1]); 
-    }
-    }
-    else if((h[0]->GetNbinsX()) == NumberLVcables){
-      for(int i=1; i<NumberLVcables+1; i++){
-       x->SetBinLabel(i, labelsContLV[i-1]);
-      }
-    }
-    else if((h[0]->GetNbinsX()) == (NumberHVcables + NumberHVRTNwires + NumberSensorWire)){
-      for(int i=1; i<(NumberHVcables + NumberHVRTNwires + NumberSensorWire+1); i++){
-
-      x->SetBinLabel(i, labelsContHV[i-1]);
-     }  
-     }
+text.SetTextSize(0.03);
+char const *labels[2]={"Failed", "Passed"};
+auto *x = h[0]->GetXaxis();
+auto *y = h[0]->GetYaxis();
+if((h[0]->GetNbinsX())== 2){
+  for(int i=1; i<3; i++){
+    x->SetBinLabel(i,labels[i-1]); 
+  }
+}
+else if((h[0]->GetNbinsX()) == NumberLVcables){
+  for(int i=1; i<NumberLVcables+1; i++){
+    x->SetBinLabel(i, labelsContLV[i-1]);
+  }
+}
+else if((h[0]->GetNbinsX()) == (NumberHVcables + NumberHVRTNwires + NumberSensorWire)){
+  for(int i=1; i<(NumberHVcables + NumberHVRTNwires + NumberSensorWire+1); i++){
+    x->SetBinLabel(i, labelsContHV[i-1]);
+  }  
+}
 //*******************************************//
     
 
 //*************DRAWING HISTOS AND PARAMETERS OF THE TEST****************//
-  for(int i=0; i<IterationTest; i++){
-    if(i==0){
-     h[i]->SetStats(0);
-     if(sTitle != "ContinuityTest_All_Passed-Failed" && sTitle != "InsulationTest_All_Passed-Failed") h[i]->Draw("  p");
-     else h[i]->Draw("hist ");
-     h[i]->SetTitle("");
-     h[i]->SetMarkerColor(i+3);
-     h[i]->SetLineColor(i+3);
-     h[i]->SetMarkerStyle(3);
-     h[i]->SetMarkerSize(2);
-     x->SetLabelSize(0.035);
-     y->SetLabelSize(0.035);
-    }
-    else{
-     // if(sTitle != "ContinuityTest_All_Passed-Failed" && sTitle != "InsulationTest_All_Passed-Failed") 
-     // else h[i]->Draw(" same hist");
-      h[i]->Draw("same p");
-      h[i]->SetMarkerColor(i+3);
-      h[i]->SetMarkerStyle(22);
-      h[i]->SetMarkerSize(1.5);
-  //    h[i]->SetLineColor(kRed);
-    }
-    }
-    text.DrawLatexNDC(0.15, 0.92, (sTitle).c_str());
-    if(sTitle.find("Continuity") != std::string::npos){
-     TLatex textPar[IterationTest];
-      for(int i=0; i<IterationTest; i++){
-        textPar[i].SetTextSize(0.020);
-        textPar[i].SetTextFont(52);
-      for(auto &it : ParametersContinuity){
-        textPar[i].DrawLatexNDC(0.01, 0.02, Form("Parameters : i=%i, Thresh.= %i, T_{rise} = %i s, T_{wait} = %i s, T_{meas} = %i s, V_{lim}= %i", int(std::get<0>(it)), int(std::get<1>(it)), int(std::get<2>(it)), int(std::get<3>(it)), int(std::get<4>(it)), int(std::get<6>(it))));
-      }
-     }
-    }
-    else if(sTitle.find("Insulation") != std::string::npos){
-      TLatex textParIns;
-      textParIns.SetTextSize(0.020);
-      textParIns.SetTextFont(52);
-      if(sTitle != "InsulationTest_HV_Resistence"){
-        textParIns.DrawLatexNDC(0.01, 0.02, "Parameters : V=50 V, Thresh.= 100 M #Omega, T_{rise} = 1 s, T_{wait} = 8 s, T_{meas} = 8 s, i_{lim}= 1.95 mA, V_{ramp}=120 V/s");
-      }
-      else if(sTitle == "InsulationTest_HV_Resistence"){
-        for(auto& it : ParametersInsulationInitial){
-        textParIns.DrawLatexNDC(0.01, 0.02, Form("Initial Parameters : V=%d kV, Thresh.= %d G #Omega, T_{rise} = %d s, T_{wait} = %d s, T_{meas} = %d s, i_{lim}= %d mA, V_{ramp}= %d V/s", int(std::get<0>(it)), int(std::get<1>(it)), int(std::get<2>(it)), int(std::get<3>(it)), int(std::get<4>(it)), int(std::get<6>(it))));
-        }
-        TLine *lineTsensor = new TLine(4*x->GetBinWidth(2), 0, 4*x->GetBinWidth(2), 1e+12);
-        lineTsensor->SetLineWidth(1);
-        lineTsensor->SetLineStyle(kDashed);
-        lineTsensor->Draw("same");
-        TLatex textTsensor[2];
-        textTsensor[0].SetTextSize(0.02);
-        textTsensor[0].SetTextFont(52);
-        for(auto&it : ParametersInsulationTsensor){
-        textTsensor[0].DrawLatex(0.3*x->GetBinWidth(2), 1e+07 , Form("V=%dV, Thresh=%d M #Omega", int(std::get<0>(it)), int(std::get<1>(it))));
-        }
-        textTsensor[1].SetTextSize(0.02);
-        textTsensor[1].SetTextFont(52);
-        textTsensor[1].DrawLatex(0.3*x->GetBinWidth(2), 0.4*1e+07 , "T_{rise}=1s, T_{meas}=100 2s");
-        TLatex textHVcable;
-        textHVcable.SetTextSize(0.02);
-        textHVcable.SetTextFont(52);
-        for(auto&it : ParametersInsulationHV){
-        textHVcable.DrawLatex(8*x->GetBinWidth(2), 1e+07, Form("T_{rise}=%d s, T_{wait}=%d s, T_{meas}=%d s", int(std::get<0>(it)), int(std::get<1>(it)), int(std::get<2>(it)) ));
-        }
-      }
+for(int i=0; i<IterationTest; i++){
+ if(i==0){
+  h[i]->SetStats(0);
+  if(sTitle != "ContinuityTest_All_Passed-Failed" && sTitle != "InsulationTest_All_Passed-Failed") h[i]->Draw("  p");
+  else h[i]->Draw("hist ");
+   h[i]->SetTitle("");
+   h[i]->SetMarkerColor(i+3);
+   h[i]->SetLineColor(i+3);
+   h[i]->SetMarkerStyle(3);
+   h[i]->SetMarkerSize(2);
+   x->SetLabelSize(0.035);
+   y->SetLabelSize(0.035);
+ }
+ else{
+   h[i]->Draw("same p");
+   h[i]->SetMarkerColor(i+3);
+   h[i]->SetMarkerStyle(22);
+   h[i]->SetMarkerSize(1.5);
+ }
+}
+text.DrawLatexNDC(0.15, 0.92, (sTitle).c_str());
 
+if(sTitle == "InsulationTest_HV_Resistence" || sTitle == "InsulationTest_LV_Resistence"){
+  TLatex textParIns;
+  textParIns.SetTextSize(0.020);
+  textParIns.SetTextFont(52);
+  y->SetTitle("R [#Omega]");
+  y->SetNdivisions(8);
+  pad->SetLogy(1);
+  for(const auto& it : ParametersInsulationInitial){
+    std::cout << "par initial " << std::endl;
+    textParIns.DrawLatexNDC(0.01, 0.02, Form("Initial Parameters : V=%d kV, Thresh.= %d G #Omega, T_{rise} = %d s, T_{wait} = %d s, T_{meas} = %d s, i_{lim}= %d mA, V_{ramp}= %d V/s", int(std::get<0>(it)), int(std::get<1>(it)), int(std::get<2>(it)), int(std::get<3>(it)), int(std::get<4>(it)), int(std::get<6>(it))));
+  }
+  if(sTitle == "InsulationTest_HV_Resistence"){
+    y->SetRangeUser(100,1e+12);
+    TLine *lineTsensor = new TLine(4*x->GetBinWidth(2), 0, 4*x->GetBinWidth(2), 1e+12);
+    lineTsensor->SetLineWidth(1);
+    lineTsensor->SetLineStyle(kDashed);
+    lineTsensor->Draw("same");
+    TLatex textTsensor[2];
+    textTsensor[0].SetTextSize(0.02);
+    textTsensor[0].SetTextFont(52);
+    for(auto&it : ParametersInsulationTsensor){
+     textTsensor[0].DrawLatex(0.3*x->GetBinWidth(2), 1e+07 , Form("V=%dV, Thresh=%d M #Omega", int(std::get<0>(it)), int(std::get<1>(it))));
     }
+    textTsensor[1].SetTextSize(0.02);
+    textTsensor[1].SetTextFont(52);
+    TLatex textHVcable;
+    textHVcable.SetTextSize(0.02);
+    textHVcable.SetTextFont(52);
+    for(auto&it : ParametersInsulationHV){
+      textHVcable.DrawLatex(8*x->GetBinWidth(2), 1e+07, Form("T_{rise}=%d s, T_{wait}=%d s, T_{meas}=%d s", int(std::get<0>(it)), int(std::get<1>(it)), int(std::get<2>(it)) ));
+    }
+   TLine *lineThresh = new TLine(4*x->GetBinWidth(2),ThreshIsoHV, x->GetXmax(), ThreshIsoHV);
+   lineThresh->SetLineColor(46); 
+   lineThresh->SetLineStyle(kDashed);
+   lineThresh->Draw("same");
+   textThresh.SetTextSize(0.02);
+   textThresh.SetTextFont(52);
+   textThresh.DrawLatex(0.8, 1e+06, "Tsensor threshold");
+   TLine *lineThreshTsensor = new TLine(x->GetXmin(), 1e+06, 4*x->GetBinWidth(2), 1e+06);
+   textThresh.DrawLatex(4.5*x->GetBinWidth(2), ThreshIsoHV, "HV threshold");
+   lineThreshTsensor->SetLineColor(46); 
+   lineThreshTsensor->SetLineStyle(kDashed);
+   lineThreshTsensor->Draw("same");
+   TArrow *arrow = new TArrow(x->GetXmax()-0.4, ThreshIsoHV+0.9*1e+09, x->GetXmax()-0.4, ThreshIsoHV-0.9*1e+09, 0.005, "<" );
+   arrow->SetLineColor(kRed);
+   arrow->SetFillColor(kRed);
+   arrow->SetLineWidth(1);
+   arrow->Draw();
+   TArrow *arrow2 = new TArrow(4*x->GetBinWidth(2)-0.2, 1e+06-0.5*1e+06, 4*x->GetBinWidth(2)-0.2, 1e+06+0.8*1e+06, 0.005, ">");
+   arrow2->SetLineColor(kRed);
+   arrow2->SetFillColor(kRed);
+   arrow2->SetLineWidth(1);
+   arrow2->Draw();
+  }
+  if(sTitle == "InsulationTest_LV_Resistence"){
+  y->SetRangeUser(100,1e+11);
+  TLine *lineThresh = new TLine(x->GetXmin(), ThreshIsoLV, x->GetXmax(), ThreshIsoLV);
+  lineThresh->SetLineColor(46);
+  lineThresh->SetLineStyle(kDashed);
+  lineThresh->Draw("same");
+  textThresh.SetTextSize(0.02);
+  textThresh.SetTextFont(52);
+  textThresh.DrawLatex(0.8, ThreshIsoLV, "threshold");
+  TArrow *arrow = new TArrow(x->GetXmax()-0.4, ThreshIsoLV+8000, x->GetXmax()-0.4, ThreshIsoLV-8000, 0.005, "<" );
+  arrow->SetLineColor(kRed);
+  arrow->SetFillColor(kRed);
+  arrow->SetLineWidth(1);
+  arrow->Draw();
+ }
+}
 //****************************************************************//
+else if(sTitle == "ContinuityTest_ResistenceHV" || sTitle == "ContinuityTest_ResistenceLV"){
+  TLatex textPar;
+  textPar.SetTextSize(0.020);
+  textPar.SetTextFont(52);
+  for(auto &it : ParametersContinuity){
+    textPar.DrawLatexNDC(0.01, 0.02, Form("Parameters : i=%i, Thresh.= %i, T_{rise} = %i s, T_{wait} = %i s, T_{meas} = %i s, V_{lim}= %i", int(std::get<0>(it)), int(std::get<1>(it)), int(std::get<2>(it)), int(std::get<3>(it)), int(std::get<4>(it)), int(std::get<6>(it))));
+  }
+  y->SetTitle("R[#Omega]");
+  if( sTitle == "ContinuityTest_ResistenceHV"){
+   y->SetRangeUser(9,14);
+   TLine *lineThresh = new TLine(x->GetXmin(), ThreshContHV, x->GetXmax(), ThreshContHV);
+   lineThresh->SetLineColor(46);
+   lineThresh->SetLineStyle(kDashed);
+   lineThresh->Draw("same");
+   textThresh.SetTextSize(0.02);
+   textThresh.SetTextFont(52);
+   textThresh.DrawLatex(0.8, ThreshContHV, "threshold");
+   TArrow *arrow = new TArrow(x->GetXmax()-0.4, ThreshContHV+0.2, x->GetXmax()-0.4, ThreshContHV-0.5, 0.005, ">" );
+   arrow->SetLineColor(kRed);
+   arrow->SetFillColor(kRed);
+   arrow->SetLineWidth(1);
+   arrow->Draw();
+  }
+  if(sTitle == "ContinuityTest_ResistenceLV"){
+   y->SetRangeUser(0,1.3);
+   TLine *lineThresh = new TLine(x->GetXmin(), ThreshContLV, x->GetXmax(), ThreshContLV);
+   lineThresh->SetLineColor(46);
+   lineThresh->SetLineStyle(kDashed);
+   lineThresh->Draw("same");
+   textThresh.SetTextSize(0.02);
+   textThresh.SetTextFont(52);
+   textThresh.DrawLatex(0.15, ThreshContLV+0.001, "threshold");
+   TArrow *arrow = new TArrow(x->GetXmax()-0.4, ThreshContLV+0.05, x->GetXmax()-0.4, ThreshContLV-0.05, 0.005, ">" );
+   arrow->SetLineColor(kRed);
+   arrow->SetFillColor(kRed);
+   arrow->SetLineWidth(1);
+   arrow->Draw();
+  } 
+}
 
 /**********************************************/
 TLegend *l = new TLegend(0.65,0.9,0.9,1.0);
@@ -155,86 +217,6 @@ l->Draw("same");
 //leg->Draw("same");
 /***********************************************/
 
-
-textThresh.SetTextSize(0.02);
-textThresh.SetTextFont(52);
-
-if(sTitle == "ContinuityTest_ResistenceHV"){
-  y->SetRangeUser(9,14);
-  y->SetTitle("R[#Omega]");
-
-  lineThresh = new TLine(x->GetXmin(), ThreshContHV, x->GetXmax(), ThreshContHV);
-  lineThresh->SetLineColor(46);
-lineThresh->SetLineStyle(kDashed);
-lineThresh->Draw("same");
-textThresh.DrawLatex(0.8, ThreshContHV, "threshold");
-TArrow *arrow = new TArrow(x->GetXmax()-0.4, ThreshContHV+0.2, x->GetXmax()-0.4, ThreshContHV-0.5, 0.005, ">" );
-arrow->SetLineColor(kRed);
-arrow->SetFillColor(kRed);
-arrow->SetLineWidth(1);
-arrow->Draw();
-}
-else if(sTitle == "ContinuityTest_ResistenceLV"){
-  y->SetRangeUser(0,1.3);
-  y->SetTitle("R[#Omega]");
-
-lineThresh = new TLine(x->GetXmin(), ThreshContLV, x->GetXmax(), ThreshContLV);
-  lineThresh->SetLineColor(46);
-lineThresh->SetLineStyle(kDashed);
-lineThresh->Draw("same");
-textThresh.DrawLatex(0.15, ThreshContLV+0.001, "threshold");
-TArrow *arrow = new TArrow(x->GetXmax()-0.4, ThreshContLV+0.05, x->GetXmax()-0.4, ThreshContLV-0.05, 0.005, ">" );
-arrow->SetLineColor(kRed);
-arrow->SetFillColor(kRed);
-arrow->SetLineWidth(1);
-arrow->Draw();
-} 
-else if(sTitle == "InsulationTest_LV_Resistence"){
-  y->SetTitle("R [#Omega]");
-  y->SetRangeUser(100,1e+11);
-  y->SetNdivisions(8);
-  pad->SetLogy(1);
-  lineThresh = new TLine(x->GetXmin(), ThreshIsoLV, x->GetXmax(), ThreshIsoLV);
-  lineThresh->SetLineColor(46);
-  lineThresh->SetLineStyle(kDashed);
-  lineThresh->Draw("same");
-  textThresh.DrawLatex(0.8, ThreshIsoLV, "threshold");
-TArrow *arrow = new TArrow(x->GetXmax()-0.4, ThreshIsoLV+8000, x->GetXmax()-0.4, ThreshIsoLV-8000, 0.005, "<" );
-arrow->SetLineColor(kRed);
-arrow->SetFillColor(kRed);
-arrow->SetLineWidth(1);
-arrow->Draw();
-}
-
-else if(sTitle == "InsulationTest_HV_Resistence"){
-  y->SetTitle("R [#Omega]");
-  y->SetRangeUser(100,1e+12);
-  y->SetNdivisions(8);
-  pad->SetLogy(1);
-  lineThresh = new TLine(4*x->GetBinWidth(2),ThreshIsoHV, x->GetXmax(), ThreshIsoHV);
-  lineThresh->SetLineColor(46); 
-  lineThresh->SetLineStyle(kDashed);
-  lineThresh->Draw("same");
-  textThresh.DrawLatex(0.8, 1e+06, "Tsensor threshold");
-    lineThresh = new TLine(4*x->GetBinWidth(2), 1e+06, x->GetXmax(), 1e+06);
-
-  TLine *lineThreshTsensor = new TLine(x->GetXmin(), 1e+06, 4*x->GetBinWidth(2), 1e+06);
-    textThresh.DrawLatex(4.5*x->GetBinWidth(2), ThreshIsoHV, "HV threshold");
-
-  lineThreshTsensor->SetLineColor(46); 
-  lineThreshTsensor->SetLineStyle(kDashed);
-  lineThreshTsensor->Draw("same");
-  TArrow *arrow = new TArrow(x->GetXmax()-0.4, ThreshIsoHV+0.9*1e+09, x->GetXmax()-0.4, ThreshIsoHV-0.9*1e+09, 0.005, "<" );
-arrow->SetLineColor(kRed);
-arrow->SetFillColor(kRed);
-arrow->SetLineWidth(1);
-arrow->Draw();
-TArrow *arrow2 = new TArrow(4*x->GetBinWidth(2)-0.2, 1e+06-0.5*1e+06, 4*x->GetBinWidth(2)-0.2, 1e+06+0.8*1e+06, 0.005, ">");
-arrow2->SetLineColor(kRed);
-arrow2->SetFillColor(kRed);
-arrow2->SetLineWidth(1);
-arrow2->Draw();
-}
 
 
 if(sTitle.find("Passed-Failed") == std::string::npos){
@@ -338,10 +320,9 @@ for(int j=0; j<IterationTest; j++){
 }
 }
 
-if(IterationTest == 1) c_plot->SaveAs("./output/plots/SingleCable/prova.pdf");
-else if(IterationTest >1) c_plot->SaveAs("./output/plots/CheckCable/prova.pdf");
+if(IterationTest == 1) c_plot->SaveAs("./output/plots/SingleCable/" + sPDFTitle +".pdf");
+else if(IterationTest >1) c_plot->SaveAs("./output/plots/CheckCable/" + sPDFTitle +".pdf");
 
- //std::system("pdftk " + sInputTestDir + name[0] + ".pdf ./output/plots/" + sPDFTitle + ".pdf output ./output/report/" + sPDFTitle + ".pdf" );
 }
 
 

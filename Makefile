@@ -1,12 +1,12 @@
 CXX = g++
 CXXFLAGS = -Wall -I include -I src $(shell root-config --cflags)
 LDFLAGS = $(shell root-config --libs)
-
 SRCDIR = src
 OBJDIR = build
-DEPDIR = .deps
+DEPDIR = deps
+PREFIX=.
 
-TARGET = CMScables
+TARGET = $(PREFIX)/CMScables
 
 SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SOURCES))
@@ -39,7 +39,7 @@ OPTION ?= NONE
 
 ifeq ($(OPTION), AUTO_TEST)
 	CXXFLAGS+=-DAUTO_TEST
-else ifeq ($(OPTION), INTER_TEST)
+else 
 	CXXFLAGS+=-DINTER_TEST
 endif
 

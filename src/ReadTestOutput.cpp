@@ -20,6 +20,7 @@ void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j){
     double r, B;
     std::string AR, str1, str2;
     int lineCounter=0;
+    int secondtree=0;
 
     while(std::getline(inputFile, line)){
       std::istringstream iss(line);
@@ -51,6 +52,7 @@ void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j){
             if(iss>>str1>>str2>>r) continuityData.push_back(std::make_tuple(str1,str2,r));
           }
           else if(SecondTree){
+          secondtree++;
           if(iss>>str1>>str2>>r)  insulationData.push_back(std::make_tuple(str1,str2,r,B));
           }
        }
@@ -97,11 +99,6 @@ void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j){
         cableIns = j;
         InsulationTree->Fill();
     }    
-      for(const auto&it : ParametersInsulationHV){
-        std::cout<<" Param : "<<std::get<1>(it);
-        std::cout<<" Param : "<<std::get<2>(it);
-      
-      }
     }
     
     }

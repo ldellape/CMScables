@@ -1,0 +1,74 @@
+IT CAN BE RUN IN TWO MODES:
+1. Automatically processes the results of the most recent test conducted in chronological order and produces the final report. (AUTO_TEST)
+2. Selecting one or more tests by navigating through the directory (INTER_TEST)
+    In the second case (INTER_TEST), the following options can be selected:
+    a- Which and how many tests among all those present in the directory ./input/FULL_TEST_su_cavo_ps_pp1_V3
+    b- Whether to plot one or more results together for comparison
+    c- The results of which type of test to plot (continuity, isolation, or both)
+    d- Whether to also produce the final report.
+3. From command line by typing:
+   ./CMScables --input [PATH_TO_TXT_FILE] --mode [OPTION]
+**********************************************************
+HOW TO ADD NEW TESTS TO PLOT:
+1. The .txt file produced by the CEETIS software should be copied into the directory ./input/FULL_TEST_su_cavo_ps_pp1_V3/CABLE_NAME/
+2. The .pdf file produced by the CEETIS software should be copied into ./input/pdf_ceetis/
+**********************************************************
+OUTPUT INCLUDES:
+1. Final test report in the directory ./output/report/
+2. Produced plots, saved in ./output/plots/SingleCable/ if only one test was processed, or in ./output/plots/CheckCable/ if multiple tests were selected.
+3. .root file containing all the histograms/graphs, including those not plotted in the report, saved in ./output/rootFiles/
+
+The output names are composed of TEST_NAME__PROGRAM_EXECUTION_DATE.pdf/root
+*************************************************************************************
+COSA SERVE:
+Linux/wsl
+1-root v6.X.X
+2-python3.x 
+3-pyPDF2
+
+*************************************************************************************
+
+*************************************************************************************
+COME INSTALLARE:
+git clone https://github.com/ldellape/CMScables
+pip install pyPDF2
+make OPTION=AUTO_TEST (oppure solo "make" per modo default)
+./CMScables
+
+*************************************************************************************
+COME CAMBIARE MODALITA':
+rm -r build 
+make OPTION="QUELLA CHE SI VUOLE" (oppure solo "make")
+
+*************************************************************************************
+
+
+
+
+
+
+********************************************************************************************************************************************
+STRUTTURA PROGETTO:
+CMScables.cpp---> main program
+include- root.h --> classi di root necessarie
+       |
+       - def_variables.h ---> variabili globali
+       |
+       - input.h ---> script per scegliere modalità di escuzione se si vuole usare INTER_TEST
+       |
+       - user_func.h ---> miscellanea di funzioni utili (ad es. per automatizzare definizione degli istogrammi) + schermata all'avvio
+
+src-   def_variable.cpp ---> implementazione variabili globali
+       |
+       plotting.cpp ----> script per disegnare i plot 
+       |
+       plottingGraph ----> script per disegnare i grafici per resistenza vs tempo per LV (non ancora terminato)
+       |
+       ReadTestOutput.cpp ----> lettura dei file di testo e riempimento dei trees
+       |
+       ManagePDF.py ----> script per la modifica del file di testo originale da software CEETIS 
+       |
+       WritePDF.py----> script per produrre report finale
+********************************************************************************************************************************************
+
+

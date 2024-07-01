@@ -14,20 +14,26 @@
 #include "./include/user_func.h"
 #include "./include/input.h"
 
-#ifdef AUTO_TEST
+#ifdef AUTO_TEST // automatic test--> report for the more recently txt file 
 #define AutoTest 
-#elif defined(INTER_TEST)
+#elif defined(INTER_TEST) // --> choose test from command line
 #define InterTest
 #endif
 
-int main(){
- std::string pathTEST;
+
+
+int main(int argc, char* argv[]){
 
 InsulationTest = false;
 ContinuityTest = false;
 Ins_Time = false;
-test_type = 2;
-start();
+test_type = 0;
+std::string pathTEST;
+
+
+if(argc>1) start(argc, argv);
+printlogo();
+
 std::this_thread::sleep_for(std::chrono::seconds(3));
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"Input Directory ---> " ;
@@ -37,6 +43,7 @@ std::cout<<"Plots will be saved in -----> ./output/plots/" << std::endl;
 std::cout<<"Final Report will be saved in -----> ./output/report" << std::endl; 
 std::cout<<"****************************************"<<std::endl;
 
+if(!CommandLine){
 #ifdef InterTest
  TestName = listAndChooseFiles();
  TestType();
@@ -47,7 +54,6 @@ std::cout<<"****************************************"<<std::endl;
 //if(Ins_Time){ std::cout << "ok" << std::endl; TestNameTimeAcquisition = listAndChooseFilesTimeAcquisition();}
 //}
 #elif defined(AutoTest)
-/*
  std::string commandTXT = "cd " + sInputTestDir + " && find . -type f -name \"*.txt\" -exec stat --format='%Y %n' {} + | sort -nr | head -n 1 | cut -d' ' -f2- > temp";
  std::system(commandTXT.c_str());
  std::ifstream pathTemp((sInputTestDir + "temp").c_str());
@@ -56,21 +62,20 @@ std::cout<<"****************************************"<<std::endl;
     std::cout<<" line: " << recentTEST<<std::endl;
     pathTEST = sInputTestDir + recentTEST;
  }
-  TestName.push_back(pathTEST);
-  */
-  TestName.push_back("/afs/cern.ch/user/l/ldellape/cavi/input/FULL_TEST_su_cavo_ps_pp1_V3/Cable01/prova.txt");
-  std::cout<<TestName.size() << std::endl;
-  //pathTemp.close();
-  //std::system(("cd " + sInputTestDir + " && rm temp").c_str());
+TestName.push_back(pathTEST);
+  pathTemp.close();
+std::system(("cd " + sInputTestDir + " && rm temp").c_str());
   test_type=2;
 #endif
+}
+IterationTest = TestName.size();
 
 std::cout<<"Test Processati   "<<std::endl;
 std::cout<<TestName[0] << std::endl;
 TString name[IterationTest];
  for(int j=0; j<IterationTest; j++){
       name[j] = TestName[j].substr( TestName[j].rfind("/") +1, TestName[j].rfind(".") - TestName[j].rfind("/")-1);
-      std::cout<<j+1<< "-" << name[j]<<std::endl;
+  //    std::cout<<j+1<< "-" << name[j]<<std::endl;
     }
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"preparing text files..." <<std::endl;
@@ -328,6 +333,7 @@ plotting(hCont_ResChannel_HV,"ContinuityTest_ResistenceHV",5);
 plotting(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV",6);
 //plotting(h_passedHV_Cont ,"ContinuityTest_HV_Passed-Failed");
 }
+
 gErrorIgnoreLevel = kPrint;
 //std::string PDF_Name = "ContinuityPDF";
 //WritePDF(CanvasPlots, "ContinuityPDF"); not fully implemented yet
@@ -368,7 +374,12 @@ f_OutPut->Write();
 std::cout<<"*******************************************"<<std::endl;
 std::cout<<"Output: "<<std::endl;
 std::cout<<"\033[32mroot histograms have been saved in "<< sOutputRoot << sPDFTitle <<".root\033[0m"<<std::endl;
-std::cout<<"\033[32mplot pdf has been saved as ./output/report/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
+if(IterationTest==1){
+std::cout<<"\033[32mplot pdf has been saved as ./output/plots/SingleCable/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
+}
+else{
+std::cout<<"\033[32mplot pdf has been saved as ./output/plots/CheckCable/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
+}
 f_OutPut->Close();
 
 std::cout<<"*****************************************"<<std::endl;

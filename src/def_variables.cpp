@@ -31,6 +31,7 @@ Float_t ResistivityHV = 1.724*TMath::Power(10,-8);
 
 Bool_t InsulationTest; 
 Bool_t ContinuityTest;
+Bool_t CommandLine;
 Bool_t Ins_Time;
 Int_t test_type;
 Int_t CompareTest;

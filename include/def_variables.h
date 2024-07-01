@@ -1,4 +1,4 @@
-// DECLARATION OF GLOBALE VARIABLES 
+// DECLARATION OF GLOBAL VARIABLES 
 
 #ifndef DEF_VARIABLES_H
 #define DEF_VARIABLES_H
@@ -42,6 +42,7 @@ extern Bool_t ContinuityTest;
 extern Bool_t Ins_Time;
 extern Int_t test_type;
 extern Int_t CompareTest;
+extern Bool_t CommandLine;
 
 extern TTree *ContinuityTree;
 extern TTree *InsulationTree;
