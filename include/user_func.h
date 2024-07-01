@@ -84,7 +84,6 @@ Float_t FindMax(TTree *tree, Int_t Cable, TString Option){
     }
  return max;
 }
-
 Float_t FindMin(TTree *tree, Int_t Cable, TString Option){
     Option.ToUpper();
     Float_t min;
@@ -111,19 +110,7 @@ Float_t FindMin(TTree *tree, Int_t Cable, TString Option){
 
 
 
-void printlogo(){
-/*
-    std::cout << "  *******************************************" << std::endl;
-    std::cout << "  *                                         *" << std::endl;
-    std::cout << "  *           \033[1;32m CMS  Cables\033[0m                  *" << std::endl;
-    std::cout << "  *          INFN  Sez.Perugia              *" << std::endl;
-    std::cout << "  *                                         *" << std::endl;
-    std::cout << "  *                                         *" << std::endl;
-    std::cout << "  *******************************************" << std::endl;
-    std::cout << "                                             " << std::endl;
-    std::cout<< "-------------------------------------------- "<< std::endl; 
-    */
-    
+void printlogo(){    
     TDatime dt;
     int day = dt.GetDay();
     int year = dt.GetYear();
@@ -159,13 +146,11 @@ void printlogo(){
 * )"+currentDate + R"(                                      *
 ************************************************************ )"; 
                               
-
-
 std::cout << green << textCMS  << reset << std::endl;
 std::cout<< green << "Test su cavo PS-PP1" << reset <<std::endl;
 std::system("mkdir -p ./output/plots && mkdir -p ./output/plots/SingleCable && mkdir -p ./output/plots/CheckCable && mkdir -p ./output/report" );
-
 }
+
 void start(int number_arg, char *argument[]){
     Bool_t ValidOption= false;
     for (int i = 1; i < number_arg; ++i) {

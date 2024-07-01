@@ -1,12 +1,15 @@
-CXX = g++
-CXXFLAGS = -Wall -I include -I src $(shell root-config --cflags)
+PREFIX = .
 LDFLAGS = $(shell root-config --libs)
 SRCDIR = src
 OBJDIR = build
 DEPDIR = deps
-PREFIX=.
-
+WORKDIR = $(PWD) 
 TARGET = $(PREFIX)/CMScables
+
+CXX = g++
+CXXFLAGS = -Wall -I include -I src $(shell root-config --cflags) -DPREFIX='"$(PREFIX)"' -DWORKDIR='"$(PWD)"'
+
+
 
 SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SOURCES))
@@ -42,5 +45,8 @@ ifeq ($(OPTION), AUTO_TEST)
 else 
 	CXXFLAGS+=-DINTER_TEST
 endif
+
+
+	
 
 .PHONY: all clean

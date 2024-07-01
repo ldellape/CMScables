@@ -14,4 +14,3 @@ if __name__ == "__main__":
     output_path = sys.argv[1]
     pdfs = sys.argv[2:]
     merge_pdfs(output_path, pdfs)
-#    print(f"PDFs merged into '{output_path}'")

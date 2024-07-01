@@ -1,0 +1,96 @@
+
+ContinuityTest
+500 40 2 2 1 On 48
+Passed    LV1            0.585289479636692 
+Passed    LVreturn1      0.579914060245754 
+Passed    LV2            0.584864117445739 
+Passed    LVreturn2      0.581205392770893 
+Passed    LV3            0.588702744419775 
+Passed    LVreturn3      0.581200514064774 
+Passed    LV4            0.583031858375296 
+Passed    LVreturn4      0.578162604752032 
+Passed    LV5            0.580598603697531 
+Passed    LVreturn5      0.58115813030537 
+Passed    LV6            0.571737653743193 
+Passed    LVreturn6      0.574360568104117 
+Passed    LV7            0.587111371459697 
+Passed    LVreturn7      0.580630010368155 
+Passed    LV8            0.571684597814532 
+Passed    LVreturn8      0.57118666487496 
+Passed    LV9            0.588265490381503 
+Passed    LVreturn9      0.579151152577418 
+Passed    LV10           0.586023115071731 
+Passed    LVreturn10     0.583942346906241 
+Passed    LV11           0.586740894712223 
+Passed    LVreturn11     0.589566885246184 
+Passed    LV12           0.587110151783162 
+Passed    LVreturn12     0.587268404813596 
+Passed    PH             0.590977746081473 
+Passed    PHreturn       0.581506957792883 
+Open      Drain          19044524.7009283 
+Passed    Tsensor1       12.300220468451 
+Passed    Tsensor2       12.3572763469221 
+Passed    Tsensor3       12.1039658891358 
+Passed    Tsensor4       12.1887207998279 
+Passed    H1             12.0398323331959 
+Passed    H2             12.3744964931493 
+Passed    H3             12.0438391510018 
+Passed    H4             12.1806704593913 
+Passed    HR1            12.1390056665718 
+Passed    H5             12.1180478665821 
+Passed    H6             11.9895483004157 
+Passed    H7             12.3599740678568 
+Passed    H8             12.2283240712778 
+Passed    HR2            12.3922733122654 
+Passed    H9             12.1978355470569 
+Passed    H10            12.1680138072706 
+Passed    H11            12.0097964933601 
+Passed    H12            12.033323548275 
+Passed    HR3            12.1797773365201 
+InsulationTest
+Passed    LV1             1252241004.0799  1,252
+Passed    LVR1             2192308831.14732  2,192
+Passed    LV2             2508580069.02557  2,509
+Fail    LVR2             25551.6697713726  25,55k
+Passed    LV3             1610587282.39065  1,611
+Passed    LVR3             1618501947.00858  1,619
+Passed    LV4             2339573941.96409  2,34
+Passed    LVR4             1317873157.37227  1,318
+Fail    LV5             25558.1781291917  25,56k
+Passed    LVR5             1137832221.22771  1,138
+Passed    LV6             1164992456.37965  1,165
+Fail    LVR6             25563.4157188378  25,56k
+Fail    LV7             25565.4172995207  25,57k
+Fail    LVR7             25565.9971252864  25,57k
+Passed    LV8             1529930205.96775  1,53
+Passed    LVR8             1421023758.17187  1,421
+Passed    LV9             1446819888.44993  1,447
+Passed    LVR9             2124842318.36735  2,125
+Passed    LV10             725740278.78194  725,7M
+Passed    LVR10             2693873362.11391  2,694
+Passed    LV11             1289488925.93217  1,289
+Passed    LVR11             1373403043.44106  1,373
+Passed    LV12             2064861764.1313  2,065
+Fail    LVR12             25569.1785570487  25,57k
+Fail    PH             25572.1294818159  25,57k
+Passed    PHR             1735256522.9838  1,735
+Passed    Tsensor1       2484006057.85319 
+Passed    Tsensor2       4088052969.71188 
+Passed    Tsensor3       4088052969.71188 
+Passed    Tsensor4       4088052969.71188 
+Passed    HV1            26166591775.1965 
+Passed    HV2            40939166524.1717 
+Passed    HV3            25579557703.7788 
+Passed    HV4            98113271273.0852 
+Passed    HV5            98113271273.0852 
+Passed    HV6            63364804529.283 
+Passed    HV7            98113271273.0852 
+Passed    HV8            98113271273.0852 
+Passed    HV9            59028816288.2366 
+Passed    HV10           98113271273.0852 
+Passed    HV11           98113271273.0852 
+Passed    HV12           98113271273.0852 
+Passed    HVreturn1      98113271273.0852 
+Passed    HVreturn2      92801542958.0253 
+Passed    HVreturn3      98113271273.0852 
+

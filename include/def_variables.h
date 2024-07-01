@@ -7,10 +7,11 @@
 #include <string>
 #include <vector>
 
-// input-output paths //
+// input-output paths, to be change in the Makefile //
 extern const std::string sInputTestDir;
 extern const std::string sInputTimeAcquisition;
 extern const std::string sOutputRoot;
+
 
 extern Int_t IterationTest; // number of cable to be test
 extern TString sPDFTitle; // final pdf name 

@@ -127,8 +127,8 @@ return choice;
 std::vector<std::string> DirTimeAcquisition(){
  std::vector<std::string> Directories;
   for(int ii=0; ii<int(TestName.size()); ii++){
-        std::string DirValues = TestName[ii].substr(0 , TestName[ii].size()- 30);
-        std::string Date = TestName[ii].substr(TestName[ii].size() - 22, 18);
+        std::string DirValues = TestName[ii].substr(0 , TestName[ii].size()- 31);
+        std::string Date = TestName[ii].substr(TestName[ii].size() - 23, 19);
         Directories.push_back((DirValues + "VALORI/" +  Date).c_str());
     }
  return Directories;

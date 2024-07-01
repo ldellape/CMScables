@@ -21,7 +21,6 @@
 #endif
 
 
-
 int main(int argc, char* argv[]){
 
 InsulationTest = false;
@@ -49,8 +48,8 @@ if(!CommandLine){
  TestType();
  IterationTest = TestName.size();
 //if(test_type != 0){
-//Ins_Time = TimeAcquisition();
-//TestNameTimeAcquisition = DirTimeAcquisition();
+// Ins_Time = TimeAcquisition();
+// TestNameTimeAcquisition = DirTimeAcquisition();
 //if(Ins_Time){ std::cout << "ok" << std::endl; TestNameTimeAcquisition = listAndChooseFilesTimeAcquisition();}
 //}
 #elif defined(AutoTest)
@@ -80,7 +79,7 @@ TString name[IterationTest];
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"preparing text files..." <<std::endl;
 for(int i=0; i<int(TestName.size()); i++){
-    std::string commandPy = "python3 ./src/ManageTXT.py " + TestName[i];
+    std::string commandPy = "python3 " + std::string(WORKDIR) + "/py/ManageTXT.py " + TestName[i];
     std::system(commandPy.c_str());
 }
 //std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -245,27 +244,24 @@ std::this_thread::sleep_for(std::chrono::seconds(2));
 /*
 //*******Histogram for Resistance Versus Time Acquisition*********
 if (Ins_Time) {
-std::vector<TGraph*> grRes_Time[IterationTest];
-    for(int i = 0; i < IterationTest; ++i) {
-    grRes_Time[i] = std::vector<TGraph*>(100, nullptr);     
-}
-float OverThreshHV[100] = {0};
+    std::vector<TGraph*> grRes_Time;
+    float OverThreshHV[100] = {0};
     std::vector<std::vector<double>> ResTime(NumberLVcables);
     std::vector<std::vector<double>> x(NumberLVcables);
-
     for (int k = 0; k < IterationTest; k++) {
         int Iteration = 0;
         for (const auto& pair : LVcables) {
             std::string line;
-            std::cout << (TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini").c_str() << std::endl;
-            std::ifstream inputTimeResolution((TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini").c_str());
-
+            std::string PathINI = TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini").c_str() << std::endl;
+            std::ifstream inputTimeResolution(pathINI);
+            std::cout<<inputTimeResolution.is_open()<<std::endl;
+            std::string commandPyINI = "python3 " + std::string(WORKDIR) + "/py/ManageINI.py pathINI";
             if (inputTimeResolution.is_open()) {
                 ++Iteration;
                 while (std::getline(inputTimeResolution, line)) {
                     std::stringstream ss(line);
                     double number_acquisition, value;
-                    if (ss >> number_acquisition >> value) { // Read a double from the line
+                    if (ss >> number_acquisition >> value) {
                         ResTime[Iteration - 1].push_back(value);
                     }
                 }
@@ -274,21 +270,21 @@ float OverThreshHV[100] = {0};
         }
 
         for (int i = 0; i < Iteration; i++) {
+            x[i].clear();
             for (int ii = 0; ii < int(ResTime[i].size()); ii++) {
                 x[i].push_back(ii);
             }
-            grRes_Time[i] = new TGraph(int(ResTime[i].size()), &x[i][0], &ResTime[i][0]); // graph for each LV cable 
+            grRes_Time.push_back(new TGraph(int(ResTime[i].size()), &x[i][0], &ResTime[i][0])); // graph for each LV cable 
         }
 
-        plottingGraph(grRes_Time[k], k, grRes_Time.size());  
-        std::cout<< "number of graphs : " << std::cout << grRes_Time.size() << std::endl;
-        c_graph[k] = new TCanvas(Form("c_graph%i", k + 1), Form("c_graph%i", k + 1), 3000, 1000);
+        plottingGraph(grRes_Time, k, grRes_Time.size());  
+        std::cout << "number of graphs : " << grRes_Time.size() << std::endl;
+  c_graph[k] = new TCanvas(Form("c_graph%i", k + 1), Form("c_graph%i", k + 1), 3000, 1000);
         c_graph[k]->Divide(grRes_Time.size());
         grRes_Time.clear();
     }
 }
 */
-
 
 // ***************************************
 
@@ -335,8 +331,6 @@ plotting(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV",6);
 }
 
 gErrorIgnoreLevel = kPrint;
-//std::string PDF_Name = "ContinuityPDF";
-//WritePDF(CanvasPlots, "ContinuityPDF"); not fully implemented yet
 
 
 // writing out histograms //
@@ -393,10 +387,10 @@ std::cout<<"*****************************************"<<std::endl;
 sPDFTitle = "prova_report";
 std::string PythonCommand;
 if(IterationTest == 1){
-    PythonCommand = "python3 ./src/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/SingleCable/" + sPDFTitle + ".pdf"; 
+    PythonCommand = "python3 " + std::string(WORKDIR) + "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/SingleCable/" + sPDFTitle + ".pdf"; 
 }
 else if(IterationTest > 1){
-    PythonCommand = "python3 ./src/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/CheckCable/" + sPDFTitle + ".pdf"; 
+    PythonCommand = "python3 " + std::string(WORKDIR)+ "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/CheckCable/" + sPDFTitle + ".pdf"; 
 }
 std::cout<< PythonCommand << std::endl;
 std::system((PythonCommand).c_str());
