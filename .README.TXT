@@ -1,0 +1,82 @@
+PROGRAMMA PER PRODURRE REPORT FINALI SU CAVI PS-PP1
+
+
+NON MODIFICARE I FILE DI TESTO/PDF PRODOTTI DAL SOFTWARE CEETIS!!! 
+*************************************************************************************
+COSA FA:
+Si può eseguire in due modalità:
+1) processa in automatico i risultati dell'ultimo test svolto in ordine cronologico e produce il report finale. (AUTO_TEST)
+2) si sceglie uno o più test navigando nella directory  (default)
+Nel secondo caso (default) si possono scegliere le seguenti cose:
+a- quali e quanti test tra tutti quelli presenti nella directory ./input/FULL_TEST_su_cavo_ps_pp1_V3
+b- se plottare uno solo o più risultati inisieme per confrontarli 
+c- i risulati di quale tipo di test plottare (continuità, isolamento o entrambi)
+d- si sceglie se produrre anche il report finale.
+
+*************************************************************************************
+COME INSERIRE NUOVI TEST DA PLOTTARE:
+1- Il file .txt prodotto dal software CEETIS va copiato nella directory ./input/FULL_TEST_su_cavo_ps_pp1_V3/NOME_DEL_CAVO/
+2- Il file .pdf prodotto dal software CEETIS va copiato in ./input/pdf_ceetis/
+
+*************************************************************************************
+COSA HA IN OUTPUT:
+1-report finale del test nella directory ./output/report/
+2-plot prodotti, salvati in ./output/plots/SingleCable/ se si è processato un solo test oppure in ./output/plots/CheckCable/
+  se si sono scelti più test.
+3-file .root contenente tutti gli istogrammi/grafici, anche quelli non plottati nel report sono salvati in ./output/rootFies/
+
+I nomi degli output sono composti da NOME_DEL_TEST__DATA_ESECUZIONE_PROGRAMMA.pdf/root
+
+*************************************************************************************
+COSA SERVE:
+Linux/wsl
+1-root v6.X.X
+2-python3.x 
+3-pyPDF2
+
+*************************************************************************************
+
+*************************************************************************************
+COME INSTALLARE:
+git clone https://github.com/ldellape/CMScables
+pip install pyPDF2
+make OPTION=AUTO_TEST (oppure solo "make" per modo default)
+./CMScables
+
+*************************************************************************************
+COME CAMBIARE MODALITA':
+rm -r build 
+make OPTION="QUELLA CHE SI VUOLE" (oppure solo "make")
+
+*************************************************************************************
+
+
+
+
+
+
+********************************************************************************************************************************************
+STRUTTURA PROGETTO:
+CMScables.cpp---> main program
+include- root.h --> classi di root necessarie
+       |
+       - def_variables.h ---> variabili globali
+       |
+       - input.h ---> script per scegliere modalità di escuzione se si vuole usare INTER_TEST
+       |
+       - user_func.h ---> miscellanea di funzioni utili (ad es. per automatizzare definizione degli istogrammi) + schermata all'avvio
+
+src-   def_variable.cpp ---> implementazione variabili globali
+       |
+       plotting.cpp ----> script per disegnare i plot 
+       |
+       plottingGraph ----> script per disegnare i grafici per resistenza vs tempo per LV (non ancora terminato)
+       |
+       ReadTestOutput.cpp ----> lettura dei file di testo e riempimento dei trees
+       |
+       ManagePDF.py ----> script per la modifica del file di testo originale da software CEETIS 
+       |
+       WritePDF.py----> script per produrre report finale
+********************************************************************************************************************************************
+
+

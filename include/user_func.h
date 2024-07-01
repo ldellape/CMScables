@@ -180,7 +180,7 @@ void start(int number_arg, char *argument[]){
         gROOT->ProcessLine(".q");
     }
     else if(arg == "--doc" || arg == "-D"){
-        std::ifstream readme("doc");
+        std::ifstream readme(".doc");
         std::string readme_line;
         std::cout<<" to change mode: "<<std::endl;
         std::cout<<" rm -r build;"<<std::endl;

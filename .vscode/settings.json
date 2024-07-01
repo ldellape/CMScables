@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.f": "fortran-modern",
+        "histoFit.C": "cpp",
+        "cmath": "cpp",
+        "complex": "cpp",
+        "task2d.C": "cpp",
+        "task2c.C": "cpp"
+    }
+}
