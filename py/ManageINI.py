@@ -1,9 +1,20 @@
 import sys
 import re
+import warnings
 
-
+warnings.filterwarnings("ignore")
 filename = sys.argv[1]
 
+try:
+    with open(filename, 'r', encoding='utf-8') as file:
+        first_line = file.readline().strip()
+        if "[Test]" not in first_line:
+            sys.exit(1)
+except UnicodeDecodeError:
+    with open(filename, 'r', encoding='iso-8859-1') as file:
+        first_line = file.readline().strip()
+        if "[Test]" not in first_line:
+            sys.exit(1)
 
 try:
     with open(filename, 'r', encoding='utf-8') as file:

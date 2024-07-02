@@ -6,9 +6,9 @@
 
 // functions defined in src directory //
 void plotting(std::vector<TH1F*> &h, std::string sTitle, Int_t number_pad);
-void plottingGraph(std::vector<TGraph*> &gr, Int_t Iteration, Int_t LVchannel);
+void plottingGraph(std::vector<std::pair<std::string,TGraph*>> &gr, Int_t NumberCable, std::string Title);
 void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j);
-void WritePDF(std::vector<TCanvas*> &canvas, std::string sPDFTitle);
+TGraph* ReadTestTime(std::string pathFile);
 
 // functions in this header files //
 void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v);
@@ -63,7 +63,7 @@ void fill_Tsensors(std::vector<std::pair<std::string, Int_t>> &v){
 // FindMax, FindMin --> automatic setting of histograms //
 Float_t FindMax(TTree *tree, Int_t Cable, TString Option){
     Option.ToUpper();
-    Float_t max;
+    Float_t max=0;
     if(Option == "HV_CONT" || Option == "LV_CONT"){
         tree->GetEntry(0);
         max = resistenceCon;
@@ -86,7 +86,7 @@ Float_t FindMax(TTree *tree, Int_t Cable, TString Option){
 }
 Float_t FindMin(TTree *tree, Int_t Cable, TString Option){
     Option.ToUpper();
-    Float_t min;
+    Float_t min=0;
     if(Option == "HV_CONT" || Option == "LV_CONT"){
         tree->GetEntry(0);
         Float_t min = resistenceCon;

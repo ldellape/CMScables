@@ -81,6 +81,8 @@ std::vector<std::string> listAndChooseFiles() {
         } else if (str == "n") {
             number_test = -1;
         }
+        std::cout<<"*****************************************"<<std::endl;
+
         FileName2.clear();
         FileName.clear();
     }
@@ -88,9 +90,9 @@ std::vector<std::string> listAndChooseFiles() {
 }
 
 void TestType() {
-    std::cout << "0 for continuity test, 1 for insulation test, 2 for both: " << std::endl<<std::endl;
-    std::cin >> test_type;
+    std::cout << "0 for continuity test, 1 for insulation test, 2 for both: " << std::endl;
     std::cout<<"*****************************************"<<std::endl;
+    std::cin >> test_type;
     if (test_type == 0) {
         ContinuityTest = true;
         std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST\033[0m" << std::endl<<std::endl;
@@ -128,8 +130,10 @@ std::vector<std::string> DirTimeAcquisition(){
  std::vector<std::string> Directories;
   for(int ii=0; ii<int(TestName.size()); ii++){
         std::string DirValues = TestName[ii].substr(0 , TestName[ii].size()- 31);
-        std::string Date = TestName[ii].substr(TestName[ii].size() - 23, 19);
-        Directories.push_back((DirValues + "VALORI/" +  Date).c_str());
+        size_t lastSlash = TestName[ii].find_last_of("/");
+        size_t lastDot = TestName[ii].find_last_of(".");
+        std::string Date = TestName[ii].substr(lastSlash + 9, lastDot - lastSlash - 9);
+        Directories.push_back((DirValues + "/VALORI/" +  Date).c_str());
     }
  return Directories;
 }

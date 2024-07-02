@@ -33,11 +33,13 @@ extern const Float_t ThreshContHV;
 extern const Float_t ThreshIsoLV;
 extern const Float_t ThreshIsoHV;
 
+// param to compute lenght of cables //
 extern Float_t diamLV;
 extern Float_t diamHV;
 extern Float_t ResistivityLV;
 extern Float_t ResistivityHV;
 
+// control vairables //
 extern Bool_t InsulationTest; 
 extern Bool_t ContinuityTest;
 extern Bool_t Ins_Time;
@@ -45,6 +47,7 @@ extern Int_t test_type;
 extern Int_t CompareTest;
 extern Bool_t CommandLine;
 
+// I/O variables //
 extern TTree *ContinuityTree;
 extern TTree *InsulationTree;
 extern Int_t statusCon, statusIns;
@@ -53,6 +56,7 @@ extern Float_t resistenceIns, resistenceCon;
 extern Int_t cableIns, cableCon;
 extern Float_t FieldIns;
 
+// cables variables (needed??) //
 extern std::vector<std::pair<std::string,Int_t>> HVcables;
 extern std::vector<std::pair<std::string, Int_t>> LVcables; 
 extern std::vector<std::pair<std::string,Int_t>> HVcables_rtn;
@@ -60,6 +64,7 @@ extern std::vector<std::pair<std::string, Int_t>> LVcables_rtn;
 extern std::vector<std::pair<std::string,Int_t>> TSensor;
 extern std::vector<std::pair<std::string,Int_t>> Drain;
 
+// test parameters //
 extern std::vector<std::tuple<double,double,double,double,double, std::string, double>> ParametersContinuity;
 extern std::vector<std::tuple<double,double,double,double,double, double, double>> ParametersInsulationInitial;
 extern std::vector<std::tuple<double,double,double>> ParametersInsulationLV;
@@ -84,7 +89,6 @@ extern std::vector<TH1F*> hIns_ResLV;
 extern std::vector<TH1F*> hIns_ResTot;
 extern std::vector<TH1F*> hIns_ResChannel_LV;
 extern std::vector<TH1F*> hIns_ResChannel_HV;
-extern std::vector<TGraph*> grRes_Time[];
 extern float OverThreshLV[];
 extern float OverThreshHV[];
 extern float BelowThreshHV[];
@@ -101,5 +105,8 @@ extern const char *labelsContHV[];
 extern const char *labelsContLV[];
 extern const char *labelsInsHV[];
 extern const char *labelsInsLV[];
+
+extern std::vector<std::pair<std::string, TGraph*>> grRes_Time;
+
 
 #endif // DEF_VARIABLES_H

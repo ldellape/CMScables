@@ -94,4 +94,6 @@ const char *labelsContLV[NumberLVcables];
 const char *labelsInsHV[NumberHVcables + NumberHVRTNwires + NumberSensorWire];
 const char *labelsInsLV[NumberLVcables];
 
+ std::vector<std::pair<std::string, TGraph*>> grRes_Time;
+
 

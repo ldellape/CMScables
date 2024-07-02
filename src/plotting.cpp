@@ -102,7 +102,7 @@ if(sTitle == "InsulationTest_HV_Resistence" || sTitle == "InsulationTest_LV_Resi
   pad->SetLogy(1);
   for(const auto& it : ParametersInsulationInitial){
     std::cout << "par initial " << std::endl;
-    textParIns.DrawLatexNDC(0.01, 0.02, Form("Initial Parameters : V=%d kV, Thresh.= %d G #Omega, T_{rise} = %d s, T_{wait} = %d s, T_{meas} = %d s, i_{lim}= %d mA, V_{ramp}= %d V/s", int(std::get<0>(it)), int(std::get<1>(it)), int(std::get<2>(it)), int(std::get<3>(it)), int(std::get<4>(it)), int(std::get<6>(it))));
+    textParIns.DrawLatexNDC(0.01, 0.02, Form("Initial Parameters : V=%i kV, Thresh.= %i G #Omega, T_{rise} = %i s, T_{wait} = %i s, T_{meas} = %i s, i_{lim}= %i mA, V_{ramp}= %i V/s", int(std::get<0>(it)), int(std::get<1>(it)), int(std::get<2>(it)), int(std::get<3>(it)), int(std::get<4>(it)), int(std::get<6>(it)) ));
   }
   if(sTitle == "InsulationTest_HV_Resistence"){
     y->SetRangeUser(100,1e+12);

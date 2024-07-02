@@ -20,6 +20,10 @@
 #define InterTest
 #endif
 
+#ifdef TIME_RES
+#define TimeRes
+#endif
+
 
 int main(int argc, char* argv[]){
 
@@ -47,11 +51,14 @@ if(!CommandLine){
  TestName = listAndChooseFiles();
  TestType();
  IterationTest = TestName.size();
-//if(test_type != 0){
-// Ins_Time = TimeAcquisition();
-// TestNameTimeAcquisition = DirTimeAcquisition();
+if(test_type != 0){
+ Ins_Time = TimeAcquisition();
+ if(Ins_Time){
+ TestNameTimeAcquisition = DirTimeAcquisition();
+ #define TimeRes
+ }
 //if(Ins_Time){ std::cout << "ok" << std::endl; TestNameTimeAcquisition = listAndChooseFilesTimeAcquisition();}
-//}
+}
 #elif defined(AutoTest)
  std::string commandTXT = "cd " + sInputTestDir + " && find . -type f -name \"*.txt\" -exec stat --format='%Y %n' {} + | sort -nr | head -n 1 | cut -d' ' -f2- > temp";
  std::system(commandTXT.c_str());
@@ -241,50 +248,39 @@ for(int i=0; i<InsulationTree->GetEntries(); ++i){
 std::cout<<"*****************************************"<<std::endl;
 std::this_thread::sleep_for(std::chrono::seconds(2));
 
-/*
-//*******Histogram for Resistance Versus Time Acquisition*********
-if (Ins_Time) {
-    std::vector<TGraph*> grRes_Time;
-    float OverThreshHV[100] = {0};
-    std::vector<std::vector<double>> ResTime(NumberLVcables);
-    std::vector<std::vector<double>> x(NumberLVcables);
-    for (int k = 0; k < IterationTest; k++) {
-        int Iteration = 0;
-        for (const auto& pair : LVcables) {
-            std::string line;
-            std::string PathINI = TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini").c_str() << std::endl;
-            std::ifstream inputTimeResolution(pathINI);
-            std::cout<<inputTimeResolution.is_open()<<std::endl;
-            std::string commandPyINI = "python3 " + std::string(WORKDIR) + "/py/ManageINI.py pathINI";
-            if (inputTimeResolution.is_open()) {
-                ++Iteration;
-                while (std::getline(inputTimeResolution, line)) {
-                    std::stringstream ss(line);
-                    double number_acquisition, value;
-                    if (ss >> number_acquisition >> value) {
-                        ResTime[Iteration - 1].push_back(value);
-                    }
-                }
-                inputTimeResolution.close();
-            }
-        }
 
-        for (int i = 0; i < Iteration; i++) {
-            x[i].clear();
-            for (int ii = 0; ii < int(ResTime[i].size()); ii++) {
-                x[i].push_back(ii);
-            }
-            grRes_Time.push_back(new TGraph(int(ResTime[i].size()), &x[i][0], &ResTime[i][0])); // graph for each LV cable 
+// *******Histogram for Resistance Versus Time Acquisition*********
+#ifdef TimeRes
+ float OverThreshHV[100] = {0};
+  for(int k=0; k<IterationTest; k++){
+     for(const auto& pair : LVcables) {
+        std::string pathINI = TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini"; 
+        gErrorIgnoreLevel = kError;
+        TGraph *gr_temp = ReadTestTime(pathINI);
+        gErrorIgnoreLevel = kWarning;
+        if(gr_temp != nullptr){
+        grRes_Time.push_back(std::make_pair((pair.first + std::to_string(pair.second)) , gr_temp));
         }
-
-        plottingGraph(grRes_Time, k, grRes_Time.size());  
-        std::cout << "number of graphs : " << grRes_Time.size() << std::endl;
-  c_graph[k] = new TCanvas(Form("c_graph%i", k + 1), Form("c_graph%i", k + 1), 3000, 1000);
-        c_graph[k]->Divide(grRes_Time.size());
-        grRes_Time.clear();
     }
-}
-*/
+   plottingGraph(grRes_Time, k, "LV");  
+   grRes_Time.clear();
+  }
+  
+  for(int k=0; k<IterationTest; k++){
+     for(const auto& pair : LVcables_rtn) {
+        std::string pathINI = TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini"; 
+        gErrorIgnoreLevel = kError;
+        TGraph *gr_temp = ReadTestTime(pathINI);
+        gErrorIgnoreLevel = kWarning;
+        if(gr_temp != nullptr){
+        grRes_Time.push_back(std::make_pair((pair.first + std::to_string(pair.second)) , gr_temp));
+        }
+    }
+   plottingGraph(grRes_Time, k, "LVR");  
+   grRes_Time.clear();
+  }
+#endif
+
 
 // ***************************************
 
@@ -384,7 +380,15 @@ std::cout<<"*****************************************"<<std::endl;
 std::cout<<"creating Final Report..." <<std::endl;
 std::cout<<"*****************************************"<<std::endl;
 
-sPDFTitle = "prova_report";
+#ifdef TimeRes
+std::string PythonCommand;
+if(IterationTest == 1){
+    PythonCommand = "python3 " + std::string(WORKDIR) + "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/SingleCable/" + sPDFTitle + ".pdf ./output/plotsTimeResistence/graph_TimeResistenceLV_" + sPDFTitle + ".pdf ./output/plotsTimeResistence/graph_TimeResistenceLVR_" + sPDFTitle + ".pdf" ; 
+}
+else if(IterationTest > 1){
+    PythonCommand = "python3 " + std::string(WORKDIR) + "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/CheckCable/" + sPDFTitle + ".pdf ./output/plotsTimeResistence/graph_TimeResistenceLV_" + sPDFTitle + ".pdf ./output/plotsTimeResistence/graph_TimeResistenceLVR_" + sPDFTitle + ".pdf" ; 
+}
+#else 
 std::string PythonCommand;
 if(IterationTest == 1){
     PythonCommand = "python3 " + std::string(WORKDIR) + "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/SingleCable/" + sPDFTitle + ".pdf"; 
@@ -392,6 +396,7 @@ if(IterationTest == 1){
 else if(IterationTest > 1){
     PythonCommand = "python3 " + std::string(WORKDIR)+ "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/CheckCable/" + sPDFTitle + ".pdf"; 
 }
+#endif
 std::cout<< PythonCommand << std::endl;
 std::system((PythonCommand).c_str());
 std::cout<<"\033[32mFinal REPORT saved as ./output/report/"+ sPDFTitle +"\033[0m" <<std::endl;
