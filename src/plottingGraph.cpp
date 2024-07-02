@@ -20,12 +20,12 @@ void plottingGraph(std::vector<std::pair<std::string, TGraph*>> &gr, Int_t Numbe
         pair.second->SetTitle((pair.first).c_str());
         pair.second->SetMarkerSize(1);
         pair.second->SetLineWidth(1);
-        pair.second->GetXaxis()->SetTitle("t [s]");
+        pair.second->GetXaxis()->SetTitle("t ");
         pair.second->GetXaxis()->SetTickSize(0.02);
         pair.second->GetYaxis()->SetTitle("R [#Omega]");
         //pair.second->SetMinimum(0);
         //pair.second->SetMaximum(1e+18);
-        pair.second->GetYaxis()->SetNdivisions(8);
+       // pair.second->GetYaxis()->SetNdivisions(8);
         TLatex textCable;
         textCable.SetTextSize(0.03);
         textCable.DrawLatexNDC(0.02, 0.05, name);

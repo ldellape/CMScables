@@ -183,10 +183,10 @@ void start(int number_arg, char *argument[]){
      while (i + 1 < number_arg && argument[i + 1][0] != '-') {
                 inputPath = argument[++i];
                 TestName.push_back((sInputTestDir + inputPath).c_str());
-                std::cout << inputPath << std::endl;
             }
     CommandLine = true;
     ValidOption=true;
+    Ins_Time = false;
     } 
     else if((arg == "--mode" || arg=="-M") && CommandLine==true){
         test_type = std::stoi(argument[++i]);

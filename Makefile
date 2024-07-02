@@ -2,7 +2,7 @@ PREFIX = .
 LDFLAGS = $(shell root-config --libs)
 SRCDIR = src
 OBJDIR = build
-DEPDIR = deps
+DEPDIR = .deps
 WORKDIR = $(PWD) 
 TARGET = $(PREFIX)/CMScables
 
@@ -14,6 +14,20 @@ CXXFLAGS = -Wall -I include -I src $(shell root-config --cflags) -DPREFIX='"$(PR
 SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SOURCES))
 DEPS = $(patsubst $(SRCDIR)/%.cpp,$(DEPDIR)/%.d,$(SOURCES))
+
+
+OPTION ?= NONE
+TIME ?= NONE
+
+ifeq ($(OPTION), AUTO_TEST)
+	CXXFLAGS+=-DAUTO_TEST
+else
+	CXXFLAGS+=-DINTER_TEST
+endif
+
+ifeq ($(TIME), YES)
+	CXXFLAGS+=-DTIME_RES
+endif
 
 
 all: $(TARGET)
@@ -35,21 +49,4 @@ $(DEPDIR)/%.d: $(SRCDIR)/%.cpp
 	@mkdir -p $(DEPDIR)
 	$(CXX) $(CXXFLAGS) -M $< -MF $@ -MT $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$<)
 
-clean:
-	rm -rf $(TARGET) $(OBJDIR) $(DEPDIR)
-
-OPTION ?= NONE
-
-ifeq ($(OPTION), AUTO_TEST)
-	CXXFLAGS+=-DAUTO_TEST
-else ifeq ($(OPTION), AUTO_TEST TIME_RES)
-	CXXFLAGS+=-DAUTO_TEST
-	CXXFLAGS+=-DTIME_RES
-else
-	CXXFLAGS+=-DINTER_TEST
-endif
-
-
-	
-
-.PHONY: all clean
+.PHONY: all clean 

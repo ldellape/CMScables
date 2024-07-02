@@ -14,64 +14,61 @@
 #include "./include/user_func.h"
 #include "./include/input.h"
 
+
+
 #ifdef AUTO_TEST // automatic test--> report for the more recently txt file 
 #define AutoTest 
 #elif defined(INTER_TEST) // --> choose test from command line
 #define InterTest
 #endif
 
-#ifdef TIME_RES
-#define TimeRes
-#endif
 
 
 int main(int argc, char* argv[]){
 
-InsulationTest = false;
-ContinuityTest = false;
-Ins_Time = false;
-test_type = 0;
 std::string pathTEST;
+#ifdef TIME_RES
+ Ins_Time = true;
+#endif
 
-
-if(argc>1) start(argc, argv);
 printlogo();
+if(argc>1) start(argc, argv);
 
 std::this_thread::sleep_for(std::chrono::seconds(3));
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"Input Directory ---> " ;
 std::cout<<sInputTestDir<<std::endl;
-std::cout<<"Histograms will be saved in -----> ./output/rootFiles/" << std::endl; 
-std::cout<<"Plots will be saved in -----> ./output/plots/" << std::endl; 
-std::cout<<"Final Report will be saved in -----> ./output/report" << std::endl; 
+std::cout<<"Histograms will be saved in ----->"+ std::string(WORKDIR)+ "/output/rootFiles/" << std::endl; 
+std::cout<<"Plots will be saved in ----->" + std::string(WORKDIR) + "/output/plots/" << std::endl; 
+std::cout<<"Final Report will be saved in ----->" + std::string(WORKDIR)+ "/output/report" << std::endl; 
 std::cout<<"****************************************"<<std::endl;
+
 
 if(!CommandLine){
 #ifdef InterTest
  TestName = listAndChooseFiles();
  TestType();
  IterationTest = TestName.size();
-if(test_type != 0){
- Ins_Time = TimeAcquisition();
+ if(test_type != 0){
+   Ins_Time = TimeAcquisition();
  if(Ins_Time){
- TestNameTimeAcquisition = DirTimeAcquisition();
- #define TimeRes
+  TestNameTimeAcquisition = DirTimeAcquisition();
  }
-//if(Ins_Time){ std::cout << "ok" << std::endl; TestNameTimeAcquisition = listAndChooseFilesTimeAcquisition();}
 }
 #elif defined(AutoTest)
- std::string commandTXT = "cd " + sInputTestDir + " && find . -type f -name \"*.txt\" -exec stat --format='%Y %n' {} + | sort -nr | head -n 1 | cut -d' ' -f2- > temp";
- std::system(commandTXT.c_str());
- std::ifstream pathTemp((sInputTestDir + "temp").c_str());
- std::string recentTEST;
- while(std::getline(pathTemp, recentTEST)){
-    std::cout<<" line: " << recentTEST<<std::endl;
+  std::string commandTXT = "cd " + sInputTestDir + " && find . -type f -name \"*.txt\" -exec stat --format='%Y %n' {} + | sort -nr | head -n 1 | cut -d' ' -f2- > temp";
+  std::system(commandTXT.c_str());
+  std::ifstream pathTemp((sInputTestDir + "temp").c_str());
+  std::string recentTEST;
+  while(std::getline(pathTemp, recentTEST)){
     pathTEST = sInputTestDir + recentTEST;
- }
-TestName.push_back(pathTEST);
+  } 
+  TestName.push_back(pathTEST);
   pathTemp.close();
-std::system(("cd " + sInputTestDir + " && rm temp").c_str());
+  std::system(("cd " + sInputTestDir + " && rm temp").c_str());
   test_type=2;
+  std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST && ISOLATION TEST\033[0m" << std::endl;
+  TestNameTimeAcquisition = DirTimeAcquisition();
 #endif
 }
 IterationTest = TestName.size();
@@ -81,7 +78,6 @@ std::cout<<TestName[0] << std::endl;
 TString name[IterationTest];
  for(int j=0; j<IterationTest; j++){
       name[j] = TestName[j].substr( TestName[j].rfind("/") +1, TestName[j].rfind(".") - TestName[j].rfind("/")-1);
-  //    std::cout<<j+1<< "-" << name[j]<<std::endl;
     }
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"preparing text files..." <<std::endl;
@@ -249,8 +245,10 @@ std::cout<<"*****************************************"<<std::endl;
 std::this_thread::sleep_for(std::chrono::seconds(2));
 
 
+
 // *******Histogram for Resistance Versus Time Acquisition*********
-#ifdef TimeRes
+if(Ins_Time){
+ std::cout<<"Plotting LV cables resistence versus time acquisition...";
  float OverThreshHV[100] = {0};
   for(int k=0; k<IterationTest; k++){
      for(const auto& pair : LVcables) {
@@ -279,10 +277,9 @@ std::this_thread::sleep_for(std::chrono::seconds(2));
    plottingGraph(grRes_Time, k, "LVR");  
    grRes_Time.clear();
   }
-#endif
 
-
-// ***************************************
+std::cout<<"*****************************************"<<std::endl;
+}
 
 
 // **********Drawing Plots****************
@@ -315,15 +312,10 @@ plotting(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV", 5);
 if(test_type == 2){
 plotting(h_passedCont_tot ,"ContinuityTest_All_Passed-Failed",1);
 plotting(h_passedIns_tot , "InsulationTest_All_Passed-Failed",2);
-//plotting(h_passedHV_Ins , "InsulationTest_HV_Passed-Failed");
-//plotting(h_passedLV_Ins , "InsulationTest_LV_Passed-Failed");
 plotting(hIns_ResChannel_HV , "InsulationTest_HV_Resistence",3);
 plotting(hIns_ResChannel_LV , "InsulationTest_LV_Resistence",4);
-//plotting(h_passedHV_Cont ,"ContinuityTest_HV_Passed-Failed");
-//plotting(h_passedLV_Cont , "ContinuityTest_LV_Passed-Failed");
 plotting(hCont_ResChannel_HV,"ContinuityTest_ResistenceHV",5);
 plotting(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV",6);
-//plotting(h_passedHV_Cont ,"ContinuityTest_HV_Passed-Failed");
 }
 
 gErrorIgnoreLevel = kPrint;
@@ -365,7 +357,7 @@ std::cout<<"*******************************************"<<std::endl;
 std::cout<<"Output: "<<std::endl;
 std::cout<<"\033[32mroot histograms have been saved in "<< sOutputRoot << sPDFTitle <<".root\033[0m"<<std::endl;
 if(IterationTest==1){
-std::cout<<"\033[32mplot pdf has been saved as ./output/plots/SingleCable/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
+std::cout<<"\033[32mplots has been saved as " + std::string(WORKDIR) +"/output/plots/SingleCable/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
 }
 else{
 std::cout<<"\033[32mplot pdf has been saved as ./output/plots/CheckCable/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
@@ -376,30 +368,30 @@ std::cout<<"*****************************************"<<std::endl;
 
 
 if(CreateReport == "y"){
-std::cout<<"*****************************************"<<std::endl;
 std::cout<<"creating Final Report..." <<std::endl;
 std::cout<<"*****************************************"<<std::endl;
 
-#ifdef TimeRes
 std::string PythonCommand;
-if(IterationTest == 1){
+if(Ins_Time){
+ if(IterationTest == 1){
     PythonCommand = "python3 " + std::string(WORKDIR) + "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/SingleCable/" + sPDFTitle + ".pdf ./output/plotsTimeResistence/graph_TimeResistenceLV_" + sPDFTitle + ".pdf ./output/plotsTimeResistence/graph_TimeResistenceLVR_" + sPDFTitle + ".pdf" ; 
-}
-else if(IterationTest > 1){
+ }
+ else if(IterationTest > 1){
     PythonCommand = "python3 " + std::string(WORKDIR) + "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/CheckCable/" + sPDFTitle + ".pdf ./output/plotsTimeResistence/graph_TimeResistenceLV_" + sPDFTitle + ".pdf ./output/plotsTimeResistence/graph_TimeResistenceLVR_" + sPDFTitle + ".pdf" ; 
+ }
 }
-#else 
-std::string PythonCommand;
-if(IterationTest == 1){
+if(!Ins_Time){
+ if(IterationTest == 1){
     PythonCommand = "python3 " + std::string(WORKDIR) + "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/SingleCable/" + sPDFTitle + ".pdf"; 
-}
-else if(IterationTest > 1){
+ }
+ else if(IterationTest > 1){
     PythonCommand = "python3 " + std::string(WORKDIR)+ "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/CheckCable/" + sPDFTitle + ".pdf"; 
+ }
 }
-#endif
 std::cout<< PythonCommand << std::endl;
 std::system((PythonCommand).c_str());
-std::cout<<"\033[32mFinal REPORT saved as ./output/report/"+ sPDFTitle +"\033[0m" <<std::endl;
+std::cout<<"*****************************************"<<std::endl;
+std::cout<<"\033[32mFinal REPORT saved as "<< std::string(WORKDIR) <<"/output/report/"+ sPDFTitle +"\033[0m" <<std::endl;
 }
 return 0;
 gROOT->ProcessLine(".q");

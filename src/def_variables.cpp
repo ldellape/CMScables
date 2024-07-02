@@ -29,11 +29,11 @@ Float_t diamHV = 0.00038;
 Float_t ResistivityLV = 1.724*TMath::Power(10,-8);
 Float_t ResistivityHV = 1.724*TMath::Power(10,-8);
 
-Bool_t InsulationTest; 
-Bool_t ContinuityTest;
-Bool_t CommandLine;
-Bool_t Ins_Time;
-Int_t test_type;
+Bool_t InsulationTest = false; 
+Bool_t ContinuityTest = false;
+Bool_t CommandLine = false;
+Bool_t Ins_Time = false;
+Int_t test_type = 0;
 Int_t CompareTest;
 
 TTree *ContinuityTree;
