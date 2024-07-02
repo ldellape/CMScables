@@ -27,7 +27,6 @@ TGraph* ReadTestTime(std::string pathFile){
     }
     inputTimeTesolution.close();
     // fill graph //
-    std::cout<<point<<std::endl;
     TGraph *gr_Time = new TGraph(point, &number_value[0], &ResTime[0]);
     return gr_Time;
 }
