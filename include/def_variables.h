@@ -14,7 +14,7 @@ extern const std::string sOutputRoot;
 
 
 extern Int_t IterationTest; // number of cable to be test
-extern TString sPDFTitle; // final pdf name 
+extern std::string sPDFTitle; // final pdf name 
 extern std::string currentDate; 
 
 // vectors of paths to cable to be test //

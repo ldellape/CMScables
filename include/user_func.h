@@ -10,6 +10,7 @@ void plottingGraph(std::vector<std::pair<std::string,TGraph*>> &gr, Int_t Number
 void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j);
 TGraph* ReadTestTime(std::string pathFile);
 
+
 // functions in this header files //
 void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v);
 void fill_LVcables_RTN(std::vector<std::pair<std::string,Int_t>> &v);
@@ -167,9 +168,6 @@ void start(int number_arg, char *argument[]){
     else if(arg == "--doc" || arg == "-D"){
         std::ifstream readme(".doc");
         std::string readme_line;
-        std::cout<<" to change mode: "<<std::endl;
-        std::cout<<" rm -r build;"<<std::endl;
-        std::cout<<" make; (or make OPTION=AUTO_TEST)" <<std::endl<<std::endl;
         while(std::getline(readme, readme_line)){
         if(readme_line.find("COSA SERVE:") != std::string::npos ){
             break;

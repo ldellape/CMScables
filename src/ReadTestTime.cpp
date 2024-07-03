@@ -5,6 +5,7 @@
 #include <tuple>
 #include "../include/root.h"
 #include "../include/def_variables.h"
+#include "../include/py_run.h"
 
 TGraph* ReadTestTime(std::string pathFile){
     int point=0;
@@ -12,8 +13,7 @@ TGraph* ReadTestTime(std::string pathFile){
     std::vector<double> ResTime;
     std::vector<double> number_value;
     std::string line;
-    std::string PythonINIcommand = "python3 " + std::string(WORKDIR) +"/py/ManageINI.py " + pathFile + " 2>/dev/null";
-    std::system(PythonINIcommand.c_str());
+    ChangeTextFileINI(pathFile);
     std::ifstream inputTimeTesolution(pathFile);
     if(!inputTimeTesolution.is_open()) return nullptr;
     while(std::getline(inputTimeTesolution, line)){

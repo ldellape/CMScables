@@ -13,6 +13,7 @@
 #include "./include/def_variables.h"
 #include "./include/user_func.h"
 #include "./include/input.h"
+#include "./include/py_run.h"
 
 
 
@@ -22,11 +23,8 @@
 #define InterTest
 #endif
 
-
-
 int main(int argc, char* argv[]){
 
-std::string pathTEST;
 #ifdef TIME_RES
  Ins_Time = true;
 #endif
@@ -38,12 +36,13 @@ std::this_thread::sleep_for(std::chrono::seconds(3));
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"Input Directory ---> " ;
 std::cout<<sInputTestDir<<std::endl;
-std::cout<<"Histograms will be saved in ----->"+ std::string(WORKDIR)+ "/output/rootFiles/" << std::endl; 
-std::cout<<"Plots will be saved in ----->" + std::string(WORKDIR) + "/output/plots/" << std::endl; 
-std::cout<<"Final Report will be saved in ----->" + std::string(WORKDIR)+ "/output/report" << std::endl; 
+std::cout<<"Histograms will be saved in -----> "+ std::string(WORKDIR)+ "/output/rootFiles/" << std::endl; 
+std::cout<<"Plots will be saved in -----> " + std::string(WORKDIR) + "/output/plots/" << std::endl; 
+std::cout<<"Final Report will be saved in -----> " + std::string(WORKDIR)+ "/output/report" << std::endl; 
 std::cout<<"****************************************"<<std::endl;
 
 
+std::string pathTEST;
 if(!CommandLine){
 #ifdef InterTest
  TestName = listAndChooseFiles();
@@ -73,19 +72,21 @@ if(!CommandLine){
 }
 IterationTest = TestName.size();
 
-std::cout<<"Test Processati   "<<std::endl;
+std::cout<<"Test Processati:   "<<std::endl;
 std::cout<<TestName[0] << std::endl;
-TString name[IterationTest];
+std::string name[IterationTest];
  for(int j=0; j<IterationTest; j++){
       name[j] = TestName[j].substr( TestName[j].rfind("/") +1, TestName[j].rfind(".") - TestName[j].rfind("/")-1);
     }
 std::cout<<"*****************************************"<<std::endl;
+
+
+// ****Preparing Text files **** //
 std::cout<<"preparing text files..." <<std::endl;
 for(int i=0; i<int(TestName.size()); i++){
-    std::string commandPy = "python3 " + std::string(WORKDIR) + "/py/ManageTXT.py " + TestName[i];
-    std::system(commandPy.c_str());
+    ChangeTextFile(TestName[i]);
 }
-//std::this_thread::sleep_for(std::chrono::seconds(1));
+
 
 //********************************
 fill_HVcables(HVcables);
@@ -128,7 +129,7 @@ std::cout<<"*****************************************"<<std::endl;
 
 std::cout<<"Filling tree(s)...";
 for(int i=0; i<IterationTest; ++i){
-ReadTestOutput(TestName, i);
+  ReadTestOutput(TestName, i);
 }
 std::this_thread::sleep_for(std::chrono::seconds(1));
 std::cout<<"done"<<std::endl;
@@ -248,7 +249,7 @@ std::this_thread::sleep_for(std::chrono::seconds(2));
 
 // *******Histogram for Resistance Versus Time Acquisition*********
 if(Ins_Time){
- std::cout<<"Plotting LV cables resistence versus time acquisition...";
+ std::cout<<"Plotting LV cables resistence versus time acquisition..." ;
  float OverThreshHV[100] = {0};
   for(int k=0; k<IterationTest; k++){
      for(const auto& pair : LVcables) {
@@ -277,7 +278,7 @@ if(Ins_Time){
    plottingGraph(grRes_Time, k, "LVR");  
    grRes_Time.clear();
   }
-
+std::cout<<"done" <<std::endl;
 std::cout<<"*****************************************"<<std::endl;
 }
 
@@ -322,8 +323,7 @@ gErrorIgnoreLevel = kPrint;
 
 
 // writing out histograms //
-TFile *f_OutPut = new TFile(sOutputRoot + sPDFTitle + ".root", "RECREATE");
-
+TFile *f_OutPut = new TFile((sOutputRoot + sPDFTitle + ".root").c_str(), "RECREATE");
 ContinuityTree->Write();
 InsulationTree->Write();
 for(int i=0; i<IterationTest; ++i){
@@ -367,32 +367,8 @@ f_OutPut->Close();
 std::cout<<"*****************************************"<<std::endl;
 
 
-if(CreateReport == "y"){
-std::cout<<"creating Final Report..." <<std::endl;
-std::cout<<"*****************************************"<<std::endl;
+if(CreateReport == "y") WriteFinalReport(sPDFTitle, name[0]);
 
-std::string PythonCommand;
-if(Ins_Time){
- if(IterationTest == 1){
-    PythonCommand = "python3 " + std::string(WORKDIR) + "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/SingleCable/" + sPDFTitle + ".pdf ./output/plotsTimeResistence/graph_TimeResistenceLV_" + sPDFTitle + ".pdf ./output/plotsTimeResistence/graph_TimeResistenceLVR_" + sPDFTitle + ".pdf" ; 
- }
- else if(IterationTest > 1){
-    PythonCommand = "python3 " + std::string(WORKDIR) + "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/CheckCable/" + sPDFTitle + ".pdf ./output/plotsTimeResistence/graph_TimeResistenceLV_" + sPDFTitle + ".pdf ./output/plotsTimeResistence/graph_TimeResistenceLVR_" + sPDFTitle + ".pdf" ; 
- }
-}
-if(!Ins_Time){
- if(IterationTest == 1){
-    PythonCommand = "python3 " + std::string(WORKDIR) + "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/SingleCable/" + sPDFTitle + ".pdf"; 
- }
- else if(IterationTest > 1){
-    PythonCommand = "python3 " + std::string(WORKDIR)+ "/py/WritePDF.py ./output/report/Report_" + sPDFTitle + ".pdf ./input/pdf_ceetis/" + name[0] + ".pdf ./output/plots/CheckCable/" + sPDFTitle + ".pdf"; 
- }
-}
-std::cout<< PythonCommand << std::endl;
-std::system((PythonCommand).c_str());
-std::cout<<"*****************************************"<<std::endl;
-std::cout<<"\033[32mFinal REPORT saved as "<< std::string(WORKDIR) <<"/output/report/"+ sPDFTitle +"\033[0m" <<std::endl;
-}
 return 0;
 gROOT->ProcessLine(".q");
 

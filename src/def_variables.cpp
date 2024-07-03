@@ -2,7 +2,7 @@
 #include "../include/def_variables.h"
 
 Int_t IterationTest;
-TString sPDFTitle = "Report";
+std::string sPDFTitle;
 std::string currentDate;
 
 std::vector<std::string> TestName;

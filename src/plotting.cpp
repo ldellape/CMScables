@@ -320,8 +320,8 @@ for(int j=0; j<IterationTest; j++){
 }
 }
 
-if(IterationTest == 1) c_plot->SaveAs("./output/plots/SingleCable/" + sPDFTitle +".pdf");
-else if(IterationTest >1) c_plot->SaveAs("./output/plots/CheckCable/" + sPDFTitle +".pdf");
+if(IterationTest == 1) c_plot->SaveAs((std::string(WORKDIR) + "/output/plots/SingleCable/" + sPDFTitle +".pdf").c_str());
+else if(IterationTest >1) c_plot->SaveAs((std::string(WORKDIR) + "/output/plots/CheckCable/" + sPDFTitle +".pdf").c_str());
 
 }
 

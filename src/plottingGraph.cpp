@@ -31,7 +31,7 @@ void plottingGraph(std::vector<std::pair<std::string, TGraph*>> &gr, Int_t Numbe
         textCable.DrawLatexNDC(0.02, 0.05, name);
         pair.second->Draw("ACP");
 
-        c_graph->SaveAs("./output/plotsTimeResistence/graph_TimeResistence" + Title + "_" + sPDFTitle + ".pdf");
+        c_graph->SaveAs((std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistence" + Title + "_" + sPDFTitle + ".pdf").c_str());
 
     }
 
