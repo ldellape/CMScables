@@ -73,10 +73,10 @@ if(!CommandLine){
 IterationTest = TestName.size();
 
 std::cout<<"Test Processati:   "<<std::endl;
-std::cout<<TestName[0] << std::endl;
 std::string name[IterationTest];
  for(int j=0; j<IterationTest; j++){
       name[j] = TestName[j].substr( TestName[j].rfind("/") +1, TestName[j].rfind(".") - TestName[j].rfind("/")-1);
+      std::cout<<TestName[j]<<std::endl;
     }
 std::cout<<"*****************************************"<<std::endl;
 
@@ -84,7 +84,7 @@ std::cout<<"*****************************************"<<std::endl;
 // ****Preparing Text files **** //
 std::cout<<"preparing text files..." <<std::endl;
 for(int i=0; i<int(TestName.size()); i++){
-    ChangeTextFile(TestName[i]);
+    Python::ChangeTextFile(TestName[i]);
 }
 
 
@@ -248,38 +248,35 @@ std::this_thread::sleep_for(std::chrono::seconds(2));
 
 
 // *******Histogram for Resistance Versus Time Acquisition*********
-if(Ins_Time){
- std::cout<<"Plotting LV cables resistence versus time acquisition..." ;
- float OverThreshHV[100] = {0};
-  for(int k=0; k<IterationTest; k++){
-     for(const auto& pair : LVcables) {
-        std::string pathINI = TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini"; 
-        gErrorIgnoreLevel = kError;
-        TGraph *gr_temp = ReadTestTime(pathINI);
-        gErrorIgnoreLevel = kWarning;
-        if(gr_temp != nullptr){
-        grRes_Time.push_back(std::make_pair((pair.first + std::to_string(pair.second)) , gr_temp));
-        }
+if (Ins_Time) {
+ std::cout << "Plotting LV cables resistance versus time acquisition...";
+
+ for (int k = 0; k < IterationTest; k++) {
+  for (const auto& pair : LVcables) {
+    std::string pathINI = TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini";
+    gErrorIgnoreLevel = kError;
+    TGraph *gr_temp = ReadTestTime(pathINI);
+    gErrorIgnoreLevel = kWarning;
+    if (gr_temp != nullptr) {
+     grRes_TimeLV.push_back(std::make_tuple(k, pair.first + std::to_string(pair.second), gr_temp));
     }
-   plottingGraph(grRes_Time, k, "LV");  
-   grRes_Time.clear();
-  }
-  
-  for(int k=0; k<IterationTest; k++){
-     for(const auto& pair : LVcables_rtn) {
-        std::string pathINI = TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini"; 
-        gErrorIgnoreLevel = kError;
-        TGraph *gr_temp = ReadTestTime(pathINI);
-        gErrorIgnoreLevel = kWarning;
-        if(gr_temp != nullptr){
-        grRes_Time.push_back(std::make_pair((pair.first + std::to_string(pair.second)) , gr_temp));
-        }
+   }
+ }
+ plottingGraph(grRes_TimeLV, "LV");
+ for (int k = 0; k < IterationTest; k++) {
+  for (const auto& pair : LVcables_rtn) {
+    std::string pathINI = TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini";
+    gErrorIgnoreLevel = kError;
+    TGraph *gr_temp = ReadTestTime(pathINI);
+    gErrorIgnoreLevel = kWarning;
+    if (gr_temp != nullptr) {
+     grRes_TimeLVR.push_back(std::make_tuple(k, pair.first, gr_temp));
     }
-   plottingGraph(grRes_Time, k, "LVR");  
-   grRes_Time.clear();
   }
-std::cout<<"done" <<std::endl;
-std::cout<<"*****************************************"<<std::endl;
+ }
+  plottingGraph(grRes_TimeLVR, "LVR");
+    std::cout << "done" << std::endl;
+    std::cout << "*****************************************" << std::endl;
 }
 
 
@@ -367,7 +364,7 @@ f_OutPut->Close();
 std::cout<<"*****************************************"<<std::endl;
 
 
-if(CreateReport == "y") WriteFinalReport(sPDFTitle, name[0]);
+if(CreateReport == "y") Python::WriteFinalReport(sPDFTitle, name[0]);
 
 return 0;
 gROOT->ProcessLine(".q");

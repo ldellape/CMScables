@@ -7,6 +7,11 @@
 #include <string>
 #include <vector>
 
+#ifdef WORKDIR
+#else
+#define WORKDIR "."
+#endif
+
 // input-output paths, to be change in the Makefile //
 extern const std::string sInputTestDir;
 extern const std::string sInputTimeAcquisition;
@@ -72,8 +77,7 @@ extern std::vector<std::tuple<double,double,double,double>> ParametersInsulation
 extern std::vector<std::tuple<double,double,double,double>> ParametersInsulationTsensor;
 
 extern TCanvas *c_plot;
-extern std::vector<TCanvas*> c_graph;
-
+extern TCanvas *c_graph;
 extern std::vector<TH1F*> h_passedHV_Cont;
 extern std::vector<TH1F*> h_passedLV_Cont;
 extern std::vector<TH1F*> hCont_ResChannel_HV;
@@ -106,7 +110,9 @@ extern const char *labelsContLV[];
 extern const char *labelsInsHV[];
 extern const char *labelsInsLV[];
 
-extern std::vector<std::pair<std::string, TGraph*>> grRes_Time;
+extern std::vector<std::tuple<int, std::string, TGraph*>> grRes_TimeLV;
+extern std::vector<std::tuple<int, std::string, TGraph*>> grRes_TimeLVR;
+
 
 
 #endif // DEF_VARIABLES_H

@@ -13,7 +13,7 @@ TGraph* ReadTestTime(std::string pathFile){
     std::vector<double> ResTime;
     std::vector<double> number_value;
     std::string line;
-    ChangeTextFileINI(pathFile);
+    Python::ChangeTextFileINI(pathFile);
     std::ifstream inputTimeTesolution(pathFile);
     if(!inputTimeTesolution.is_open()) return nullptr;
     while(std::getline(inputTimeTesolution, line)){

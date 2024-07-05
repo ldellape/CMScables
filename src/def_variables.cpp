@@ -58,7 +58,7 @@ std::vector<std::tuple<double,double,double,double>> ParametersInsulationHV;
 std::vector<std::tuple<double,double,double,double>> ParametersInsulationTsensor;
 
 TCanvas *c_plot;
-std::vector<TCanvas*> c_graph(100, nullptr);
+TCanvas *c_graph;
 
 std::vector<TH1F*> h_passedHV_Cont(MaxCables, nullptr);
 std::vector<TH1F*> h_passedLV_Cont(MaxCables, nullptr);
@@ -93,7 +93,7 @@ const char *labelsContHV[NumberHVcables + NumberHVRTNwires + NumberSensorWire];
 const char *labelsContLV[NumberLVcables];
 const char *labelsInsHV[NumberHVcables + NumberHVRTNwires + NumberSensorWire];
 const char *labelsInsLV[NumberLVcables];
-
- std::vector<std::pair<std::string, TGraph*>> grRes_Time;
+ std::vector<std::tuple<int, std::string, TGraph*>> grRes_TimeLV;
+ std::vector<std::tuple<int, std::string, TGraph*>> grRes_TimeLVR;
 
 

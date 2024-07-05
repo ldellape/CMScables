@@ -1,4 +1,3 @@
-// legge l'output .txt e crea i tree per test di continuità/isolamento //
 #include <vector>
 #include <string>
 #include <fstream>

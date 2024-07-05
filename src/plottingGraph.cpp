@@ -2,37 +2,73 @@
 #include <vector>
 #include "../include/root.h"
 #include "../include/def_variables.h"
+#include "../include/style.h"
 
-void plottingGraph(std::vector<std::pair<std::string, TGraph*>> &gr, Int_t NumberCable, std::string Title){
-    TString name;
-    name = TestName[NumberCable].substr( TestName[NumberCable].rfind("/") +1, TestName[NumberCable].rfind(".") - TestName[NumberCable].rfind("/")-1);
-    sPDFTitle = name + "____" + currentDate;
-    TCanvas *c_graph = new TCanvas(Form("c_graph_%i_%s", NumberCable, Title.c_str()), Form("c_graph_%i_%s",NumberCable, Title.c_str()), 1000,3000);
-    int it=0;
-    c_graph->Divide(1, gr.size(), 0.001, 0.001);
-    
-    for(const auto& pair : gr){
-        it++;
-        TPad *padGraph = (TPad*) c_graph->cd(it);
-        padGraph->Draw();
-        padGraph->SetLogy(1);
-        padGraph->cd(it);
-        pair.second->SetTitle((pair.first).c_str());
-        pair.second->SetMarkerSize(1);
-        pair.second->SetLineWidth(1);
-        pair.second->GetXaxis()->SetTitle("t ");
-        pair.second->GetXaxis()->SetTickSize(0.02);
-        pair.second->GetYaxis()->SetTitle("R [#Omega]");
-        //pair.second->SetMinimum(0);
-        //pair.second->SetMaximum(1e+18);
-       // pair.second->GetYaxis()->SetNdivisions(8);
-        TLatex textCable;
-        textCable.SetTextSize(0.03);
-        textCable.DrawLatexNDC(0.02, 0.05, name);
-        pair.second->Draw("ACP");
+void plottingGraph(std::vector<std::tuple<int, std::string, TGraph*>> &gr, std::string Title) {
+    gStyle->SetOptStat(0);
+    c_graph = new TCanvas(("c_graph_" + Title).c_str(), ("c_graph_" + Title).c_str(), 3000, 3500);
+    c_graph->SetFillStyle(4000);
 
-        c_graph->SaveAs((std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistence" + Title + "_" + sPDFTitle + ".pdf").c_str());
-
+    // preparing name of the test //
+    TString name[IterationTest];
+    for(int j = 0; j < IterationTest; j++) {
+        name[j] = TestName[j].substr(TestName[j].rfind("/") + 1, TestName[j].rfind(".") - TestName[j].rfind("/") - 1);
     }
+    sPDFTitle = name[0] + "____" + currentDate;
+    
+    const int Nx = 3;
+    int Ny = (gr.size() + Nx - 1) / Nx; // Calculate the number of rows needed
 
-}
+    Float_t lMargin = 0.06;
+    Float_t rMargin = 0.06;
+    Float_t bMargin = 0.04;
+    Float_t tMargin = 0.01;
+
+    CanvasPartition(c_graph, Nx, Ny, lMargin, rMargin, bMargin, tMargin);
+    
+    TPad *pad[Nx][Ny];
+    int graphIndex = 0;
+
+    for(int j = 0; j < Ny; j++) {
+        for(int i = 0; i < Nx; i++) {
+            if (graphIndex < int(gr.size())) {
+                c_graph->cd();
+                pad[i][j] = (TPad*) c_graph->FindObject(TString::Format("pad_%d_%d", i, j).Data()); 
+                pad[i][j]->Draw();
+                pad[i][j]->SetFillStyle(4000);
+                pad[i][j]->SetFrameFillStyle(4000);
+                pad[i][j]->SetLogy(1);
+                pad[i][j]->cd();
+
+                int Cable = std::get<0>(gr[graphIndex]);
+                std::string channel = std::get<1>(gr[graphIndex]);
+                TGraph *graph = std::get<2>(gr[graphIndex]);
+                graph->SetTitle("");
+                graph->SetMarkerStyle(Cable + 1);
+                graph->SetMarkerSize(3);
+                graph->SetMarkerColor(Cable +1);
+                graph->SetLineColor(Cable + 1);
+                graph->SetLineWidth(1);
+                graph->Draw("ACP");
+                graph->GetXaxis()->SetTitle("t");
+                graph->GetYaxis()->SetTitle("R [#Omega]");
+                TLatex text;
+                text.SetTextSize(0.05);
+                text.SetTextColor(kRed);
+                text.DrawTextNDC(XtoPad(0.80), YtoPad(0.90), channel.c_str());
+                graphIndex++;
+                if(i==0 && j==0){
+                    TLatex legend[IterationTest];
+                    for(int kk=0; kk<IterationTest; kk++){
+                        legend[kk].SetTextSize(0.03);
+                        legend[kk].SetTextColor(Cable+1);
+                        legend[kk].DrawLatexNDC(0.10,0.10-Cable*0.01, name[kk]); 
+                    }
+                
+                }
+            }
+        }
+    }
+        c_graph->SaveAs((std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistence" + Title + "_" + sPDFTitle + ".pdf").c_str());
+        std::cout<<std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistence" + Title + "_" + sPDFTitle + ".pdf"<<std::endl;
+    }

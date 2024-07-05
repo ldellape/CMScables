@@ -6,21 +6,26 @@
 
 // functions defined in src directory //
 void plotting(std::vector<TH1F*> &h, std::string sTitle, Int_t number_pad);
-void plottingGraph(std::vector<std::pair<std::string,TGraph*>> &gr, Int_t NumberCable, std::string Title);
+void plottingGraph(std::vector<std::tuple<int, std::string, TGraph*>> &gr, std::string Title);
 void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j);
 TGraph* ReadTestTime(std::string pathFile);
 
 
-// functions in this header files //
+// ***** functions in this header files, called only by the main function **** //
 void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v);
 void fill_LVcables_RTN(std::vector<std::pair<std::string,Int_t>> &v);
 void fill_HVcables(std::vector<std::pair<std::string, Int_t>> &v);
 void fill_HVcables_RTN(std::vector<std::pair<std::string, Int_t>> &v);
 void fill_DRAINcables(std::vector<std::pair<std::string, Int_t>> &v);
 void fill_Tsensors(std::vector<std::pair<std::string, Int_t>> &v);
-Float_t FindMax(TTree *tree, Int_t Cable, TString Option);
+
+// automatic range setting of histograms //
+Float_t FindMax(TTree *tree, Int_t Cable, TString Option); 
 Float_t FindMin(TTree *tree, Int_t Cable, TString Option);
+
+// interface to the terminal //
 void start(int number_arg, char *argument[]);
+// ***************************************************************************** //
 
 
 void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v){
@@ -63,49 +68,51 @@ void fill_Tsensors(std::vector<std::pair<std::string, Int_t>> &v){
 
 // FindMax, FindMin --> automatic setting of histograms //
 Float_t FindMax(TTree *tree, Int_t Cable, TString Option){
-    Option.ToUpper();
-    Float_t max=0;
-    if(Option == "HV_CONT" || Option == "LV_CONT"){
-        tree->GetEntry(0);
-        max = resistenceCon;
-        for(int i=0; i<tree->GetEntries(); i++){
-            tree->GetEntry(i);
-            if( Option == "HV_CONT" && resistenceCon > max && channelCon.find("HV")) max = resistenceCon;
-            else if(Option == "LV_CONT" && resistenceCon > max && channelCon.find("HV")) max = resistenceCon;
-        }
-    }
-    else if(Option == "HV_INS" || Option == "LV_INS"){
-      tree->GetEntry(0);
-      Float_t max = resistenceIns;
-        for(int i=0; i<tree->GetEntries(); i++){
-            tree->GetEntry(i);
-            if( Option == "HV_INS" && resistenceIns > max && channelIns.find("HV")) max = resistenceIns;
-            else if(Option == "LV_INS" && resistenceIns > max && channelIns.find("HV")) max = resistenceIns;
-        }
-    }
+ Option.ToUpper();
+ Float_t max=0;
+  if(Option == "HV_CONT" || Option == "LV_CONT"){
+    tree->GetEntry(0);
+    max = resistenceCon;
+     for(int i=0; i<tree->GetEntries(); i++){
+      tree->GetEntry(i);
+      if( Option == "HV_CONT" && resistenceCon > max && channelCon.find("HV")) max = resistenceCon;
+      else if(Option == "LV_CONT" && resistenceCon > max && channelCon.find("HV")) max = resistenceCon;
+     }
+  }
+  else if(Option == "HV_INS" || Option == "LV_INS"){
+    tree->GetEntry(0);
+    Float_t max = resistenceIns;
+     for(int i=0; i<tree->GetEntries(); i++){
+      tree->GetEntry(i);
+      if( Option == "HV_INS" && resistenceIns > max && channelIns.find("HV")) max = resistenceIns;
+      else if(Option == "LV_INS" && resistenceIns > max && channelIns.find("HV")) max = resistenceIns;
+     }
+   }
  return max;
 }
+
+
 Float_t FindMin(TTree *tree, Int_t Cable, TString Option){
-    Option.ToUpper();
-    Float_t min=0;
-    if(Option == "HV_CONT" || Option == "LV_CONT"){
-        tree->GetEntry(0);
-        Float_t min = resistenceCon;
-        for(int i=0; i<tree->GetEntries(); i++){
-            tree->GetEntry(i);
-            if( Option == "HV_CONT" && resistenceCon < min && channelCon.find("HV")) min = resistenceCon;
-            else if(Option == "LV_CONT" && resistenceCon < min && channelCon.find("HV")) min = resistenceCon;
-        }
-    }
-    else if(Option == "HV_INS" || Option == "LV_INS"){
-      tree->GetEntry(0);
-      Float_t min = resistenceIns;
-        for(int i=0; i<tree->GetEntries(); i++){
-            tree->GetEntry(i);
-            if( Option == "HV_INS" && resistenceIns < min && channelIns.find("HV")) min = resistenceIns;
-            else if(Option == "LV_INS" && resistenceIns < min && channelIns.find("HV")) min = resistenceIns;
-        }
-    }
+ Option.ToUpper();
+ Float_t min=0;
+  if(Option == "HV_CONT" || Option == "LV_CONT"){
+   tree->GetEntry(0);
+   Float_t min = resistenceCon;
+   for(int i=0; i<tree->GetEntries(); i++){
+    tree->GetEntry(i);
+    if( Option == "HV_CONT" && resistenceCon < min && channelCon.find("HV")) min = resistenceCon;
+    else if(Option == "LV_CONT" && resistenceCon < min && channelCon.find("HV")) min = resistenceCon;
+   }
+  }
+ else if(Option == "HV_INS" || Option == "LV_INS"){
+    tree->GetEntry(0);
+    Float_t min = resistenceIns;
+     for(int i=0; i<tree->GetEntries(); i++){
+        tree->GetEntry(i);
+        if( Option == "HV_INS" && resistenceIns < min && channelIns.find("HV")) min = resistenceIns;
+        else if(Option == "LV_INS" && resistenceIns < min && channelIns.find("HV")) min = resistenceIns;
+     }
+  }
  return min;
 }
 
