@@ -1,7 +1,7 @@
 #include"root.h"
 
 // script from https://root.cern/doc/master/canvas2_8C.html //
-// author :
+// author : Olivier Couet //
 
 
 void CanvasPartition(TCanvas *C,const Int_t Nx , const Int_t Ny,
