@@ -24,8 +24,14 @@ namespace Python{
   std::string sInputPDFCeetis = std::string(WORKDIR) + "/input/pdf_ceetis/" + CableName + ".pdf ";
   std::string sInputPlotsSingle = std::string(WORKDIR) + "/output/plots/SingleCable/" + PDFname + ".pdf ";
   std::string sInputPlotsCheck = std::string(WORKDIR)  + "/output/plots/CheckCable/" + PDFname + ".pdf ";
-  std::string sInputPlotsTimeResLV = std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistenceLV_" + PDFname +".pdf ";
-  std::string sInputPlotsTimeResLVR = std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistenceLVR_" + PDFname +".pdf ";
+  std::string sInputPlotsTimeResLV = std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistenceLV_" + currentDate + "_Cable0.pdf ";
+  std::string sInputPlotsTimeResLVR = std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistenceLVR_" + currentDate + "_Cable0.pdf ";
+  if(IterationTest > 1){
+    for(int i=1; i<IterationTest; i++){
+    sInputPlotsTimeResLV+= " " + std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistenceLV_" + currentDate + "_Cable"+std::to_string(i)+".pdf ";
+    sInputPlotsTimeResLVR+= " " + std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistenceLVR_" + currentDate + "_Cable" +std::to_string(i)+ ".pdf ";
+    }
+  }
 
   std::string command;
   if( IterationTest == 1 && Ins_Time){

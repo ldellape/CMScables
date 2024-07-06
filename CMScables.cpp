@@ -9,6 +9,7 @@
 #include <chrono>
 #include <thread>
 #include <tuple>
+#include <filesystem>
 #include "./include/root.h"
 #include "./include/def_variables.h"
 #include "./include/user_func.h"
@@ -72,6 +73,7 @@ if(!CommandLine){
 }
 IterationTest = TestName.size();
 
+std::cout<<"*****************************************"<<std::endl;
 std::cout<<"Test Processati:   "<<std::endl;
 std::string name[IterationTest];
  for(int j=0; j<IterationTest; j++){
@@ -133,7 +135,7 @@ for(int i=0; i<IterationTest; ++i){
 }
 std::this_thread::sleep_for(std::chrono::seconds(1));
 std::cout<<"done"<<std::endl;
-std::cout<<"**************************************** "<<std::endl;
+std::cout<<"****************************************"<<std::endl;
 std::cout<<"Filling Histograms... "<<std::endl;
 
 std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -249,30 +251,39 @@ std::this_thread::sleep_for(std::chrono::seconds(2));
 
 // *******Histogram for Resistance Versus Time Acquisition*********
 if (Ins_Time) {
- std::cout << "Plotting LV cables resistance versus time acquisition...";
-
+ std::cout << "Plotting LV cables resistance versus time acquisition..."<<std::endl;
+ std::vector<std::pair<std::string, TGraph*>> grRes_TimeLV[IterationTest];
+ std::vector<std::pair<std::string, TGraph*>> grRes_TimeLVR[IterationTest];
  for (int k = 0; k < IterationTest; k++) {
+  if(!std::filesystem::exists(TestNameTimeAcquisition[k])){
+      std::cout<<"\033[33mLV: no available time measurements for "<<TestNameTimeAcquisition[k] <<"\033[0m"<< std::endl;
+      continue;
+    }
   for (const auto& pair : LVcables) {
     std::string pathINI = TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini";
     gErrorIgnoreLevel = kError;
     TGraph *gr_temp = ReadTestTime(pathINI);
     gErrorIgnoreLevel = kWarning;
     if (gr_temp != nullptr) {
-     grRes_TimeLV.push_back(std::make_tuple(k, pair.first + std::to_string(pair.second), gr_temp));
+     grRes_TimeLV[k].push_back(std::make_pair(pair.first + std::to_string(pair.second), gr_temp));
     }
    }
  }
  plottingGraph(grRes_TimeLV, "LV");
  for (int k = 0; k < IterationTest; k++) {
+ if(!std::filesystem::exists(TestNameTimeAcquisition[k])){
+      std::cout<<"\033[33mLVR: no available time measurements for "<<TestNameTimeAcquisition[k] <<"\033[0m" <<std::endl;
+      continue;
+    }
   for (const auto& pair : LVcables_rtn) {
     std::string pathINI = TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini";
     gErrorIgnoreLevel = kError;
     TGraph *gr_temp = ReadTestTime(pathINI);
     gErrorIgnoreLevel = kWarning;
     if (gr_temp != nullptr) {
-     grRes_TimeLVR.push_back(std::make_tuple(k, pair.first, gr_temp));
+     grRes_TimeLVR[k].push_back(std::make_pair(pair.first + std::to_string(pair.second), gr_temp));
     }
-  }
+   }
  }
   plottingGraph(grRes_TimeLVR, "LVR");
     std::cout << "done" << std::endl;
@@ -357,7 +368,7 @@ if(IterationTest==1){
 std::cout<<"\033[32mplots has been saved as " + std::string(WORKDIR) +"/output/plots/SingleCable/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
 }
 else{
-std::cout<<"\033[32mplot pdf has been saved as ./output/plots/CheckCable/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
+std::cout<<"\033[32mplot pdf has been saved as" + std::string(WORKDIR) +"/output/plots/CheckCable/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
 }
 f_OutPut->Close();
 

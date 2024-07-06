@@ -13,13 +13,13 @@ try:
     with open(filename, 'r', encoding='utf-8') as file:
         first_line = file.readline().strip()
         if "Ambient Temperature" not in first_line:
-            print("Text file already in the right format")
+            print("Text file is already in the right format")
             sys.exit(1)
 except UnicodeDecodeError:
     with open(filename, 'r', encoding='iso-8859-1') as file:
         first_line = file.readline().strip()
         if "Ambient Temperature" not in first_line:
-            print("Text file already in the right format")
+            print("Text file is already in the right format")
             sys.exit(1)
 
 try:
@@ -87,4 +87,4 @@ filtered_text = '\n'.join(final_lines)
 with open(filename, 'w', encoding='utf-8') as file:
     file.write(filtered_text)
 
-print(f"Filtered lines containing 'Passed' or 'Failed' from '{filename}'.")
+print(f"\033[31mInput text files changed: from '{filename}'.\033[0m")

@@ -7,12 +7,13 @@
 #include <string>
 #include <vector>
 
+// declare in Makefile //
 #ifdef WORKDIR
 #else
 #define WORKDIR "."
 #endif
 
-// input-output paths, to be change in the Makefile //
+// input-output paths //
 extern const std::string sInputTestDir;
 extern const std::string sInputTimeAcquisition;
 extern const std::string sOutputRoot;
@@ -20,7 +21,7 @@ extern const std::string sOutputRoot;
 
 extern Int_t IterationTest; // number of cable to be test
 extern std::string sPDFTitle; // final pdf name 
-extern std::string currentDate; 
+extern std::string currentDate; // date of execution
 
 // vectors of paths to cable to be test //
 extern std::vector<std::string> TestName;
@@ -33,6 +34,7 @@ extern const int NumberSensorWire;
 extern const int NumberDrainWire;
 extern const int NumberHVRTNwires;
 
+// treshold values //
 extern const Float_t ThreshContLV;
 extern const Float_t ThreshContHV;
 extern const Float_t ThreshIsoLV;
@@ -76,8 +78,11 @@ extern std::vector<std::tuple<double,double,double>> ParametersInsulationLV;
 extern std::vector<std::tuple<double,double,double,double>> ParametersInsulationHV;
 extern std::vector<std::tuple<double,double,double,double>> ParametersInsulationTsensor;
 
+// canvas for report and report resistence vs time //
 extern TCanvas *c_plot;
 extern TCanvas *c_graph;
+
+// histograms and histograms variables for range, maximum/minimum values to be stored 
 extern std::vector<TH1F*> h_passedHV_Cont;
 extern std::vector<TH1F*> h_passedLV_Cont;
 extern std::vector<TH1F*> hCont_ResChannel_HV;
@@ -110,8 +115,8 @@ extern const char *labelsContLV[];
 extern const char *labelsInsHV[];
 extern const char *labelsInsLV[];
 
-extern std::vector<std::tuple<int, std::string, TGraph*>> grRes_TimeLV;
-extern std::vector<std::tuple<int, std::string, TGraph*>> grRes_TimeLVR;
+
+
 
 
 

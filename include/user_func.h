@@ -6,7 +6,7 @@
 
 // functions defined in src directory //
 void plotting(std::vector<TH1F*> &h, std::string sTitle, Int_t number_pad);
-void plottingGraph(std::vector<std::tuple<int, std::string, TGraph*>> &gr, std::string Title);
+void plottingGraph(std::vector<std::pair<std::string, TGraph*>> gr[], std::string Title);
 void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j);
 TGraph* ReadTestTime(std::string pathFile);
 

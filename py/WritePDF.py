@@ -8,7 +8,7 @@ def merge_pdfs(output_path, pdf_list):
 
     for pdf in pdf_list:
         if not os.path.exists(pdf):
-            print(f"Warning: The file '{pdf}' does not exist and will be skipped.")
+            print(f"\033[33mWarning: The file '{pdf}' does not exist and will be skipped.\033[0m")
             continue
         merger.append(pdf)
         files_appended = True

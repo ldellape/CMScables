@@ -93,7 +93,6 @@ const char *labelsContHV[NumberHVcables + NumberHVRTNwires + NumberSensorWire];
 const char *labelsContLV[NumberLVcables];
 const char *labelsInsHV[NumberHVcables + NumberHVRTNwires + NumberSensorWire];
 const char *labelsInsLV[NumberLVcables];
- std::vector<std::tuple<int, std::string, TGraph*>> grRes_TimeLV;
- std::vector<std::tuple<int, std::string, TGraph*>> grRes_TimeLVR;
+ 
 
 

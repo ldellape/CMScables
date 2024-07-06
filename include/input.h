@@ -1,8 +1,7 @@
-#include<cstdlib>
-
 #ifndef INPUT_H
 #define INPUT_H
 
+// functions to be called when the second mode is selected
 
 // list of commands to be execute //
 std::vector<std::string> listAndChooseFiles();
@@ -134,37 +133,10 @@ std::vector<std::string> DirTimeAcquisition(){
         size_t lastDot = TestName[ii].find_last_of(".");
         std::string Date = TestName[ii].substr(lastSlash + 9, lastDot - lastSlash - 9);
         Directories.push_back((DirValues + "/VALORI/" +  Date).c_str());
+        
     }
  return Directories;
 }
 
-/*
-std::vector<std::string> listAndChooseFilesTimeAcquisition(){
-std::vector<std::string> TestTempTimeAcquisition;
- for(int j=0; j<IterationTest; j++){
-  std::string directory = (sInputTestDir + Form("Cable0%i", j+1) + "/VALORI/").c_str();
-  std::system(("cd " + directory + "&& ls > TempFilesName3.txt").c_str());
-  std::ifstream inputFile((directory + "TempFilesName3.txt").c_str());
-  std::vector<std::string> subDirectory;
-    if(inputFile.is_open()){
-     std::string subDir;
-     while(std::getline(inputFile, subDir)){
-        subDirectory.push_back(subDir);
-     }
-    }
-  inputFile.close();
-std::system(("rm ./" + directory + "/TempFilesName3.txt").c_str());
-std::cout<<"Quale misura? (inserire numero)"<<std::endl;
-for(int i=0; i<int(subDirectory.size()); i++){
-std::cout<<i+1 << "   " <<subDirectory[i] <<std::endl;
-}
-int choice;
-std::cin>>choice;
-TestTempTimeAcquisition.push_back((directory + subDirectory[choice-1]).c_str());
-subDirectory.clear();
-}
-return TestTempTimeAcquisition;
-}
-*/
 
 #endif
