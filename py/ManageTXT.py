@@ -75,7 +75,6 @@ for index, line in enumerate(lines):
 phr_index = None
 for i, line in enumerate(filtered_lines):
     if "PHR" in line:
-        print("ok")
         phr_index = i
 
 if phr_index is not None and phr_index > Insulation_test_index:
@@ -87,4 +86,4 @@ filtered_text = '\n'.join(final_lines)
 with open(filename, 'w', encoding='utf-8') as file:
     file.write(filtered_text)
 
-print(f"\033[31mInput text files changed: from '{filename}'.\033[0m")
+print(f"\033[32mInput text files changed: '{filename}'.\033[0m")

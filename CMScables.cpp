@@ -86,7 +86,7 @@ std::cout<<"*****************************************"<<std::endl;
 // ****Preparing Text files **** //
 std::cout<<"preparing text files..." <<std::endl;
 for(int i=0; i<int(TestName.size()); i++){
-    Python::ChangeTextFile(TestName[i]);
+    Python::PS_PP1::ChangeTextFile(TestName[i]);
 }
 
 
@@ -375,7 +375,7 @@ f_OutPut->Close();
 std::cout<<"*****************************************"<<std::endl;
 
 
-if(CreateReport == "y") Python::WriteFinalReport(sPDFTitle, name[0]);
+if(CreateReport == "y") Python::PS_PP1::WriteFinalReport(sPDFTitle, name[0]);
 
 return 0;
 gROOT->ProcessLine(".q");

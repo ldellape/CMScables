@@ -1,5 +1,9 @@
+500 40 2 2 1 On
+50 100 10 3 1 On
+1 8 8
+1.2 1 10 1
+50 100 1 2
 ContinuityTest
-500 40 2 2 1 On 48
 Passed    LV1            0.563400225386732 
 Passed    LVreturn1      0.562004935500406 
 Passed    LV2            0.568251578522657 
@@ -46,32 +50,32 @@ Passed    H11            11.5241431145546
 Passed    H12            11.5915970653719 
 Passed    HR3            11.616965777355 
 InsulationTest
-Passed    LV1             1658162230.2784  1,658
-Passed    LVR1             1264170762.27633  1,264
-Passed    LV2             1865462030.05199  1,865
-Passed    LVR2             1348109215.31891  1,348
-Passed    LV3             1740155427.33794  1,74
-Passed    LVR3             1343249351.3735  1,343
+Passed    LV1             1658162230.2784  1,658G
+Passed    LVR1             1264170762.27633  1,264G
+Passed    LV2             1865462030.05199  1,865G
+Passed    LVR2             1348109215.31891  1,348G
+Passed    LV3             1740155427.33794  1,74G
+Passed    LVR3             1343249351.3735  1,343G
 Passed    LV4             873198990.2264  873,2M
-Passed    LVR4             1644833304.11305  1,645
-Passed    LV5             1671098645.13728  1,671
-Passed    LVR5             1447238722.36784  1,447
+Passed    LVR4             1644833304.11305  1,645G
+Passed    LV5             1671098645.13728  1,671G
+Passed    LVR5             1447238722.36784  1,447G
 Passed    LV6             911324651.82704  911,3M
 Passed    LVR6             581311692.96123  581,3M
-Passed    LV7             1279528188.58258  1,28
-Passed    LVR7             1970331758.22737  1,97
-Passed    LV8             1191029029.65709  1,191
+Passed    LV7             1279528188.58258  1,28G
+Passed    LVR7             1970331758.22737  1,97G
+Passed    LV8             1191029029.65709  1,191G
 Passed    LVR8             845187688.02608  845,2M
-Passed    LV9             2078427631.09869  2,078
-Passed    LVR9             2354729902.2419  2,355
+Passed    LV9             2078427631.09869  2,078G
+Passed    LVR9             2354729902.2419  2,355G
 Passed    LV10             789099387.64607  789,1M
-Passed    LVR10             1303464721.46951  1,303
+Passed    LVR10             1303464721.46951  1,303G
 Passed    LV11             937720843.441995  937,7M
-Passed    LVR11             2043856795.05491  2,044
-Passed    LV12             1537200981.9937  1,537
-Passed    LVR12             1913101596.89036  1,913
-Passed    PH             2129845001.92727  2,13
-Passed    PHR             1699064110.44163  1,699
+Passed    LVR11             2043856795.05491  2,044G
+Passed    LV12             1537200981.9937  1,537G
+Passed    LVR12             1913101596.89036  1,913G
+Passed    PH             2129845001.92727  2,13G
+Passed    PHR             1699064110.44163  1,699G
 Passed    Tsensor1       4091920911.35262 
 Passed    Tsensor2       4091920911.35262 
 Passed    Tsensor3       4091920911.35262 
@@ -91,4 +95,9 @@ Passed    HV12           98206101872.463
 Passed    HVreturn1      98206101872.463 
 Passed    HVreturn2      98206101872.463 
 Passed    HVreturn3      98206101872.463 
-
+Passed    Tsensor1       4091920911.35262 
+Passed    Tsensor2       4091920911.35262 
+Passed    Tsensor3       4091920911.35262 
+Passed    Tsensor4       4091920911.35262 
+Passed    LV_group             204150783.758022  204,2M
+Passed    HV_group       4919000459.10671 

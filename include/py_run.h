@@ -7,10 +7,12 @@
 #include <string>
 
 namespace Python{
+ namespace PS_PP1{
  void ChangeTextFile(std::string TestName);
  void ChangeTextFileINI(std::string path);
  void WriteFinalReport(std::string PDFname, std::string CableName);
  }
+}
 
 
 #endif

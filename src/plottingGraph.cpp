@@ -39,8 +39,8 @@ void plottingGraph(std::vector<std::pair<std::string, TGraph*>> gr[], std::strin
         TPad* pad[Nx][Ny];
         int graphIndex = 0;
 
-        for (int j = 0; j < Ny; j++) {
-            for (int i = 0; i < Nx; i++) {
+        for (int j =0; j < Ny; j++) {
+            for (int i =0; i < Nx; i++) {
                 if (graphIndex < int(gr[kk].size())) {
                     c[kk]->cd();
                     pad[i][j] = (TPad*)c[kk]->FindObject(TString::Format("pad_%d_%d", i, j).Data());

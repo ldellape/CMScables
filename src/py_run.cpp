@@ -3,7 +3,7 @@
 #include "../include/root.h"
 
 namespace Python{
-
+ namespace PS_PP1{
  void ChangeTextFile(std::string TestName){
     std::string pythonScript = "python3 " + std::string(WORKDIR) + "/py/ManageTXT.py ";
     std::system((pythonScript + TestName).c_str());
@@ -58,6 +58,7 @@ namespace Python{
   std::cout<<"\033[32mFinal REPORT saved as "<< std::string(WORKDIR) <<"/output/report/Report_"+ PDFname +"\033[0m" <<std::endl;
   return;
  }
+}
  
 }//namespace
 

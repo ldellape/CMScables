@@ -1,95 +1,129 @@
-ContinuityTest
-500 40 2 2 1 On 48
-Passed    LV1            0.565930632149042 
-Passed    LVreturn1      0.564167842632123 
-Passed    LV2            0.569506219403302 
-Passed    LVreturn2      0.560331236914221 
-Passed    LV3            0.56693567526508 
-Passed    LVreturn3      0.564947238930961 
-Passed    LV4            0.562053775913045 
-Passed    LVreturn4      0.560128459708807 
-Passed    LV5            0.562290705069192 
-Passed    LVreturn5      0.559782061354966 
-Passed    LV6            0.553130359179974 
-Passed    LVreturn6      0.555541730809019 
-Passed    LV7            0.573909991472288 
-Passed    LVreturn7      0.557450275959588 
-Passed    LV8            0.550252447522201 
-Passed    LVreturn8      0.54911841982151 
-Passed    LV9            0.571585829255417 
-Passed    LVreturn9      0.562736814921871 
-Passed    LV10           0.566732593130528 
-Passed    LVreturn10     0.562337359072917 
-Passed    LV11           0.571859044860864 
-Passed    LVreturn11     0.565744625989908 
-Passed    LV12           0.565472630098236 
-Passed    LVreturn12     0.567601028444864 
-Passed    PH             0.576783024331137 
-Passed    PHreturn       0.562036699937829 
-Open      Drain          23639889.143293 
-Passed    Tsensor1       11.7595614640364 
-Passed    Tsensor2       11.7637130424653 
-Passed    Tsensor3       11.8153689666595 
-Passed    Tsensor4       11.72036027742 
-Passed    H1             11.6385656165107 
-Passed    H2             11.8865703800578 
-Passed    H3             11.5985439163204 
-Passed    H4             11.7645641772781 
-Passed    HR1            11.6650181487274 
-Passed    H5             11.7582388372839 
-Passed    H6             11.5400789263266 
-Passed    H7             11.9323602149854 
-Passed    H8             11.8636509702897 
-Passed    HR2            11.7573999490205 
-Passed    H9             11.946492729318 
-Passed    H10            11.8411785599398 
-Passed    H11            11.4868248427936 
-Passed    H12            11.5635677928635 
-Passed    HR3            11.6322708936696 
-InsulationTest
-Passed    LV1             1312108834.73291  1,312
-Passed    LVR1             2195263125.84184  2,195
-Passed    LV2             1873504006.98886  1,874
-Passed    LVR2             2149140619.62779  2,149
-Fail    LV3             25557.293755328  25,56k
-Passed    LVR3             1513685349.12821  1,514
-Passed    LV4             1229817226.15362  1,23
-Passed    LVR4             2396403667.27578  2,396
-Passed    LV5             1428840128.33909  1,429
-Passed    LVR5             1044679418.55763  1,045
-Passed    LV6             987312721.78213  987,3M
-Passed    LVR6             1036981072.16575  1,037
-Passed    LV7             1182419332.81792  1,182
-Passed    LVR7             2178013684.23579  2,178
-Passed    LV8             1609219166.31552  1,609
-Passed    LVR8             924082071.474165  924,1M
-Fail    LV9             25565.3174245708  25,57k
-Passed    LVR9             1899082671.00596  1,899
-Passed    LV10             1774442902.97819  1,774
-Passed    LVR10             3175363351.51059  3,175
-Passed    LV11             1947765239.31649  1,948
-Passed    LVR11             2184239190.59568  2,184
-Passed    LV12             1677435476.58262  1,677
-Passed    LVR12             2499376356.74362  2,499
-Fail    PH             25570.4451068338  25,57k
-Fail    PHR             25572.6396658299  25,57k
-Passed    Tsensor1       4086569896.69151 
-Passed    Tsensor2       4086569896.69151 
-Passed    Tsensor3       4086569896.69151 
-Passed    Tsensor4       4086569896.69151 
-Passed    HV1            98077677520.5963 
-Passed    HV2            22397149484.325 
-Passed    HV3            98077677520.5963 
-Passed    HV4            98077677520.5963 
-Passed    HV5            98077677520.5963 
-Passed    HV6            98077677520.5963 
-Passed    HV7            98077677520.5963 
-Passed    HV8            98077677520.5963 
-Passed    HV9            98077677520.5963 
-Passed    HV10           98077677520.5963 
-Passed    HV11           38632461024.6614 
-Passed    HV12           98077677520.5963 
-Passed    HVreturn1      45557134737.9503 
-Passed    HVreturn2      47085101336.7081 
-Passed    HVreturn3      98077677520.5963 
+Ambient Temperature:°C
+Ambient Rel.Humidity:%
+CONTINUITY AND RESISTANCE MEASUREMENTS
+-->LV channels
+Parameters for continuity test
+Current=500mA; Threshold=40Ohm; Trise=2ms; Twait=2s; Tmeas=1ms; Auto ranging=On;
+ Voltage limit=48V
 
+
+Parameters for continuity test
+
+Passed    ;LV1            ;0.565930632149042; Ohm;
+Passed    ;LVreturn1      ;0.564167842632123; Ohm;
+Passed    ;LV2            ;0.569506219403302; Ohm;
+Passed    ;LVreturn2      ;0.560331236914221; Ohm;
+Passed    ;LV3            ;0.56693567526508; Ohm;
+Passed    ;LVreturn3      ;0.564947238930961; Ohm;
+Passed    ;LV4            ;0.562053775913045; Ohm;
+Passed    ;LVreturn4      ;0.560128459708807; Ohm;
+Passed    ;LV5            ;0.562290705069192; Ohm;
+Passed    ;LVreturn5      ;0.559782061354966; Ohm;
+Passed    ;LV6            ;0.553130359179974; Ohm;
+Passed    ;LVreturn6      ;0.555541730809019; Ohm;
+Passed    ;LV7            ;0.573909991472288; Ohm;
+Passed    ;LVreturn7      ;0.557450275959588; Ohm;
+Passed    ;LV8            ;0.550252447522201; Ohm;
+Passed    ;LVreturn8      ;0.54911841982151; Ohm;
+Passed    ;LV9            ;0.571585829255417; Ohm;
+Passed    ;LVreturn9      ;0.562736814921871; Ohm;
+Passed    ;LV10           ;0.566732593130528; Ohm;
+Passed    ;LVreturn10     ;0.562337359072917; Ohm;
+Passed    ;LV11           ;0.571859044860864; Ohm;
+Passed    ;LVreturn11     ;0.565744625989908; Ohm;
+Passed    ;LV12           ;0.565472630098236; Ohm;
+Passed    ;LVreturn12     ;0.567601028444864; Ohm;
+Passed    ;PH             ;0.576783024331137; Ohm;
+Passed    ;PHreturn       ;0.562036699937829; Ohm;
+--> Drains
+Open      ;Drain          ;23639889.143293; Ohm;
+HV channels and Tsensor
+Parameters for continuity test
+
+Passed    ;Tsensor1       ;11.7595614640364; Ohm;
+Passed    ;Tsensor2       ;11.7637130424653; Ohm;
+Passed    ;Tsensor3       ;11.8153689666595; Ohm;
+Passed    ;Tsensor4       ;11.72036027742; Ohm;
+Passed    ;H1             ;11.6385656165107; Ohm;
+Passed    ;H2             ;11.8865703800578; Ohm;
+Passed    ;H3             ;11.5985439163204; Ohm;
+Passed    ;H4             ;11.7645641772781; Ohm;
+Passed    ;HR1            ;11.6650181487274; Ohm;
+Passed    ;H5             ;11.7582388372839; Ohm;
+Passed    ;H6             ;11.5400789263266; Ohm;
+Passed    ;H7             ;11.9323602149854; Ohm;
+Passed    ;H8             ;11.8636509702897; Ohm;
+Passed    ;HR2            ;11.7573999490205; Ohm;
+Passed    ;H9             ;11.946492729318; Ohm;
+Passed    ;H10            ;11.8411785599398; Ohm;
+Passed    ;H11            ;11.4868248427936; Ohm;
+Passed    ;H12            ;11.5635677928635; Ohm;
+Passed    ;HR3            ;11.6322708936696; Ohm;
+INSULATION TEST 1 VS all
+--> LV channels
+Parameters for HV isolation test
+Voltage=50V; Threshold=100MOhm; Trise=10s; Twait=3s; Tmeas=1s; Auto ranging=On; 
+Current limit=1,95mA; Tmeas red.=Off; Tmeas fact.=1; Voltage ramp=120V/s
+
+
+Parameters for HV isolation test
+Trise=1s; Twait=8s; Tmeas=8s
+Passed;    LV1;             1312108834.73291; Ohm; 1,312GOhm
+Passed;    LVR1;             2195263125.84184; Ohm; 2,195GOhm
+Passed;    LV2;             1873504006.98886; Ohm; 1,874GOhm
+Passed;    LVR2;             2149140619.62779; Ohm; 2,149GOhm
+Fail;    LV3;             25557.293755328; Ohm; 25,56kOhm
+Passed;    LVR3;             1513685349.12821; Ohm; 1,514GOhm
+Passed;    LV4;             1229817226.15362; Ohm; 1,23GOhm
+Passed;    LVR4;             2396403667.27578; Ohm; 2,396GOhm
+Passed;    LV5;             1428840128.33909; Ohm; 1,429GOhm
+Passed;    LVR5;             1044679418.55763; Ohm; 1,045GOhm
+Passed;    LV6;             987312721.78213; Ohm; 987,3MOhm
+Passed;    LVR6;             1036981072.16575; Ohm; 1,037GOhm
+Passed;    LV7;             1182419332.81792; Ohm; 1,182GOhm
+Passed;    LVR7;             2178013684.23579; Ohm; 2,178GOhm
+Passed;    LV8;             1609219166.31552; Ohm; 1,609GOhm
+Passed;    LVR8;             924082071.474165; Ohm; 924,1MOhm
+Fail;    LV9;             25565.3174245708; Ohm; 25,57kOhm
+Passed;    LVR9;             1899082671.00596; Ohm; 1,899GOhm
+Passed;    LV10;             1774442902.97819; Ohm; 1,774GOhm
+Passed;    LVR10;             3175363351.51059; Ohm; 3,175GOhm
+Passed;    LV11;             1947765239.31649; Ohm; 1,948GOhm
+Passed;    LVR11;             2184239190.59568; Ohm; 2,184GOhm
+Passed;    LV12;             1677435476.58262; Ohm; 1,677GOhm
+Passed;    LVR12;             2499376356.74362; Ohm; 2,499GOhm
+Fail;    PH;             25570.4451068338; Ohm; 25,57kOhm
+Fail;    PHR;             25572.6396658299; Ohm; 25,57kOhm
+--> HV channels
+Parameters for HV isolation test
+Voltage=1,2kV; Threshold=1GOhm; Trise=10s; Tmeas=1s
+Passed    ;HV1            ;98077677520.5963; Ohm;
+Passed    ;HV2            ;22397149484.325; Ohm;
+Passed    ;HV3            ;98077677520.5963; Ohm;
+Passed    ;HV4            ;98077677520.5963; Ohm;
+Passed    ;HV5            ;98077677520.5963; Ohm;
+Passed    ;HV6            ;98077677520.5963; Ohm;
+Passed    ;HV7            ;98077677520.5963; Ohm;
+Passed    ;HV8            ;98077677520.5963; Ohm;
+Passed    ;HV9            ;98077677520.5963; Ohm;
+Passed    ;HV10           ;98077677520.5963; Ohm;
+Passed    ;HV11           ;38632461024.6614; Ohm;
+Passed    ;HV12           ;98077677520.5963; Ohm;
+Passed    ;HVreturn1      ;45557134737.9503; Ohm;
+Passed    ;HVreturn2      ;47085101336.7081; Ohm;
+Passed    ;HVreturn3      ;98077677520.5963; Ohm;
+Parameters for HV isolation test
+Voltage=50V; Threshold=100MOhm; Trise=1s; Tmeas=2s
+Passed    ;Tsensor1       ;4086569896.69151; Ohm;
+Passed    ;Tsensor2       ;4086569896.69151; Ohm;
+Passed    ;Tsensor3       ;4086569896.69151; Ohm;
+Passed    ;Tsensor4       ;4086569896.69151; Ohm;
+INSULATION GROUP TEST
+--> LV channels
+Parameters for HV isolation test
+Threshold=10MOhm
+Fail;    LV_group;             25577.0512559379; Ohm; 25,58kOhm
+--> HV channels
+Parameters for HV isolation test
+Voltage=1,2kV; Threshold=100MOhm; Trise=10s
+Passed    ;HV_group       ;2985420698.02121; Ohm;
