@@ -1,4 +1,4 @@
-Ambient Temperature:°C
+Ambient Temperature:ï¿½C
 Ambient Rel.Humidity:%
 CONTINUITY AND RESISTANCE MEASUREMENTS
 -->LV channels
