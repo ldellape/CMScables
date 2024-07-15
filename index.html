@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subdirectory Contents</title>
+  <title>GitHub Repository Directory Listing</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -29,28 +29,29 @@
   </style>
 </head>
 <body>
-  <h1>Contents of Subdirectory: <em>your-subdirectory</em></h1>
-
-  <ul id="fileList"></ul>
+  <h1>Contents of GitHub Repository Subdirectory</h1>
+  <ul id="fileList">
+    <!-- Placeholder for dynamically generated file list -->
+  </ul>
 
   <script>
-    fetch(`https://api.github.com/repos/ldellape/CMScables/output/report/`)
-      .then(response => response.json())
-      .then(data => {
-        const fileList = document.getElementById('fileList');
+    async function list_directory() {
+      const url = `https://api.github.com/repos/ldellape/CMScables/git/trees/aaf68891cff513a624c76a9655bd715afc23c697`;
+      directory = directory.split('/').filter(Boolean);
+      const dir = await directory.reduce(async (acc, dir) => {
+        const { url } = await acc;
+        const list = await fetch(url).then(res => res.json());
+        return list.tree.find(node => node.path === dir);
+      }, { url });
 
-        data.forEach(file => {
-          if (file.type === 'file') {
-            const listItem = document.createElement('li');
-            const link = document.createElement('a');
-            link.href = file.html_url;
-            link.textContent = file.name;
-            listItem.appendChild(link);
-            fileList.appendChild(listItem);
-          }
-        });
-      })
-      .catch(error => console.error('Error fetching directory contents:', error));
+      if (dir) {
+        const list = await fetch(dir.url).then(res => res.json());
+        return list.tree.map(node => node.path);
+      }
+    }
+
+    list_directory()
+    
   </script>
 </body>
 </html>
