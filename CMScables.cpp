@@ -375,7 +375,10 @@ f_OutPut->Close();
 std::cout<<"*****************************************"<<std::endl;
 
 
-if(CreateReport == "y") Python::PS_PP1::WriteFinalReport(sPDFTitle, name[0]);
+if(CreateReport == "y") {
+Python::PS_PP1::WriteFinalReport(sPDFTitle, name[0]);
+Python::PS_PP1::ChangeHTML(sPDFTitle);
+}
 
 return 0;
 gROOT->ProcessLine(".q");

@@ -58,7 +58,15 @@ namespace Python{
   std::cout<<"\033[32mFinal REPORT saved as "<< std::string(WORKDIR) <<"/output/report/Report_"+ PDFname +"\033[0m" <<std::endl;
   return;
  }
+
+
+void ChangeHTML(std::string ReportTitle){
+  std::system(" mv index.html index.txt");
+  std::string command;
+  command = "python3 " + std::string(WORKDIR) +"/py/ManageHTML.py index.txt Report_" + ReportTitle+".pdf";
+  std::system(command.c_str());
+  std::system(" mv index.txt index.html");
 }
- 
+}
 }//namespace
 
