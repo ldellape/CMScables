@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS cables Phase II</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            background-color: blue;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header .title {
+            text-align: left;
+        }
+        .header h1 {
+            margin: 0;
+        }
+        .header h2 {
+            margin: 0;
+            font-size: 1em;
+        }
+        .header .images img {
+            margin-left: 10px;
+            width: 100px; /* Adjust the size as needed */
+            height: auto;
+        }
+        .content {
+            margin: 20px;
+        }
+        .pdf-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .pdf-list li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">
+            <h1>CMS cables Phase II</h1>
+            <h2>INFN-Sez.Perugia</h2>
+        </div>
+        <div class="images">
+            <img src="URL_OF_FIRST_IMAGE" alt="First Image">
+            <img src="URL_OF_SECOND_IMAGE" alt="Second Image">
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="pdf-list">
+            <ul id="pdfList">
+                <li><a href="#" id="outputLink">output</a></li>
+                <!-- PDF links will be inserted here by JavaScript -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function loadOutput(event) {
+            event.preventDefault(); // Prevent default anchor behavior
+
+            const apiUrl = 'https://api.github.com/repos/ldellape/CMScables/contents/output/report';
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                const data = await response.json();
+                const pdfFiles = data.filter(item => item.type === 'file' && item.name.endsWith('.pdf'));
+
+                const pdfList = document.getElementById('pdfList');
+
+                // Remove previous entries, except the first one (the "output" link)
+                while (pdfList.children.length > 1) {
+                    pdfList.removeChild(pdfList.lastChild);
+                }
+
+                // Generate the PDF links
+                pdfFiles.forEach(file => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = file.download_url;
+                    a.textContent = file.name;
+                    a.target = '_blank'; // Open in a new tab
+                    li.appendChild(a);
+                    pdfList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error fetching the file list:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('outputLink').addEventListener('click', loadOutput);
+        });
+    </script>
+</body>
+</html>
