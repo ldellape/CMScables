@@ -90,7 +90,6 @@
     <ul>
         <li> The script to produce the reports is stored in this <a href="https://github.com/ldellape/CMScables" target="_blank">GitHub page</a> </li> 
         <li> Instruction on how it works can be found in this <a href="https://github.com/ldellape/CMScables/wiki/CMScables" target="_blank">Wiki</a></li>
-        </li>
     </ul>
 </div>      
 <hr>
@@ -165,7 +164,7 @@ Reports are produced for continuity and/or isolation tests, including LV/LVR res
       a.href = `../output/report/${file}`; // Replace with actual path
       a.onclick = function(event) {
         event.preventDefault();
-        loadPDF(`output/report/${file}`);
+        loadPDF(`../output/report/${file}`);
       };
       a.textContent = file;
       li.appendChild(a);
@@ -183,6 +182,7 @@ Reports are produced for continuity and/or isolation tests, including LV/LVR res
     document.getElementById('backButton').style.display = 'none'; // Hide the back button
     document.getElementById('fileList').innerHTML = ''; // Clear the file list
     document.getElementById('pdfContainer').innerHTML = ''; // Clear the PDF container
+    document.getElementById('pdfContainer').style.display = 'none'; // Hide PDF container
     currentCategory = null;
   }
 </script>
