@@ -22,7 +22,6 @@ std::vector<std::string> listAndChooseFiles() {
     std::vector<std::pair<Int_t, std::string>> FileName2;
 
     while (number_test != -1) {
-        // Platform-specific command to list files and store in tempFilesName.txt
         command = "cd " + sInputTestDir + " && ls > tempFilesName.txt";
         remove_temp = "rm " + sInputTestDir + "tempFilesName.txt";
         std::system(command.c_str());

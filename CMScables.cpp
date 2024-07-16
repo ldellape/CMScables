@@ -329,32 +329,6 @@ plotting(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV",6);
 
 gErrorIgnoreLevel = kPrint;
 
-
-// writing out histograms //
-TFile *f_OutPut = new TFile((sOutputRoot + sPDFTitle + ".root").c_str(), "RECREATE");
-ContinuityTree->Write();
-InsulationTree->Write();
-for(int i=0; i<IterationTest; ++i){
- if(test_type == 0 || test_type == 2){
- h_passedLV_Cont[i]->Write();
- h_passedHV_Cont[i]->Write();
- hCont_ResChannel_HV[i]->Write();
- hCont_ResChannel_LV[i]->Write();
- hCont_ResLV[i]->Write();
- hCont_ResHV[i]->Write();
- h_passedCont_tot[i]->Write();
- }
-
-if(test_type == 1 || test_type == 2){
- hIns_ResHV[i]->Write();
- hIns_ResLV[i]->Write();
- h_passedHV_Ins[i]->Write();
- h_passedLV_Ins[i]->Write();
- h_passedIns_tot[i]->Write();
- hIns_ResChannel_HV[i]->Write();
- hIns_ResChannel_LV[i]->Write();
-}
-}
 std::cout<<"*******************************************"<<std::endl;
 TString CreateReport;
 std::cout<<"Do you want to create the final report? (y/n)" <<std::endl;
@@ -378,6 +352,31 @@ std::cout<<"*****************************************"<<std::endl;
 if(CreateReport == "y") {
 Python::PS_PP1::WriteFinalReport(sPDFTitle, name[0]);
 Python::PS_PP1::ChangeHTML(sPDFTitle);
+}
+
+TFile *f_OutPut = new TFile((sOutputRoot + sPDFTitle + ".root").c_str(), "RECREATE");
+ContinuityTree->Write();
+InsulationTree->Write();
+for(int i=0; i<IterationTest; ++i){
+ if(test_type == 0 || test_type == 2){
+ h_passedLV_Cont[i]->Write();
+ h_passedHV_Cont[i]->Write();
+ hCont_ResChannel_HV[i]->Write();
+ hCont_ResChannel_LV[i]->Write();
+ hCont_ResLV[i]->Write();
+ hCont_ResHV[i]->Write();
+ h_passedCont_tot[i]->Write();
+ }
+
+if(test_type == 1 || test_type == 2){
+ hIns_ResHV[i]->Write();
+ hIns_ResLV[i]->Write();
+ h_passedHV_Ins[i]->Write();
+ h_passedLV_Ins[i]->Write();
+ h_passedIns_tot[i]->Write();
+ hIns_ResChannel_HV[i]->Write();
+ hIns_ResChannel_LV[i]->Write();
+}
 }
 
 return 0;
