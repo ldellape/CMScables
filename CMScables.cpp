@@ -334,7 +334,6 @@ TString CreateReport;
 std::cout<<"Do you want to create the final report? (y/n)" <<std::endl;
 std::cin>>CreateReport;
 
-f_OutPut->Write();
 std::cout<<"*******************************************"<<std::endl;
 std::cout<<"Output: "<<std::endl;
 std::cout<<"\033[32mroot histograms have been saved in "<< sOutputRoot << sPDFTitle <<".root\033[0m"<<std::endl;
@@ -344,7 +343,6 @@ std::cout<<"\033[32mplots has been saved as " + std::string(WORKDIR) +"/output/p
 else{
 std::cout<<"\033[32mplot pdf has been saved as" + std::string(WORKDIR) +"/output/plots/CheckCable/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
 }
-f_OutPut->Close();
 
 std::cout<<"*****************************************"<<std::endl;
 
@@ -378,6 +376,9 @@ if(test_type == 1 || test_type == 2){
  hIns_ResChannel_LV[i]->Write();
 }
 }
+f_OutPut->Write();
+f_OutPut->Close();
+
 
 return 0;
 gROOT->ProcessLine(".q");
