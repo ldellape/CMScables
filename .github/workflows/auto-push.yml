@@ -1,0 +1,27 @@
+name: Auto Push
+
+on:
+  schedule:
+    - cron: '46 15 * * *'  # Runs at 3:46 PM UTC every day
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Make changes
+      run: |
+        # Add commands to make changes here
+        # Example: echo "Hello World" > output/hello.txt
+        echo "Hello World" > output/hello.txt
+
+    - name: Commit and push changes
+      run: |
+        git add output/ index.html
+        git commit -m "Automated changes to output directory and index.html" || echo "No changes to commit"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ s
