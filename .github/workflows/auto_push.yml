@@ -2,7 +2,7 @@ name: Auto Push
 
 on:
   schedule:
-    - cron: '24 14 * * *'  # Runs at midnight UTC every day
+    - cron: '21 14 * * *'  # Runs at midnight UTC every day
 
 jobs:
   build:
