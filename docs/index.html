@@ -138,19 +138,17 @@ Reports are produced for continuity and/or isolation tests, including LV/LVR res
     const backButton = document.getElementById('backButton');
 
     if (currentCategory === category) {
-      // If the same category is clicked again, show the menu and clear PDF container
       menu.style.display = 'block';
-      pdfContainer.style.display = 'none'; // Hide PDF container
-      fileList.innerHTML = ''; // Clear file list
-      backButton.style.display = 'none'; // Hide back button
+      pdfContainer.style.display = 'none'; 
+      fileList.innerHTML = ''; 
+      backButton.style.display = 'none'; 
       currentCategory = null;
     } else {
-      // Otherwise, filter files for the selected category and display them
       const filteredFiles = files.filter(file => file.includes(category));
       displayFiles(filteredFiles);
-      menu.style.display = 'none'; // Hide the menu
-      pdfContainer.style.display = 'block'; // Show PDF container
-      backButton.style.display = 'block'; // Show back button
+      menu.style.display = 'none';  
+      pdfContainer.style.display = 'block';
+      backButton.style.display = 'block'; 
       currentCategory = category;
     }
   }
@@ -161,10 +159,10 @@ Reports are produced for continuity and/or isolation tests, including LV/LVR res
     files.forEach(file => {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      a.href = `../output/report/${file}`; // Replace with actual path
+      a.href = `./../output/report/${file}`; 
       a.onclick = function(event) {
         event.preventDefault();
-        loadPDF(`../output/report/${file}`);
+        loadPDF(`./../output/report/${file}`);
       };
       a.textContent = file;
       li.appendChild(a);
@@ -178,11 +176,11 @@ Reports are produced for continuity and/or isolation tests, including LV/LVR res
   }
 
   function showMenu() {
-    document.getElementById('menu').style.display = 'block'; // Show the menu
-    document.getElementById('backButton').style.display = 'none'; // Hide the back button
-    document.getElementById('fileList').innerHTML = ''; // Clear the file list
-    document.getElementById('pdfContainer').innerHTML = ''; // Clear the PDF container
-    document.getElementById('pdfContainer').style.display = 'none'; // Hide PDF container
+    document.getElementById('menu').style.display = 'block';
+    document.getElementById('backButton').style.display = 'none'; 
+    document.getElementById('fileList').innerHTML = ''; 
+    document.getElementById('pdfContainer').innerHTML = ''; 
+    document.getElementById('pdfContainer').style.display = 'none'; 
     currentCategory = null;
   }
 </script>
