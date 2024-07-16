@@ -49,4 +49,8 @@ $(DEPDIR)/%.d: $(SRCDIR)/%.cpp
 	@mkdir -p $(DEPDIR)
 	$(CXX) $(CXXFLAGS) -M $< -MF $@ -MT $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$<)
 
+clean: 
+	rm -r build && rm -r .deps
+
 .PHONY: all clean 
+
