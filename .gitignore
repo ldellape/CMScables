@@ -2,3 +2,5 @@
 build/
 CMScables
 settings.json
+.vscode
+auto_push.sh
