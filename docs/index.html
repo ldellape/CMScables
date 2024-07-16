@@ -112,7 +112,7 @@ Reports are produced for continuity and/or isolation tests, including LV/LVR res
 </div>
 <hr>
 <p>Structure of the Cable:</p>
-<img src="./immagine_2024-07-16_112623860.png" alt="Cable Structure" width="500px">
+<img src="./docs/immagine_2024-07-16_112623860.png" alt="Cable Structure" width="500px">
 <hr>
 
 <script>
@@ -159,10 +159,10 @@ Reports are produced for continuity and/or isolation tests, including LV/LVR res
     files.forEach(file => {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      a.href = `./../output/report/${file}`; 
+      a.href = `output/report/${file}`; 
       a.onclick = function(event) {
         event.preventDefault();
-        loadPDF(`./../output/report/${file}`);
+        loadPDF(`output/report/${file}`);
       };
       a.textContent = file;
       li.appendChild(a);
