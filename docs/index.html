@@ -162,7 +162,7 @@ Reports are produced for continuity and/or isolation tests, including LV/LVR res
     files.forEach(file => {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      a.href = `output/report/${file}`; // Replace with actual path
+      a.href = `../output/report/${file}`; // Replace with actual path
       a.onclick = function(event) {
         event.preventDefault();
         loadPDF(`output/report/${file}`);
