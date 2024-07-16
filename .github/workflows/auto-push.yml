@@ -2,7 +2,7 @@ name: Auto Push
 
 on:
   schedule:
-    - cron: '46 15 * * *'  # Runs at 3:46 PM UTC every day
+    - cron: '55 14 * * *'  # Runs at 14:15 UTC (16:15 CEST) every day
 
 jobs:
   build:
@@ -20,8 +20,10 @@ jobs:
 
     - name: Commit and push changes
       run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add output/ index.html
         git commit -m "Automated changes to output directory and index.html" || echo "No changes to commit"
         git push
       env:
-        GITHUB_TOKEN: ${{ s
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
