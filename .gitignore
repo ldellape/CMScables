@@ -4,3 +4,4 @@ CMScables
 settings.json
 .vscode
 auto_push.sh
+auto_commit.log
