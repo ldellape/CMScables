@@ -5,3 +5,4 @@ settings.json
 .vscode
 auto_push.sh
 auto_commit.log
+cron_env.log
