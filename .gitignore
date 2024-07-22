@@ -7,3 +7,4 @@ auto_push.sh
 auto_commit.log
 cron_env.log
 StatCable.cpp   
+stat_root/
