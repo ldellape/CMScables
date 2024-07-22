@@ -179,12 +179,12 @@ Structure of the Cable: <br>
   <h2 class="section-title">Modes of Operation</h2>
   <ol>
     <li>
-      **Automatic Mode**:
+      AUTOMATIC MODE:
       <p>Processes the results of the most recent test in chronological order. Generates a final report with or without LV/LVR/PHR cables resistance versus time.</p>
-      <p>Command: <code>AUTO_TEST</code></p>
+      (AUTO_TEST)</p>
     </li>
     <li>
-      **Manual Mode**:
+      MANUAL MODE:
       <p>Allows selection of one or more tests by navigating through directories. Options include:</p>
       <ul class="sub-list">
         <li>Choosing specific tests from the directory <code>./input/FULL_TEST_su_cavo_ps_pp1_V3</code></li>
@@ -195,7 +195,7 @@ Structure of the Cable: <br>
       </ul>
     </li>
     <li>
-      **Command Line Mode**:
+      COMMAND LINE MODE:
       <p>Run CMScables from the command line with:</p>
       <pre><code>./CMScables --input [PATH_TO_TXT_FILE] --mode [OPTION]</code></pre>
       <p>Parameters:</p>
@@ -226,10 +226,6 @@ Structure of the Cable: <br>
     <li>LV/LVR cables resistance versus time plots in <code>./output/plotsTimeResistence/</code></li>
   </ol>
   <p>File names are formatted as: <code>TEST_NAME__PROGRAM_EXECUTION_DATE_AND_TIME.pdf/root</code></p>
-
-  <h2 class="section-title">LV Cables Resistance Versus Time</h2>
-  <p>To include LV cables resistance versus time plots in the final report, compile with:</p>
-  <pre><code>make OPTION=AUTO_TEST TIME_RES=YES</code></pre>
 
   <h2 class="section-title">Requirements</h2>
   <ul>
