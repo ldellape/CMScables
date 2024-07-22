@@ -189,16 +189,11 @@ Structure of the Cable: <br>
 <hr>
 
 <h2 class="section-title">Cable Structure and Histograms</h2>
-<div style="display: flex; align-items: center; gap: 20px;">
-  <div>
-    <img src="./docs/immagine_2024-07-16_112623860.png" alt="Cable Structure">
-  </div>
   <div class="histogram-container">
     <!-- Containers for histograms -->
-    <div id="histogram1" class="histogram"></div>
-    <div id="histogram2" class="histogram"></div>
+    <div id="h_LV_ResistenceContinuity" class="histogram"></div>
+    <div id="h_LV_ResistenceIsolation" class="histogram"></div>
   </div>
-</div>
 
 Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
 </div>
@@ -470,8 +465,8 @@ Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
       const histogram1 = rootfile.FindObject("h_LV_ResistenceIsolation");
       const histogram2 = rootfile.FindObject("h_LV_ResistenceContinuity");
 
-      JSROOT.draw("h_LV_ResistenceIsolation", histogram1, { canvas: "histogram1", width: 300, height: 300 });
-      JSROOT.draw("h_LV_ResistenceContinuity", histogram2, { canvas: "histogram2", width: 300, height: 300 });
+      JSROOT.draw("h_LV_ResistenceIsolation", histogram1, { canvas: "h_LV_ResistenceIsolation", width: 300, height: 300 });
+      JSROOT.draw("h_LV_ResistenceContinuity", histogram2, { canvas: "h_LV_ResistenceContinuity", width: 300, height: 300 });
     });
   }
 
