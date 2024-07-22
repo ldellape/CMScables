@@ -71,6 +71,9 @@
       font-size: 16px;
       text-decoration: underline;
     }
+    .sub-list{
+      margin-left: 20px;
+    }
   </style>
 </head>
 <body>
@@ -116,8 +119,104 @@ Reports are produced for continuity and/or isolation tests, including LV/LVR res
 <p>Structure of the Cable:</p>
 <img src="./docs/immagine_2024-07-16_112623860.png" alt="Cable Structure" width="500px">
 <hr>
+<h1> Usage: </h1>
+<h1>CMScables Documentation</h1>
+    
+<p class="important">DO NOT CHANGE THE TXT FILES PROVIDED BY CEETIS!!!</p>
 
+<p class="section-title">IT CAN BE RUN IN THREE MODES:</p>
+<ol>
+    <li>
+        Automatically processes the results of the most recent test conducted in chronological order and produces the final report with or without LV/LVR/PHR cables resistance versus time. (<span class="code">AUTO_TEST</span>)
+    </li>
+    <li>
+        Selecting one or more tests by navigating through the directories. In this second case, the following options can be selected:
+        <ul class="sub-list">
+            <li>Which and how many tests among all those present in the directory <span class="code">./input/FULL_TEST_su_cavo_ps_pp1_V3</span></li>
+            <li>Whether to plot one or more results together for comparison</li>
+            <li>The results of which type of test to plot (continuity, isolation or both)</li>
+            <li>If you want to plot also LV cables resistance versus time</li>
+            <li>If you want to also produce the final report.</li>
+        </ul>
+    </li>
+    <li>
+        From command line by typing:
+        <ul class="sub-list">
+            <li class="code">./CMScables --input [PATH_TO_TXT_FILE] --mode [OPTION]</li>
+        </ul>
+        <p>where</p>
+        <ul class="sub-list">
+            <li class="code">[PATH_TO_TXT_FILE]</li> should be of type CableXX/NAME_OF_THE_TEST.txt</li>
+            <li class="code">[OPTION] = 0,1,2</li> --> 0 for continuity, 1, for isolation, 2 for both. Default is continuity test.</li>
+        </ul>
+    </li>
+</ol>
+<p class="section-title">HOW TO ADD NEW TESTS TO PLOT:</p>
+<ol>
+    <li>The .txt file produced by the CEETIS software should be copied into the directory <span class="code">./input/FULL_TEST_su_cavo_ps_pp1_V3/CABLE_NAME/</span></li>
+    <li>The .pdf file produced by the CEETIS software should be copied into <span class="code">./input/pdf_ceetis/</span></li>
+    <li>The .ini files produced by the CEETIS software should be copied into the directory <span class="code">./input/FULL_TEST_su_cavo_ps_pp1_V3/CABLE_NAME/VALORI/DATE_OF_THE_TEST/</span></li>
+</ol>
+<p class="section-title">OUTPUT INCLUDES:</p>
+<ol>
+    <li>Final report in the directory <span class="code">./output/report/</span></li>
+    <li>Produced plots, saved in <span class="code">./output/plots/SingleCable/</span> if only one test was selected, or in <span class="code">./output/plots/CheckCable/</span> if multiple tests were selected.</li>
+    <li>.root file containing all the histograms, including those not plotted in the report, saved in <span class="code">./output/rootFiles/</span></li>
+    <li>LV/LVR cables resistance versus time in <span class="code">./output/plotsTimeResistence/</span></li>
+</ol>
+<p>The output names are composed of TEST_NAME__PROGRAM_EXECUTION_DATE_AND_TIME.pdf/root</p>
+<p class="section-title">PLOTS FOR LV CABLES VERSUS TIME:</p>
+<p>Plots for LV cables resistance versus time acquisition can be drawn as well. To attach also these plots in the final report in the automatic mode you should compile with:</p>
+<p class="code">make OPTION=AUTO_TEST TIME_RES=YES</p>
+<p class="section-title">YOU NEED:</p>
+<ul>
+    <li>root v6.X.X</li>
+    <li>python 3.x</li>
+    <li>pyPDF2 to produce the final report</li>
+</ul>
+<p class="section-title">HOW TO INSTALL:</p>
+<ul>
+    <li class="code">git clone https://github.com/ldellape/CMScables</li>
+    <li class="code">pip install pyPDF2</li>
+    <li class="code">make OPTION=AUTO_TEST</li> --> if you want mode 1</li>
+    <li>or</li>
+    <li class="code">make OPTION=AUTO_TEST TIME=YES</li> --> if you want mode 1 with also LV resistance versus time</li>
+    <li>or</li>
+    <li class="code">make</li> --> if you want mode 2</li>
+</ul>
 
+<p class="section-title">IF YOU WANT TO CHANGE MODE:</p>
+<ul>
+    <li class="code">make clean</li></li>
+    <li class="code">make OPTION=AUTO_TEST</li> --> if you want mode 1</li>
+    <li>or</li>
+    <li class="code">make OPTION=AUTO_TEST TIME=YES</li> --> if you want mode 1 with also LV resistance versus time</li>
+    <li>or</li>
+    <li class="code">make</li> --> if you want mode 2</li>
+</ul>
+
+<p>If you want to build the executable outside the current directory use:</p>
+<p class="code">make [MODE OPTION] PREFIX=path/to/location/of/executable</p>
+<p>where</p>
+<ul class="sub-list">
+    <li><span class="code">[MODE OPTION]</span> is "OPTION=AUTO_TEST", "OPTION=AUTO_TEST TIME=YES" or nothing as described.</li>
+</ul>
+
+<p>The script produces some temporary files that are deleted automatically. Information on the script is available also by typing:</p>
+<ul>
+    <li class="code">./CMScables --doc</li>
+    <li>or</li>
+    <li class="code">./CMScables --help</li>
+</ul>
+
+<hr>
+
+<p class="contact">Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it</p>
+
+<hr>
+
+<p>NOTE: some functions and variables are actually not used. Same namespace are included without, at the time, a practical reason. This is for future extension to split the same script with also the octopus cable.</p>
+<hr>
 <script>
   const files = [
     "Report_Cable01_07_05_2024_15_30_3____13_07_2024_15_14_26.pdf",
