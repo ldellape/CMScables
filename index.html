@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reports PS-PP1: </title>
+  <title>Reports PS-PP1</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -26,8 +26,8 @@
       margin: 0;
     }
     .header img {
-      height: 150px; 
-      margin-left: 0px; 
+      height: 150px;
+      margin-left: 0px;
     }
     h1 {
       font-size: 28px;
@@ -48,11 +48,36 @@
       cursor: pointer;
       color: #007bff;
     }
-    .important{
-      color:red;
+    .important {
+      color: red;
       font-weight: bold;
     }
-    .section-title{
+    .nav-buttons {
+      margin-bottom: 20px; /* Space between the buttons and the content */
+    }
+    .nav-button,
+    .back-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 16px;
+      text-decoration: none;
+      margin-right: 10px;
+    }
+    .nav-button:hover,
+    .back-button:hover {
+      background-color: #0056b3;
+    }
+    .back-button {
+      background-color: #dc3545;
+    }
+    .back-button:hover {
+      background-color: #c82333;
+    }
+    .section-title {
       margin-top: 1.5em;
       border-bottom: 2px solid #333;
       padding-bottom: 0.5em;
@@ -60,11 +85,11 @@
     }
     .pdf-container {
       width: 75%;
-      height: 800px; 
+      height: 800px;
       overflow-y: auto;
       border: 1px solid #ccc;
       margin-top: 20px;
-      display: none; 
+      display: none;
     }
     .pdf-container embed,
     .pdf-container iframe {
@@ -82,13 +107,19 @@
       text-decoration: underline;
     }
     code {
-            font-family: monospace;
-            background: #f4f4f4;
-            padding: 0.2em 0.4em;
-            border-radius: 3px;
-        }
-    .sub-list{
+      font-family: monospace;
+      background: #f4f4f4;
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+    }
+    .sub-list {
       margin-left: 20px;
+    }
+    .content {
+      display: none;
+    }
+    .content.active {
+      display: block;
     }
   </style>
 </head>
@@ -105,161 +136,230 @@
   </div>
 </div>
 <hr>
-<div>
-    <ul>
-        <li> <b> This page will be update automatically once a day if new reports have been produced (at 3:45 PM). </b></li>
-        <br>
-        <li> The script to produce the reports is stored in this <a href="https://github.com/ldellape/CMScables" target="_blank">GitHub page</a> </li> 
-        <li> Instruction on how it works can be found in this <a href="https://github.com/ldellape/CMScables/wiki/CMScables" target="_blank">Wiki</a></li>
-    </ul>
-</div>      
-<ol></ol>
 
-<h1>Reports PS-PP1 :</h1>
-<p>
-Reports are produced for continuity and/or isolation tests, including LV/LVR resistance versus time acquisition.</p>
+<!-- Navigation Buttons -->
+<div class="nav-buttons">
+  <button class="nav-button" onclick="showHome()">Home</button>
+  <button class="nav-button" onclick="showDocumentation()">Documentation</button>
+</div>
+
+<!-- Home Content -->
+<div id="homeContent" class="content active">
+  <ul>
+    <li><b>This page will be updated automatically once a day if new reports have been produced (at 3:45 PM).</b></li>
+    <br>
+    <li>The script to produce the reports is stored in this <a href="https://github.com/ldellape/CMScables" target="_blank">GitHub page</a></li> 
+  </ul>
+</div>
+
+<!-- Reports Section -->
+<h1>Reports PS-PP1:</h1>
+<p>Reports are produced for continuity and/or isolation tests, including LV/LVR resistance versus time acquisition.</p>
 <div class="menu" id="menu">
   <a onclick="toggleMenu('Cable01')">Cable01</a>
   <a onclick="toggleMenu('Cable02')">Cable02</a>
   <a onclick="toggleMenu('Cable03')">Cable03</a>
 </div>
-
-<button class="back-button" id="backButton" onclick="showMenu()">back </button>
-
-<ul id="fileList">
-</ul>
-
-<div class="pdf-container" id="pdfContainer">
+<div>
+  <button class="back-button" id="backButton" onclick="showMenu()">Back</button>
 </div>
+
+<ul id="fileList"></ul>
+
+<div class="pdf-container" id="pdfContainer"></div>
 <hr>
 Structure of the Cable: <br>
-<img src="./docs/immagine_2024-07-16_112623860.png" alt="First Figure">
+<img src="./docs/immagine_2024-07-16_112623860.png" alt="Cable Structure">
 
-<ol>
-<hr>
-<h1>CMScables Documentation</h1>
+<!-- Documentation Content -->
+<div id="documentationContent" class="content">
+  <h1>CMScables Documentation</h1>
 
-<p class="important">DO NOT MODIFY THE TXT FILES PROVIDED BY CEETIS!</p>
+  <p class="important">DO NOT MODIFY THE TXT FILES PROVIDED BY CEETIS!</p>
 
-<h2 class="section-title">Modes of Operation</h2>
-<ol>
+  <h2 class="section-title">Modes of Operation</h2>
+  <ol>
     <li>
-        **Automatic Mode**: 
-        <p>Processes the results of the most recent test in chronological order. Generates a final report with or without LV/LVR/PHR cables resistance versus time.</p>
-        <p>Command: <code>AUTO_TEST</code></p>
+      **Automatic Mode**:
+      <p>Processes the results of the most recent test in chronological order. Generates a final report with or without LV/LVR/PHR cables resistance versus time.</p>
+      <p>Command: <code>AUTO_TEST</code></p>
     </li>
     <li>
-        **Manual Mode**: 
-        <p>Allows selection of one or more tests by navigating through directories. Options include:</p>
-        <ul class="sub-list">
-            <li>Choosing specific tests from the directory <code>./input/FULL_TEST_su_cavo_ps_pp1_V3</code></li>
-            <li>Deciding whether to plot results for comparison</li>
-            <li>Selecting the type of test to plot (continuity, isolation, or both)</li>
-            <li>Including LV cables resistance versus time plots</li>
-            <li>Determining if a final report should be produced</li>
-        </ul>
+      **Manual Mode**:
+      <p>Allows selection of one or more tests by navigating through directories. Options include:</p>
+      <ul class="sub-list">
+        <li>Choosing specific tests from the directory <code>./input/FULL_TEST_su_cavo_ps_pp1_V3</code></li>
+        <li>Deciding whether to plot results for comparison</li>
+        <li>Selecting the type of test to plot (continuity, isolation, or both)</li>
+        <li>Including LV cables resistance versus time plots</li>
+        <li>Determining if a final report should be produced</li>
+      </ul>
     </li>
     <li>
-        **Command Line Mode**:
-        <p>Run CMScables from the command line with:</p>
-        <pre><code>./CMScables --input [PATH_TO_TXT_FILE] --mode [OPTION]</code></pre>
-        <p>Parameters:</p>
-        <ul class="sub-list">
-            <li><code>[PATH_TO_TXT_FILE]</code> should be in the format <code>CableXX/NAME_OF_THE_TEST.txt</code></li>
-            <li><code>[OPTION]</code> can be 0 (continuity), 1 (isolation), or 2 (both). Default is continuity test.</li>
-        </ul>
+      **Command Line Mode**:
+      <p>Run CMScables from the command line with:</p>
+      <pre><code>./CMScables --input [PATH_TO_TXT_FILE] --mode [OPTION]</code></pre>
+      <p>Parameters:</p>
+      <ul class="sub-list">
+        <li><code>[PATH_TO_TXT_FILE]</code> should be in the format <code>CableXX/NAME_OF_THE_TEST.txt</code></li>
+        <li><code>[OPTION]</code> can be 0 (continuity), 1 (isolation), or 2 (both). Default is continuity test.</li>
+      </ul>
     </li>
-</ol>
+  </ol>
 
-<h2 class="section-title">Adding New Tests to Plot</h2>
-<ol>
+  <h2 class="section-title">Adding New Tests to Plot</h2>
+  <ol>
     <li>Copy the <code>.txt</code> file from CEETIS into <code>./input/FULL_TEST_su_cavo_ps_pp1_V3/CABLE_NAME/</code></li>
     <li>Copy the <code>.pdf</code> file into <code>./input/pdf_ceetis/</code></li>
     <li>Copy the <code>.ini</code> files into <code>./input/FULL_TEST_su_cavo_ps_pp1_V3/CABLE_NAME/VALORI/DATE_OF_THE_TEST/</code></li>
-</ol>
+  </ol>
 
-<h2 class="section-title">Output Includes</h2>
-<ol>
+  <h2 class="section-title">Output Includes</h2>
+  <ol>
     <li>Final report in <code>./output/report/</code></li>
     <li>Plots:
-        <ul class="sub-list">
-            <li>Saved in <code>./output/plots/SingleCable/</code> if only one test was selected</li>
-            <li>Saved in <code>./output/plots/CheckCable/</code> if multiple tests were selected</li>
-        </ul>
+      <ul class="sub-list">
+        <li>Saved in <code>./output/plots/SingleCable/</code> if only one test was selected</li>
+        <li>Saved in <code>./output/plots/CheckCable/</code> if multiple tests were selected</li>
+      </ul>
     </li>
     <li><code>.root</code> file containing all histograms, including those not plotted in the report, in <code>./output/rootFiles/</code></li>
     <li>LV/LVR cables resistance versus time plots in <code>./output/plotsTimeResistence/</code></li>
-</ol>
-<p>File names are formatted as: <code>TEST_NAME__PROGRAM_EXECUTION_DATE_AND_TIME.pdf/root</code></p>
+  </ol>
+  <p>File names are formatted as: <code>TEST_NAME__PROGRAM_EXECUTION_DATE_AND_TIME.pdf/root</code></p>
 
-<h2 class="section-title">LV Cables Resistance Versus Time</h2>
-<p>To include LV cables resistance versus time plots in the final report, compile with:</p>
-<pre><code>make OPTION=AUTO_TEST TIME_RES=YES</code></pre>
+  <h2 class="section-title">LV Cables Resistance Versus Time</h2>
+  <p>To include LV cables resistance versus time plots in the final report, compile with:</p>
+  <pre><code>make OPTION=AUTO_TEST TIME_RES=YES</code></pre>
 
-<h2 class="section-title">Requirements</h2>
-<ul>
+  <h2 class="section-title">Requirements</h2>
+  <ul>
     <li>root v6.X.X</li>
     <li>Python 3.x</li>
     <li>pyPDF2 for generating the final report</li>
-</ul>
+  </ul>
 
-<h2 class="section-title">Installation</h2>
-<ol>
+  <h2 class="section-title">Installation</h2>
+  <ol>
     <li>Clone the repository:
-        <pre><code>git clone https://github.com/ldellape/CMScables</code></pre>
+      <pre><code>git clone https://github.com/ldellape/CMScables</code></pre>
     </li>
     <li>Install pyPDF2:
-        <pre><code>pip install pyPDF2</code></pre>
+      <pre><code>pip install pyPDF2</code></pre>
     </li>
     <li>Build the executable:
-        <ul class="sub-list">
-            <li>For Mode 1:
-                <pre><code>make OPTION=AUTO_TEST</code></pre>
-            </li>
-            <li>For Mode 1 with LV resistance versus time:
-                <pre><code>make OPTION=AUTO_TEST TIME=YES</code></pre>
-            </li>
-            <li>For Mode 2:
-                <pre><code>make</code></pre>
-            </li>
-        </ul>
+      <ul class="sub-list">
+        <li>For Mode 1:
+          <pre><code>make OPTION=AUTO_TEST</code></pre>
+        </li>
+        <li>For Mode 1 with LV resistance versus time:
+          <pre><code>make OPTION=AUTO_TEST TIME=YES</code></pre>
+        </li>
+        <li>For Mode 2:
+          <pre><code>make</code></pre>
+        </li>
+      </ul>
     </li>
-</ol>
+  </ol>
 
-<h2 class="section-title">Changing Modes</h2>
-<ol>
+  <h2 class="section-title">Changing Modes</h2>
+  <ol>
     <li>Clean the build:
-        <pre><code>make clean</code></pre>
+      <pre><code>make clean</code></pre>
     </li>
     <li>Rebuild in the desired mode:
-        <ul class="sub-list">
-            <li>For Mode 1:
-                <pre><code>make OPTION=AUTO_TEST</code></pre>
-            </li>
-            <li>For Mode 1 with LV resistance versus time:
-                <pre><code>make OPTION=AUTO_TEST TIME=YES</code></pre>
-            </li>
-            <li>For Mode 2:
-                <pre><code>make</code></pre>
-            </li>
-        </ul>
+      <ul class="sub-list">
+        <li>For Mode 1:
+          <pre><code>make OPTION=AUTO_TEST</code></pre>
+        </li>
+        <li>For Mode 1 with LV resistance versus time:
+          <pre><code>make OPTION=AUTO_TEST TIME=YES</code></pre>
+        </li>
+        <li>For Mode 2:
+          <pre><code>make</code></pre>
+        </li>
+      </ul>
     </li>
-</ol>
+  </ol>
 
-<p>To build the executable in a different directory, use:</p>
-<pre><code>make [MODE OPTION] PREFIX=path/to/location/of/executable</code></pre>
-<p>Where <code>[MODE OPTION]</code> is <code>OPTION=AUTO_TEST</code>, <code>OPTION=AUTO_TEST TIME=YES</code>, or nothing as described.</p>
+  <p>To build the executable in a different directory, use:</p>
+  <pre><code>make [MODE OPTION] PREFIX=path/to/location/of/executable</code></pre>
+  <p>Where <code>[MODE OPTION]</code> is <code>OPTION=AUTO_TEST</code>, <code>OPTION=AUTO_TEST TIME=YES</code>, or nothing as described.</p>
 
-<h2 class="section-title">Additional Information</h2>
-<p>The script generates temporary files that are automatically deleted. For more information, view the documentation by typing:</p>
-<pre><code>./CMScables --doc</code></pre>
-<p>or</p>
-<pre><code>./CMScables --help</code></pre>
+  <h2 class="section-title">Additional Information</h2>
+  <p>The script generates temporary files that are automatically deleted. For more information, view the documentation by typing:</p>
+  <pre><code>./CMScables --doc</code></pre>
+  <p>or</p>
+  <pre><code>./CMScables --help</code></pre>
 
-<hr>
-Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
-<ol>
+  <hr>
+  Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
+</div>
+
 <script>
+  function showDocumentation() {
+    document.getElementById('homeContent').classList.remove('active');
+    document.getElementById('documentationContent').classList.add('active');
+  }
+
+  function showHome() {
+    document.getElementById('homeContent').classList.add('active');
+    document.getElementById('documentationContent').classList.remove('active');
+  }
+
+  function toggleMenu(category) {
+    const menu = document.getElementById('menu');
+    const pdfContainer = document.getElementById('pdfContainer');
+    const fileList = document.getElementById('fileList');
+    const backButton = document.getElementById('backButton');
+
+    if (currentCategory === category) {
+      menu.style.display = 'block';
+      pdfContainer.style.display = 'none';
+      fileList.innerHTML = '';
+      backButton.style.display = 'none';
+      currentCategory = null;
+    } else {
+      const filteredFiles = files.filter(file => file.includes(category));
+      displayFiles(filteredFiles);
+      menu.style.display = 'none';
+      pdfContainer.style.display = 'block';
+      backButton.style.display = 'block';
+      currentCategory = category;
+    }
+  }
+
+  function displayFiles(files) {
+    const fileList = document.getElementById('fileList');
+    fileList.innerHTML = '';
+    files.forEach(file => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = `output/report/${file}`;
+      a.onclick = function(event) {
+        event.preventDefault();
+        loadPDF(`output/report/${file}`);
+      };
+      a.textContent = file;
+      li.appendChild(a);
+      fileList.appendChild(li);
+    });
+  }
+
+  function loadPDF(pdfUrl) {
+    const pdfContainer = document.getElementById('pdfContainer');
+    pdfContainer.innerHTML = `<embed src="${pdfUrl}" type="application/pdf" width="100%" height="100%" />`;
+  }
+
+  function showMenu() {
+    document.getElementById('menu').style.display = 'block';
+    document.getElementById('backButton').style.display = 'none';
+    document.getElementById('fileList').innerHTML = '';
+    document.getElementById('pdfContainer').innerHTML = '';
+    document.getElementById('pdfContainer').style.display = 'none';
+    currentCategory = null;
+  }
+
   const files = [
     "Report_Cable01_07_05_2024_15_30_3____13_07_2024_15_14_26.pdf",
     "Report_Cable01_09_05_2024_11_24_47____09_07_2024_16_25_26.pdf",
@@ -293,16 +393,16 @@ Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
 
     if (currentCategory === category) {
       menu.style.display = 'block';
-      pdfContainer.style.display = 'none'; 
-      fileList.innerHTML = ''; 
-      backButton.style.display = 'none'; 
+      pdfContainer.style.display = 'none';
+      fileList.innerHTML = '';
+      backButton.style.display = 'none';
       currentCategory = null;
     } else {
       const filteredFiles = files.filter(file => file.includes(category));
       displayFiles(filteredFiles);
-      menu.style.display = 'none';  
+      menu.style.display = 'none';
       pdfContainer.style.display = 'block';
-      backButton.style.display = 'block'; 
+      backButton.style.display = 'block';
       currentCategory = category;
     }
   }
@@ -313,7 +413,7 @@ Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
     files.forEach(file => {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      a.href = `output/report/${file}`; 
+      a.href = `output/report/${file}`;
       a.onclick = function(event) {
         event.preventDefault();
         loadPDF(`output/report/${file}`);
@@ -331,10 +431,10 @@ Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
 
   function showMenu() {
     document.getElementById('menu').style.display = 'block';
-    document.getElementById('backButton').style.display = 'none'; 
-    document.getElementById('fileList').innerHTML = ''; 
-    document.getElementById('pdfContainer').innerHTML = ''; 
-    document.getElementById('pdfContainer').style.display = 'none'; 
+    document.getElementById('backButton').style.display = 'none';
+    document.getElementById('fileList').innerHTML = '';
+    document.getElementById('pdfContainer').innerHTML = '';
+    document.getElementById('pdfContainer').style.display = 'none';
     currentCategory = null;
   }
 </script>
