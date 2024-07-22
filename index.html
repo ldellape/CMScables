@@ -48,6 +48,16 @@
       cursor: pointer;
       color: #007bff;
     }
+    .important{
+      color:red;
+      font-weight: bold;
+    }
+    .section-title{
+      margin-top: 1.5em;
+      border-bottom: 2px solid #333;
+      padding-bottom: 0.5em;
+      font-size: 1.2em;
+    }
     .pdf-container {
       width: 75%;
       height: 800px; 
@@ -71,6 +81,12 @@
       font-size: 16px;
       text-decoration: underline;
     }
+    code {
+            font-family: monospace;
+            background: #f4f4f4;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
     .sub-list{
       margin-left: 20px;
     }
@@ -116,106 +132,127 @@ Reports are produced for continuity and/or isolation tests, including LV/LVR res
 <div class="pdf-container" id="pdfContainer">
 </div>
 <hr>
-<p>Structure of the Cable:</p>
-<img src="./docs/immagine_2024-07-16_112623860.png" alt="Cable Structure" width="500px">
-<hr>
-<h1> Usage: </h1>
 <h1>CMScables Documentation</h1>
-    
-<p class="important">DO NOT CHANGE THE TXT FILES PROVIDED BY CEETIS!!!</p>
 
-<p class="section-title">IT CAN BE RUN IN THREE MODES:</p>
+<p class="important">DO NOT MODIFY THE TXT FILES PROVIDED BY CEETIS!</p>
+
+<h2 class="section-title">Modes of Operation</h2>
 <ol>
     <li>
-        Automatically processes the results of the most recent test conducted in chronological order and produces the final report with or without LV/LVR/PHR cables resistance versus time. (<span class="code">AUTO_TEST</span>)
+        **Automatic Mode**: 
+        <p>Processes the results of the most recent test in chronological order. Generates a final report with or without LV/LVR/PHR cables resistance versus time.</p>
+        <p>Command: <code>AUTO_TEST</code></p>
     </li>
     <li>
-        Selecting one or more tests by navigating through the directories. In this second case, the following options can be selected:
+        **Manual Mode**: 
+        <p>Allows selection of one or more tests by navigating through directories. Options include:</p>
         <ul class="sub-list">
-            <li>Which and how many tests among all those present in the directory <span class="code">./input/FULL_TEST_su_cavo_ps_pp1_V3</span></li>
-            <li>Whether to plot one or more results together for comparison</li>
-            <li>The results of which type of test to plot (continuity, isolation or both)</li>
-            <li>If you want to plot also LV cables resistance versus time</li>
-            <li>If you want to also produce the final report.</li>
+            <li>Choosing specific tests from the directory <code>./input/FULL_TEST_su_cavo_ps_pp1_V3</code></li>
+            <li>Deciding whether to plot results for comparison</li>
+            <li>Selecting the type of test to plot (continuity, isolation, or both)</li>
+            <li>Including LV cables resistance versus time plots</li>
+            <li>Determining if a final report should be produced</li>
         </ul>
     </li>
     <li>
-        From command line by typing:
+        **Command Line Mode**:
+        <p>Run CMScables from the command line with:</p>
+        <pre><code>./CMScables --input [PATH_TO_TXT_FILE] --mode [OPTION]</code></pre>
+        <p>Parameters:</p>
         <ul class="sub-list">
-            <li class="code">./CMScables --input [PATH_TO_TXT_FILE] --mode [OPTION]</li>
-        </ul>
-        <p>where</p>
-        <ul class="sub-list">
-            <li class="code">[PATH_TO_TXT_FILE]</li> should be of type CableXX/NAME_OF_THE_TEST.txt</li>
-            <li class="code">[OPTION] = 0,1,2</li> --> 0 for continuity, 1, for isolation, 2 for both. Default is continuity test.</li>
+            <li><code>[PATH_TO_TXT_FILE]</code> should be in the format <code>CableXX/NAME_OF_THE_TEST.txt</code></li>
+            <li><code>[OPTION]</code> can be 0 (continuity), 1 (isolation), or 2 (both). Default is continuity test.</li>
         </ul>
     </li>
 </ol>
-<p class="section-title">HOW TO ADD NEW TESTS TO PLOT:</p>
+
+<h2 class="section-title">Adding New Tests to Plot</h2>
 <ol>
-    <li>The .txt file produced by the CEETIS software should be copied into the directory <span class="code">./input/FULL_TEST_su_cavo_ps_pp1_V3/CABLE_NAME/</span></li>
-    <li>The .pdf file produced by the CEETIS software should be copied into <span class="code">./input/pdf_ceetis/</span></li>
-    <li>The .ini files produced by the CEETIS software should be copied into the directory <span class="code">./input/FULL_TEST_su_cavo_ps_pp1_V3/CABLE_NAME/VALORI/DATE_OF_THE_TEST/</span></li>
+    <li>Copy the <code>.txt</code> file from CEETIS into <code>./input/FULL_TEST_su_cavo_ps_pp1_V3/CABLE_NAME/</code></li>
+    <li>Copy the <code>.pdf</code> file into <code>./input/pdf_ceetis/</code></li>
+    <li>Copy the <code>.ini</code> files into <code>./input/FULL_TEST_su_cavo_ps_pp1_V3/CABLE_NAME/VALORI/DATE_OF_THE_TEST/</code></li>
 </ol>
-<p class="section-title">OUTPUT INCLUDES:</p>
+
+<h2 class="section-title">Output Includes</h2>
 <ol>
-    <li>Final report in the directory <span class="code">./output/report/</span></li>
-    <li>Produced plots, saved in <span class="code">./output/plots/SingleCable/</span> if only one test was selected, or in <span class="code">./output/plots/CheckCable/</span> if multiple tests were selected.</li>
-    <li>.root file containing all the histograms, including those not plotted in the report, saved in <span class="code">./output/rootFiles/</span></li>
-    <li>LV/LVR cables resistance versus time in <span class="code">./output/plotsTimeResistence/</span></li>
+    <li>Final report in <code>./output/report/</code></li>
+    <li>Plots:
+        <ul class="sub-list">
+            <li>Saved in <code>./output/plots/SingleCable/</code> if only one test was selected</li>
+            <li>Saved in <code>./output/plots/CheckCable/</code> if multiple tests were selected</li>
+        </ul>
+    </li>
+    <li><code>.root</code> file containing all histograms, including those not plotted in the report, in <code>./output/rootFiles/</code></li>
+    <li>LV/LVR cables resistance versus time plots in <code>./output/plotsTimeResistence/</code></li>
 </ol>
-<p>The output names are composed of TEST_NAME__PROGRAM_EXECUTION_DATE_AND_TIME.pdf/root</p>
-<p class="section-title">PLOTS FOR LV CABLES VERSUS TIME:</p>
-<p>Plots for LV cables resistance versus time acquisition can be drawn as well. To attach also these plots in the final report in the automatic mode you should compile with:</p>
-<p class="code">make OPTION=AUTO_TEST TIME_RES=YES</p>
-<p class="section-title">YOU NEED:</p>
+<p>File names are formatted as: <code>TEST_NAME__PROGRAM_EXECUTION_DATE_AND_TIME.pdf/root</code></p>
+
+<h2 class="section-title">LV Cables Resistance Versus Time</h2>
+<p>To include LV cables resistance versus time plots in the final report, compile with:</p>
+<pre><code>make OPTION=AUTO_TEST TIME_RES=YES</code></pre>
+
+<h2 class="section-title">Requirements</h2>
 <ul>
     <li>root v6.X.X</li>
-    <li>python 3.x</li>
-    <li>pyPDF2 to produce the final report</li>
-</ul>
-<p class="section-title">HOW TO INSTALL:</p>
-<ul>
-    <li class="code">git clone https://github.com/ldellape/CMScables</li>
-    <li class="code">pip install pyPDF2</li>
-    <li class="code">make OPTION=AUTO_TEST</li> --> if you want mode 1</li>
-    <li>or</li>
-    <li class="code">make OPTION=AUTO_TEST TIME=YES</li> --> if you want mode 1 with also LV resistance versus time</li>
-    <li>or</li>
-    <li class="code">make</li> --> if you want mode 2</li>
+    <li>Python 3.x</li>
+    <li>pyPDF2 for generating the final report</li>
 </ul>
 
-<p class="section-title">IF YOU WANT TO CHANGE MODE:</p>
-<ul>
-    <li class="code">make clean</li></li>
-    <li class="code">make OPTION=AUTO_TEST</li> --> if you want mode 1</li>
-    <li>or</li>
-    <li class="code">make OPTION=AUTO_TEST TIME=YES</li> --> if you want mode 1 with also LV resistance versus time</li>
-    <li>or</li>
-    <li class="code">make</li> --> if you want mode 2</li>
-</ul>
+<h2 class="section-title">Installation</h2>
+<ol>
+    <li>Clone the repository:
+        <pre><code>git clone https://github.com/ldellape/CMScables</code></pre>
+    </li>
+    <li>Install pyPDF2:
+        <pre><code>pip install pyPDF2</code></pre>
+    </li>
+    <li>Build the executable:
+        <ul class="sub-list">
+            <li>For Mode 1:
+                <pre><code>make OPTION=AUTO_TEST</code></pre>
+            </li>
+            <li>For Mode 1 with LV resistance versus time:
+                <pre><code>make OPTION=AUTO_TEST TIME=YES</code></pre>
+            </li>
+            <li>For Mode 2:
+                <pre><code>make</code></pre>
+            </li>
+        </ul>
+    </li>
+</ol>
 
-<p>If you want to build the executable outside the current directory use:</p>
-<p class="code">make [MODE OPTION] PREFIX=path/to/location/of/executable</p>
-<p>where</p>
-<ul class="sub-list">
-    <li><span class="code">[MODE OPTION]</span> is "OPTION=AUTO_TEST", "OPTION=AUTO_TEST TIME=YES" or nothing as described.</li>
-</ul>
+<h2 class="section-title">Changing Modes</h2>
+<ol>
+    <li>Clean the build:
+        <pre><code>make clean</code></pre>
+    </li>
+    <li>Rebuild in the desired mode:
+        <ul class="sub-list">
+            <li>For Mode 1:
+                <pre><code>make OPTION=AUTO_TEST</code></pre>
+            </li>
+            <li>For Mode 1 with LV resistance versus time:
+                <pre><code>make OPTION=AUTO_TEST TIME=YES</code></pre>
+            </li>
+            <li>For Mode 2:
+                <pre><code>make</code></pre>
+            </li>
+        </ul>
+    </li>
+</ol>
 
-<p>The script produces some temporary files that are deleted automatically. Information on the script is available also by typing:</p>
-<ul>
-    <li class="code">./CMScables --doc</li>
-    <li>or</li>
-    <li class="code">./CMScables --help</li>
-</ul>
+<p>To build the executable in a different directory, use:</p>
+<pre><code>make [MODE OPTION] PREFIX=path/to/location/of/executable</code></pre>
+<p>Where <code>[MODE OPTION]</code> is <code>OPTION=AUTO_TEST</code>, <code>OPTION=AUTO_TEST TIME=YES</code>, or nothing as described.</p>
+
+<h2 class="section-title">Additional Information</h2>
+<p>The script generates temporary files that are automatically deleted. For more information, view the documentation by typing:</p>
+<pre><code>./CMScables --doc</code></pre>
+<p>or</p>
+<pre><code>./CMScables --help</code></pre>
 
 <hr>
-
-<p class="contact">Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it</p>
-
-<hr>
-
-<p>NOTE: some functions and variables are actually not used. Same namespace are included without, at the time, a practical reason. This is for future extension to split the same script with also the octopus cable.</p>
+Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
 <hr>
 <script>
   const files = [
