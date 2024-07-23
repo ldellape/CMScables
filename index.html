@@ -138,7 +138,7 @@
       height: auto;
     }
   </style>
-    <script src="https://root.cern/js/latest/jsroot.js"></script>
+  <script src="https://root.cern/js/latest/jsroot.js"></script>
 </head>
 <body>
 
@@ -189,11 +189,11 @@ Structure of the Cable: <br>
 <hr>
 
 <h2 class="section-title">Cable Structure and Histograms</h2>
-  <div class="histogram-container">
-    <!-- Containers for histograms -->
-    <div id="histogram1" class="histogram"></div>
-    <div id="histogram2" class="histogram"></div>
-  </div>
+<div class="histogram-container">
+  <!-- Containers for histograms -->
+  <div id="histogram1" class="histogram"></div>
+  <div id="histogram2" class="histogram"></div>
+</div>
 
 Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
 </div>
@@ -237,246 +237,101 @@ Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
   <ol>
     <li>Copy the <code>.txt</code> file from CEETIS into <code>./input/FULL_TEST_su_cavo_ps_pp1_V3/CABLE_NAME/</code></li>
     <li>Copy the <code>.pdf</code> file into <code>./input/pdf_ceetis/</code></li>
-    <li>Copy the <code>.ini</code> files into <code>./input/FULL_TEST_su_cavo_ps_pp1_V3/CABLE_NAME/VALORI/DATE_OF_THE_TEST/</code></li>
+    <li>Copy the <code>.ini</code> files into <code>./input/FULL_TEST_su_cavo_ps_pp1_V3/</code></li>
   </ol>
 
-  <h2 class="section-title">Output Includes</h2>
+  <h2 class="section-title">Adding New Sections to the Report</h2>
   <ol>
-    <li>Final report in <code>./output/report/</code></li>
-    <li>Plots:
-      <ul class="sub-list">
-        <li>Saved in <code>./output/plots/SingleCable/</code> if only one test was selected</li>
-        <li>Saved in <code>./output/plots/CheckCable/</code> if multiple tests were selected</li>
-      </ul>
-    </li>
-    <li><code>.root</code> file containing all histograms, including those not plotted in the report, in <code>./output/rootFiles/</code></li>
-    <li>LV/LVR cables resistance versus time plots in <code>./output/plotsTimeResistence/</code></li>
+    <li>In <code>CMScables.py</code>:</li>
+    <ul class="sub-list">
+      <li>Locate the function <code>run_Cable_Plot_and_Report(...)</code></li>
+      <li>Add the function you want to call. Example: <code>write_pdf.add_test_measure(fig, ax, f1, label1, color1, legend1, ...)</code></li>
+    </ul>
+    <li>In <code>write_pdf.py</code>:</li>
+    <ul class="sub-list">
+      <li>Add the desired function definition. Example:</li>
+      <pre><code>def add_test_measure(fig, ax, f1, label1, color1, legend1, ...):
+    // Function implementation</code></pre>
+    </ul>
   </ol>
-  <p>File names are formatted as: <code>TEST_NAME__PROGRAM_EXECUTION_DATE_AND_TIME.pdf/root</code></p>
-
-  <h2 class="section-title">Requirements</h2>
-  <ul>
-    <li>root v6.X.X</li>
-    <li>Python 3.x</li>
-    <li>pyPDF2 for generating the final report</li>
-  </ul>
-
-  <h2 class="section-title">Installation</h2>
-  <ol>
-    <li>Clone the repository:
-      <pre><code>git clone https://github.com/ldellape/CMScables</code></pre>
-    </li>
-    <li>Install pyPDF2:
-      <pre><code>pip install pyPDF2</code></pre>
-    </li>
-    <li>Build the executable:
-      <ul class="sub-list">
-        <li>For Mode 1:
-          <pre><code>make OPTION=AUTO_TEST</code></pre>
-        </li>
-        <li>For Mode 1 with LV resistance versus time:
-          <pre><code>make OPTION=AUTO_TEST TIME=YES</code></pre>
-        </li>
-        <li>For Mode 2:
-          <pre><code>make</code></pre>
-        </li>
-      </ul>
-    </li>
-  </ol>
-
-  <h2 class="section-title">Changing Modes</h2>
-  <ol>
-    <li>Clean the build:
-      <pre><code>make clean</code></pre>
-    </li>
-    <li>Rebuild in the desired mode:
-      <ul class="sub-list">
-        <li>For Mode 1:
-          <pre><code>make OPTION=AUTO_TEST</code></pre>
-        </li>
-        <li>For Mode 1 with LV resistance versus time:
-          <pre><code>make OPTION=AUTO_TEST TIME=YES</code></pre>
-        </li>
-        <li>For Mode 2:
-          <pre><code>make</code></pre>
-        </li>
-      </ul>
-    </li>
-  </ol>
-
-  <p>To build the executable in a different directory, use:</p>
-  <pre><code>make [MODE OPTION] PREFIX=path/to/location/of/executable</code></pre>
-  <p>Where <code>[MODE OPTION]</code> is <code>OPTION=AUTO_TEST</code>, <code>OPTION=AUTO_TEST TIME=YES</code>, or nothing as described.</p>
-
-  <h2 class="section-title">Additional Information</h2>
-  <p>The script generates temporary files that are automatically deleted. For more information, view the documentation by typing:</p>
-  <pre><code>./CMScables --doc</code></pre>
-  <p>or</p>
-  <pre><code>./CMScables --help</code></pre>
-
-  <hr>
-  Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
 </div>
 
 <script>
-  function showDocumentation() {
-    document.getElementById('homeContent').classList.remove('active');
-    document.getElementById('documentationContent').classList.add('active');
-  }
-
   function showHome() {
     document.getElementById('homeContent').classList.add('active');
     document.getElementById('documentationContent').classList.remove('active');
   }
 
-  function toggleMenu(category) {
-    const menu = document.getElementById('menu');
-    const pdfContainer = document.getElementById('pdfContainer');
-    const fileList = document.getElementById('fileList');
-    const backButton = document.getElementById('backButton');
-
-    if (currentCategory === category) {
-      menu.style.display = 'block';
-      pdfContainer.style.display = 'none';
-      fileList.innerHTML = '';
-      backButton.style.display = 'none';
-      currentCategory = null;
-    } else {
-      const filteredFiles = files.filter(file => file.includes(category));
-      displayFiles(filteredFiles);
-      menu.style.display = 'none';
-      pdfContainer.style.display = 'block';
-      backButton.style.display = 'block';
-      currentCategory = category;
-    }
+  function showDocumentation() {
+    document.getElementById('homeContent').classList.remove('active');
+    document.getElementById('documentationContent').classList.add('active');
   }
 
-  function displayFiles(files) {
-    const fileList = document.getElementById('fileList');
-    fileList.innerHTML = '';
-    files.forEach(file => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = `output/report/${file}`;
-      a.onclick = function(event) {
-        event.preventDefault();
-        loadPDF(`output/report/${file}`);
-      };
-      a.textContent = file;
-      li.appendChild(a);
-      fileList.appendChild(li);
-    });
-  }
-
-  function loadPDF(pdfUrl) {
-    const pdfContainer = document.getElementById('pdfContainer');
-    pdfContainer.innerHTML = `<embed src="${pdfUrl}" type="application/pdf" width="100%" height="100%" />`;
+  function toggleMenu(cable) {
+    var menuItems = document.querySelectorAll('.menu a');
+    menuItems.forEach(item => item.style.display = 'block');
+    document.getElementById('menu').style.display = 'none';
+    document.getElementById('backButton').style.display = 'block';
+    loadFiles(cable);
   }
 
   function showMenu() {
+    var menuItems = document.querySelectorAll('.menu a');
+    menuItems.forEach(item => item.style.display = 'block');
     document.getElementById('menu').style.display = 'block';
     document.getElementById('backButton').style.display = 'none';
     document.getElementById('fileList').innerHTML = '';
-    document.getElementById('pdfContainer').innerHTML = '';
     document.getElementById('pdfContainer').style.display = 'none';
-    currentCategory = null;
   }
 
-  const files = [
-    "Report_Cable01_07_05_2024_15_30_3____13_07_2024_15_14_26.pdf",
-    "Report_Cable01_09_05_2024_11_24_47____09_07_2024_16_25_26.pdf",
-    "Report_Cable02_06_05_2024_11_50_37____09_07_2024_16_27_03.pdf",
-    "Report_Cable03_08_05_2024_18_36_57____13_07_2024_15_09_50.pdf",
-    "Report_Cable01_07_05_2024_15_30_3____15_07_2024_10_03_02.pdf",
-    "Report_Cable01_09_05_2024_12_11_9____15_07_2024_10_08_21.pdf",
-    "Report_Cable02_07_05_2024_12_20_26____13_07_2024_15_07_24.pdf",
-    "Report_Cable01_07_05_2024_15_30_3____15_07_2024_16_43_56.pdf",
-    "Report_Cable01_09_05_2024_11_24_47____15_07_2024_16_54_17.pdf",
-    "Report_Cable02_08_05_2024_11_10_2____16_07_2024_09_00_14.pdf",
-    "Report_Cable03_08_05_2024_18_36_57____16_07_2024_15_19_10.pdf",
-    "Report_Cable01_07_05_2024_15_30_3____16_07_2024_15_45_22.pdf",
-    "Report_Cable01_07_05_2024_15_30_3____16_07_2024_15_51_36.pdf",
-    "Report_Cable01_09_05_2024_11_24_47____16_07_2024_16_07_16.pdf",
-    "Report_Cable01_07_05_2024_15_30_3____16_07_2024_16_19_10.pdf",
-    "Report_Cable01_09_05_2024_11_24_47____16_07_2024_16_21_41.pdf",
-    "Report_Cable03_09_05_2024_10_36_51____16_07_2024_19_34_16.pdf",
-    "Report_Cable02_08_05_2024_11_10_2____16_07_2024_19_37_56.pdf",
-    "Report_Cable01_09_05_2024_12_11_9____17_07_2024_14_36_09.pdf",
-    "Report_Cable03_09_05_2024_10_36_51____18_07_2024_16_30_24.pdf"
-  ]; 
-
-  let currentCategory = null;
-
-  function toggleMenu(category) {
-    const menu = document.getElementById('menu');
-    const pdfContainer = document.getElementById('pdfContainer');
-    const fileList = document.getElementById('fileList');
-    const backButton = document.getElementById('backButton');
-
-    if (currentCategory === category) {
-      menu.style.display = 'block';
-      pdfContainer.style.display = 'none';
-      fileList.innerHTML = '';
-      backButton.style.display = 'none';
-      currentCategory = null;
-    } else {
-      const filteredFiles = files.filter(file => file.includes(category));
-      displayFiles(filteredFiles);
-      menu.style.display = 'none';
-      pdfContainer.style.display = 'block';
-      backButton.style.display = 'block';
-      currentCategory = category;
-    }
-  }
-
-  function displayFiles(files) {
-    const fileList = document.getElementById('fileList');
-    fileList.innerHTML = '';
-    files.forEach(file => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = `output/report/${file}`;
-      a.onclick = function(event) {
-        event.preventDefault();
-        loadPDF(`output/report/${file}`);
-      };
-      a.textContent = file;
-      li.appendChild(a);
-      fileList.appendChild(li);
-    });
-  }
-
-  function loadPDF(pdfUrl) {
-    const pdfContainer = document.getElementById('pdfContainer');
-    pdfContainer.innerHTML = `<embed src="${pdfUrl}" type="application/pdf" width="100%" height="100%" />`;
-  }
-
-  function showMenu() {
-    document.getElementById('menu').style.display = 'block';
-    document.getElementById('backButton').style.display = 'none';
-    document.getElementById('fileList').innerHTML = '';
-    document.getElementById('pdfContainer').innerHTML = '';
-    document.getElementById('pdfContainer').style.display = 'none';
-    currentCategory = null;
-  }
-
-  function loadHistograms() {
-    JSROOT.load("statistics.root").then(function (rootfile) {
-      const histogram1 = rootfile.FindObject("h_LV_ResistenceIsolation");
-      const histogram2 = rootfile.FindObject("h_LV_ResistenceContinuity");
-
-      JSROOT.draw("histogram1", histogram1, { canvas: "histogram1", width: 300, height: 300 });
-      JSROOT.draw("histogram2", histogram2, { canvas: "histogram2", width: 300, height: 300 });
-      if(!histogram1){
-        
+  function loadFiles(cable) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', './input/FULL_TEST_su_cavo_ps_pp1_V3/' + cable + '/');
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(xhr.responseText, 'text/html');
+        var links = doc.querySelectorAll('a');
+        var fileList = document.getElementById('fileList');
+        fileList.innerHTML = '';
+        links.forEach(function(link) {
+          var li = document.createElement('li');
+          var a = document.createElement('a');
+          a.textContent = link.textContent;
+          a.href = './input/FULL_TEST_su_cavo_ps_pp1_V3/' + cable + '/' + link.textContent;
+          a.target = '_blank';
+          a.onclick = function(event) {
+            event.preventDefault();
+            showPDF(a.href);
+          };
+          li.appendChild(a);
+          fileList.appendChild(li);
+        });
       }
+    };
+    xhr.send();
+  }
+
+  function showPDF(url) {
+    var pdfContainer = document.getElementById('pdfContainer');
+    pdfContainer.style.display = 'block';
+    pdfContainer.innerHTML = '<embed src="' + url + '" type="application/pdf">';
+  }
+
+  // Function to draw histograms
+  function drawHistogram(divId, fileName, histName) {
+    JSROOT.openFile(fileName).then(file => {
+      file.readObject(histName).then(obj => {
+        JSROOT.draw(divId, obj);
+      });
     });
   }
 
-  // Call the function to load histograms on page load
-  window.onload = function() {
-    loadHistograms();
-  };
+  // Load histograms on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    drawHistogram('histogram1', 'statistics.root', 'h_HV_ResistenceContinuity');
+    drawHistogram('histogram2', 'statistics.root', 'h_LV_ResistenceContinuity');
+  });
 </script>
 
 </body>
