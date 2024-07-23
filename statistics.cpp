@@ -203,10 +203,10 @@ auto h_HV_ResistenceIsolation = df_Isolation.Filter(HV_filter, {"channelIns"}).H
     
      TCanvas *c6 = new TCanvas("h_PassedFailedContinuity", "h_PassedFailedContinuity", 1);
     c6->SetTitle(""); 
-    h_PassedFailedIsolation->Draw();
-    h_PassedFailedIsolation->SetTitle("");
-    h_PassedFailedIsolation->GetXaxis()->SetTitle("");
-    h_PassedFailedIsolation->GetYaxis()->SetTitle("Entries");
+    h_PassedFailedContinuity->Draw();
+    h_PassedFailedContinuity->SetTitle("");
+    h_PassedFailedContinuity->GetXaxis()->SetTitle("");
+    h_PassedFailedContinuity->GetYaxis()->SetTitle("Entries");
     TLatex text6;
     text6.SetTextSize(0.03);
     text6.DrawLatexNDC(0.15, 0.93, "Continuity Test, passed/failed channels, all cables");
