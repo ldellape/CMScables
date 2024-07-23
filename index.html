@@ -317,35 +317,15 @@ Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
   Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
 </div>
 
-<div id="histogramsContent" class="content">
-    <h1>Histogram: h_HV_ResistenceContinuity</h1>
-    <iframe width="700" height="400"
-            src="https://root.cern/js/latest/?nobrowser&file=https://ldellape.github.io/CMScables/docs/statistic.root&item=h_HV_ResistenceContinuity&opt=hist">
-    </iframe>
-
-    <h1>Histogram: h_LV_ResistenceContinuity</h1>
-    <iframe width="700" height="400"
-            src="https://root.cern/js/latest/?nobrowser&file=https://ldellape.github.io/CMScables/docs/statistic.root&item=h_LV_ResistenceContinuity&opt=hist">
-    </iframe>
- </div>
-
 
 <script>
 function showDocumentation() {
   document.getElementById('documentationContent').classList.add('active');
   document.getElementById('homeContent').classList.remove('active');
-  document.getElementById('histogramsContent').classList.remove('active');
 }
 
 function showHome() {
   document.getElementById('homeContent').classList.add('active');
-  document.getElementById('histogramsContent').classList.remove('active');
-  document.getElementById('documentationContent').classList.remove('active');
-}
-
-function showHistograms() {
-  document.getElementById('histogramsContent').classList.add('active');
-  document.getElementById('homeContent').classList.remove('active');
   document.getElementById('documentationContent').classList.remove('active');
 }
 
@@ -469,6 +449,9 @@ function showHistograms() {
   function loadPDF(pdfUrl) {
     const pdfContainer = document.getElementById('pdfContainer');
     pdfContainer.innerHTML = `<embed src="${pdfUrl}" type="application/pdf" width="100%" height="100%" />`;
+  }
+  function showHistograms() {
+      window.open("https://root.cern/js/latest/?file=https://ldellape.github.io/CMScables/docs/statistic.root&item=h_HV_ResistenceContinuity&opt=hist", "_blank");
   }
 
   function showMenu() {
