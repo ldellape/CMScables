@@ -5,8 +5,10 @@
 #include <filesystem>
 #include <tuple>
 #include "TROOT.h"
+#include "TCanvas.h"
 #include "TH1.h"
 #include "TFile.h"
+#include "TLatex.h"
 #include "TTree.h"
 #include "ROOT/RDataFrame.hxx"
 
@@ -93,7 +95,7 @@ bool HV_filter(const std::string& channel) {
 }
 
 void statistics() {
-   // ROOT::EnableImplicitMT();
+    ROOT::EnableImplicitMT();
 
     std::vector<std::string> FileNames;
     std::string sInputDir = "./input/FULL_TEST_su_cavo_ps_pp1_V3/";
@@ -139,23 +141,80 @@ auto h_LV_ResistenceContinuity = df_Continuity.Filter(LV_filter, {"channelCon"})
 auto h_HV_ResistenceContinuity = df_Continuity.Filter(HV_filter, {"channelCon"}).Histo1D({
 "h_HV_ResistenceContinuity", "HV Resistence Continuity", 50, 10, 13},"resistenceCon");
 auto h_HV_ResistenceIsolation = df_Isolation.Filter(HV_filter, {"channelIns"}).Histo1D({
-"h_HV_ResistenceIsolation", "HV Resistence Isolation", 25, 1e+9, 1e+10},"resistenceIns");
+"h_HV_ResistenceIsolation", "HV Resistence Isolation", 25, 1e+06, 1e+10},"resistenceIns");
 
     TFile *f_StatOut = new TFile("./docs/statistic.root", "RECREATE");
 
+    TCanvas *c = new TCanvas("h_LV_ResistenceContinuity", "h_LV_ResistenceContinuity", 1);
     h_LV_ResistenceContinuity->Draw();
+    h_LV_ResistenceContinuity->SetTitle("");
     h_LV_ResistenceContinuity->GetXaxis()->SetTitle("R [#Omega]");
+    h_LV_ResistenceContinuity->GetYaxis()->SetTitle("Entries");
+    TLatex text;
+    text.SetTextSize(0.03);
+    text.DrawLatexNDC( 0.15,0.93, "Continuity Test LV channels resistence, all cables");
+    c->SetTitle("");
+    c->Write();
+
+    TCanvas *c2 = new TCanvas("h_LV_ResistenceIsolation", "h_LV_ResistenceIsolation", 1);
     h_LV_ResistenceIsolation->Draw();
+    h_LV_ResistenceIsolation->SetTitle("");
     h_LV_ResistenceIsolation->GetXaxis()->SetTitle("R [#Omega]");
+    h_LV_ResistenceIsolation->GetYaxis()->SetTitle("Entries");
+    TLatex text2;
+    text2.SetTextSize(0.03);
+    text2.DrawLatexNDC( 0.15,0.93, "Isolation Test LV channels resistence, all cables");
+    c2->SetTitle("");
+    c2->Write();
+
+    TCanvas *c3 = new TCanvas("h_HV_ResistenceContinuity", "h_HV_ResistenceContinuity", 1);
     h_HV_ResistenceContinuity->Draw();
+    h_HV_ResistenceIsolation->SetTitle("");
+    h_HV_ResistenceContinuity->SetTitle("");
     h_HV_ResistenceContinuity->GetXaxis()->SetTitle("R [#Omega]");
+    h_HV_ResistenceContinuity->GetYaxis()->SetTitle("Entries");
+    TLatex text3;
+    text3.SetTextSize(0.03);
+    text3.DrawLatexNDC( 0.15,0.93, "Continuity Test HV channels resistence, all cables");
+    c3->SetTitle("");
+    c3->Write();
+
+    TCanvas *c4 = new TCanvas("h_HV_ResistenceIsolation", "h_HV_ResistenceIsolation", 1);
     h_HV_ResistenceIsolation->Draw();
     h_HV_ResistenceIsolation->GetXaxis()->SetTitle("R [#Omega]");
-    h_HV_ResistenceContinuity->Write();
-        h_LV_ResistenceIsolation->Write();
-    h_HV_ResistenceIsolation->Write();
-        h_PassedFailedContinuity->Write();
-    h_PassedFailedIsolation->Write();
-    h_LV_ResistenceContinuity->Write();
+    h_HV_ResistenceIsolation->GetYaxis()->SetTitle("Entries");
+    TLatex text4;
+    text4.SetTextSize(0.03);
+    text4.DrawLatexNDC( 0.15,0.93, "Isolation Test HV channels resistence, all cables");
+    c4->SetTitle("");
+    c4->Write();
+
+     TCanvas *c5 = new TCanvas("h_PassedFailedIsolation", "h_PassedFailedIsolation", 1);
+    c5->SetTitle(""); 
+    h_PassedFailedIsolation->Draw();
+    h_PassedFailedIsolation->SetTitle("");
+    h_PassedFailedIsolation->GetXaxis()->SetTitle("");
+    h_PassedFailedIsolation->GetYaxis()->SetTitle("Entries");
+    TLatex text5;
+    text5.SetTextSize(0.03);
+    text5.DrawLatexNDC(0.15, 0.93, "Isolation Test, passed/failed channels, all cables");
+    c5->Write();
+
+    
+     TCanvas *c6 = new TCanvas("h_PassedFailedContinuity", "h_PassedFailedContinuity", 1);
+    c6->SetTitle(""); 
+    h_PassedFailedIsolation->Draw();
+    h_PassedFailedIsolation->SetTitle("");
+    h_PassedFailedIsolation->GetXaxis()->SetTitle("");
+    h_PassedFailedIsolation->GetYaxis()->SetTitle("Entries");
+    TLatex text6;
+    text6.SetTextSize(0.03);
+    text6.DrawLatexNDC(0.15, 0.93, "Continuity Test, passed/failed channels, all cables");
+    c6->Write();
+
+
+
+
     f_StatOut->Close(); 
+    gROOT->ProcessLine(".q");
 }
