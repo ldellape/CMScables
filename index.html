@@ -461,12 +461,15 @@ Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
   }
 
   function loadHistograms() {
-    JSROOT.load("./docs/statistics.root").then(function (rootfile) {
+    JSROOT.load("statistics.root").then(function (rootfile) {
       const histogram1 = rootfile.FindObject("h_LV_ResistenceIsolation");
       const histogram2 = rootfile.FindObject("h_LV_ResistenceContinuity");
 
       JSROOT.draw("histogram1", histogram1, { canvas: "histogram1", width: 300, height: 300 });
       JSROOT.draw("histogram2", histogram2, { canvas: "histogram2", width: 300, height: 300 });
+      if(!histogram1){
+        
+      }
     });
   }
 
