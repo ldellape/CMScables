@@ -156,8 +156,9 @@
 <!-- Navigation Buttons -->
 <div class="nav-buttons">
   <button class="nav-button" onclick="showHome()">Home</button>
-  <button class="nav-button" onclick="showDocumentation()">Documentation</button>
+  <button class="nav-button" onclick="showDocumentation()">Code Documentation</button>
   <button class="nav-button" onclick="showHistograms()">Histograms</button>
+  <button class="nav-button" onclick="showMaterials()"> Materials </button>
 </div>
 
 <!-- Home Content -->
@@ -313,8 +314,13 @@ Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
   <p>or</p>
   <pre><code>./CMScables --help</code></pre>
 
-  <hr>
+  <hr><a href="path/to/your/file.ext" download class="download-button">Download File</a>
   Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
+</div>
+<div id="materialsContent" class="content">
+  <h2 class="section-title">Materials</h2>
+  <a href="./docs/latestPresentation.pdf" download >Latest Presentation</a>
+
 </div>
 
 
@@ -322,10 +328,19 @@ Contact: luca.dellapenna@cern.ch or luca.dellapenna@pg.infn.it
 function showDocumentation() {
   document.getElementById('documentationContent').classList.add('active');
   document.getElementById('homeContent').classList.remove('active');
+  document.getElementById('materialsContent').classList.remove('active');
+
 }
 
 function showHome() {
   document.getElementById('homeContent').classList.add('active');
+  document.getElementById('documentationContent').classList.remove('active');
+  document.getElementById('materialsContent').classList.remove('active');
+
+}
+function showMaterials(){
+  document.getElementById('materialsContent').classList.add('active');
+  document.getElementById('homeContent').classList.remove('active');
   document.getElementById('documentationContent').classList.remove('active');
 }
 
@@ -402,7 +417,10 @@ function showHome() {
     "Report_Cable03_09_05_2024_10_36_51____16_07_2024_19_34_16.pdf",
     "Report_Cable02_08_05_2024_11_10_2____16_07_2024_19_37_56.pdf",
     "Report_Cable01_09_05_2024_12_11_9____17_07_2024_14_36_09.pdf",
-    "Report_Cable03_09_05_2024_10_36_51____18_07_2024_16_30_24.pdf"
+    "Report_Cable03_09_05_2024_10_36_51____18_07_2024_16_30_24.pdf",
+    "Report_Cable02_07_05_2024_11_25_21____24_07_2024_08_46_31.pdf",
+    "Report_Cable02_07_05_2024_11_25_21____24_07_2024_08_48_12.pdf",
+    "Report_Cable02_07_05_2024_11_25_21____24_07_2024_08_48_27.pdf"
   ]; 
 
   let currentCategory = null;
