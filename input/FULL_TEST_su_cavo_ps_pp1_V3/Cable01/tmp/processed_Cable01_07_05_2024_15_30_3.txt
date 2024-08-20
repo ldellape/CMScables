@@ -1,0 +1,96 @@
+Passed    LV1            0.563400225386732
+Passed    LVR1      0.562004935500406
+Passed    LV2            0.568251578522657
+Passed    LVR2      0.560246876342683
+Passed    LV3            0.569079546044669
+Passed    LVR3      0.563325842443225
+Passed    LV4            0.562487510088411
+Passed    LVR4      0.556969149270018
+Passed    LV5            0.562274421246308
+Passed    LVR5      0.557728221108114
+Passed    LV6            0.552356492258358
+Passed    LVR6      0.554989465530452
+Passed    LV7            0.571571984361467
+Passed    LVR7      0.557471538984501
+Passed    LV8            0.549559815547823
+Passed    LVR8      0.547717008627647
+Passed    LV9            0.571703983602201
+Passed    LVR9      0.562814916978919
+Passed    LV10           0.566644419180958
+Passed    LVR10     0.562007374285437
+Passed    LV11           0.569638942364141
+Passed    LVR11     0.568281148791291
+Passed    LV12           0.565666771228792
+Passed    LVR12     0.569827033660714
+Passed    PH             0.576036485247594
+Passed    PHR       0.562677430472746
+Passed    Tsensor1       11.7978962091669
+Passed    Tsensor2       11.7744440767586
+Passed    Tsensor3       11.8244528412292
+Passed    Tsensor4       11.7492590589387
+Passed    HV1             11.6556587283943
+Passed    HV2             11.8695752365901
+Passed    HV3             11.6102791652999
+Passed    HV4             11.729915643057
+Passed    HVR1            11.6768758639169
+Passed    HV5             11.8149372759591
+Passed    HV6             11.5708391769723
+Passed    HV7             11.9045942336602
+Passed    HV8             11.8569245553132
+Passed    HVR2            11.73016057393
+Passed    HV9             11.9701193790502
+Passed    HV10            11.8449719272645
+Passed    HV11            11.5241431145546
+Passed    HV12            11.5915970653719
+Passed    HVR3            11.616965777355
+Passed    LV1             1658162230.2784  1,658G
+Passed    LVR1             1264170762.27633  1,264G
+Passed    LV2             1865462030.05199  1,865G
+Passed    LVR2             1348109215.31891  1,348G
+Passed    LV3             1740155427.33794  1,74G
+Passed    LVR3             1343249351.3735  1,343G
+Passed    LV4             873198990.2264  873,2M
+Passed    LVR4             1644833304.11305  1,645G
+Passed    LV5             1671098645.13728  1,671G
+Passed    LVR5             1447238722.36784  1,447G
+Passed    LV6             911324651.82704  911,3M
+Passed    LVR6             581311692.96123  581,3M
+Passed    LV7             1279528188.58258  1,28G
+Passed    LVR7             1970331758.22737  1,97G
+Passed    LV8             1191029029.65709  1,191G
+Passed    LVR8             845187688.02608  845,2M
+Passed    LV9             2078427631.09869  2,078G
+Passed    LVR9             2354729902.2419  2,355G
+Passed    LV10             789099387.64607  789,1M
+Passed    LVR10             1303464721.46951  1,303G
+Passed    LV11             937720843.441995  937,7M
+Passed    LVR11             2043856795.05491  2,044G
+Passed    LV12             1537200981.9937  1,537G
+Passed    LVR12             1913101596.89036  1,913G
+Passed    PH             2129845001.92727  2,13G
+Passed    PHR             1699064110.44163  1,699G
+Passed    Tsensor1       4091920911.35262
+Passed    Tsensor2       4091920911.35262
+Passed    Tsensor3       4091920911.35262
+Passed    Tsensor4       4091920911.35262
+Passed    HV1            98206101872.463
+Passed    HV2            98206101872.463
+Passed    HV3            98206101872.463
+Passed    HV4            88937683527.8201
+Passed    HV5            98206101872.463
+Passed    HV6            98206101872.463
+Passed    HV7            98206101872.463
+Passed    HV8            71117460983.7519
+Passed    HV9            98206101872.463
+Passed    HV10           25833343690.3514
+Passed    HV11           54794867832.313
+Passed    HV12           98206101872.463
+Passed    HVR1      98206101872.463
+Passed    HVR2      98206101872.463
+Passed    HVR3      98206101872.463
+Passed    Tsensor1       4091920911.35262
+Passed    Tsensor2       4091920911.35262
+Passed    Tsensor3       4091920911.35262
+Passed    Tsensor4       4091920911.35262
+Passed    LV_group             204150783.758022  204,2M
+Passed    HV_group       4919000459.10671

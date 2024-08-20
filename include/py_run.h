@@ -1,19 +1,15 @@
-#ifndef PY_RUN
-#define PY_RUN
+#ifndef PY_RUN_H
+#define PY_RUN_H
 
-// python scirpts, defined in py directory //
-
-
-#include <string>
+#include<string>
 
 namespace Python{
- namespace PS_PP1{
+ namespace PSPP1{
  void ChangeTextFile(std::string TestName);
  void ChangeTextFileINI(std::string path);
  void WriteFinalReport(std::string PDFname, std::string CableName);
- void ChangeHTML(std::string ReportTitle);
+ void UpdateHTML(std::string ReportTitle);
  }
 }
-
 
 #endif

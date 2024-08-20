@@ -6,7 +6,7 @@
 #include"TObject.h"
 #include"TH1.h"
 #include"TGraph.h"
-#include "TLegend.h"
+#include"TLegend.h"
 #include"TStyle.h"
 #include"TString.h"
 #include"TFile.h"

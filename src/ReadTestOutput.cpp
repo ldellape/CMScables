@@ -5,14 +5,14 @@
 #include <tuple>
 #include "../include/root.h"
 #include "../include/def_variables.h"
+#include "../include/Isolation.h"
+#include "../include/Continuity.h"
 
-
-
-void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j){
+void ReadTestOutput(std::vector<std::string> &TestNameFile, int j){
     std::ifstream inputFile(TestNameFile[j]);
     std::string line;
-    std::vector<std::tuple<std::string, std::string, double>> continuityData;
-    std::vector<std::tuple<std::string, std::string, double, double>> insulationData;
+    std::vector<std::tuple<bool, std::string, double>> continuityData;
+    std::vector<std::tuple<bool, std::string, double, double>> insulationData;
     Bool_t FirstTree = false;
     Bool_t SecondTree = false;
     double i, Thresh, Trise, Twait, Tmeas, Vlimit, V, Vramp;
@@ -33,74 +33,47 @@ void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j){
      }
      else{
         if(lineCounter<5){
-            if(lineCounter==0 && iss >> i >> Thresh >> Trise >> Twait >> Tmeas >> AR >> Vlimit)
-            ParametersContinuity.push_back(std::make_tuple(i,Thresh,Trise,Twait,Tmeas,AR,Vlimit));
+            if(lineCounter==0 && iss >> i >> Thresh >> Trise >> Twait >> Tmeas >> AR >> Vlimit)           
+            ParametersContinuity.push_back(std::make_tuple(i,Thresh,Trise,Twait,Tmeas,AR));
             else if(lineCounter==1 && iss >> V >> Thresh >> Trise >> Twait >> Tmeas >> i >> Vramp)
             ParametersInsulationInitial.push_back(std::make_tuple(V, Thresh, Trise, Twait, Tmeas, i, Vramp));
             else if(lineCounter==2 && iss>> Trise >> Twait >> Tmeas)
-            ParametersInsulationLV.push_back(std::make_tuple(Trise, Twait,  Tmeas));
+            ParametersInsulationLV.push_back(std::make_tuple(Trise, Twait,  Tmeas, 0));
             else if(lineCounter == 3 && iss >> V >> Thresh >> Trise >> Tmeas)
             ParametersInsulationHV.push_back(std::make_tuple(V, Thresh, Trise, Tmeas));
             else if(lineCounter == 4 && iss>> V >> Thresh >> Trise >> Tmeas)
             ParametersInsulationTsensor.push_back(std::make_tuple(V, Thresh, Trise, Tmeas));
             lineCounter++;
         }
-        
         else{
           if(FirstTree){
-            if(iss>>str1>>str2>>r) continuityData.push_back(std::make_tuple(str1,str2,r));
+            if(iss>>str1>>str2>>r) continuityData.push_back(std::make_tuple((str1 == "Passed"),str2,r));
           }
           else if(SecondTree){
           secondtree++;
-          if(iss>>str1>>str2>>r)  insulationData.push_back(std::make_tuple(str1,str2,r,B));
+          if(iss>>str1>>str2>>r)  insulationData.push_back(std::make_tuple((str1 == "Passed"),str2,r,B));
           }
        }
      }
-  }    
-    // fill continuity tree //
-    if(test_type == 0){
-    for(const auto&it : continuityData){
-        if(std::get<0>(it) == "Passed") statusCon = 1;
-        else if(std::get<0>(it) == "Failed") statusCon = 0;
-        channelCon = std::get<1>(it);
-        resistenceCon = std::get<2>(it);
-        cableCon = j;
-        ContinuityTree->Fill();
-    }
-    }
-    // fill Insulation Tree //
-    else if(test_type == 1){
-    for(const auto& it : insulationData){
-        if(std::get<0>(it) == "Passed") statusIns = 1;
-        else if(std::get<0>(it) == "Failed") statusIns = 0;
-        channelIns = std::get<1>(it);
-        resistenceIns = std::get<2>(it);
-        FieldIns = std::get<3>(it);
-        cableIns = j;
-        InsulationTree->Fill();
-    }
-    }
-    else if(test_type == 2){
-       for(const auto&it : continuityData){
-        if(std::get<0>(it) == "Passed") statusCon = 1;
-        else if(std::get<0>(it) == "Failed") statusCon = 0;
-        channelCon = std::get<1>(it);
-        resistenceCon = std::get<2>(it);
-        cableCon = j;
-        ContinuityTree->Fill();
-    }
-       for(const auto& it : insulationData){
-        if(std::get<0>(it) == "Passed") statusIns = 1;
-        else if(std::get<0>(it) == "Failed") statusIns = 0;
-        channelIns = std::get<1>(it);
-        resistenceIns = std::get<2>(it);
-        FieldIns = std::get<3>(it);
-        cableIns = j;
-        InsulationTree->Fill();
-    }    
-    }
+    }//while
+    TString path(TestNameFile[j].c_str());
+    int lastSlash = path.Last('/');
+    TString testTitle = path( lastSlash+1, path.Length()-lastSlash-4);
+    if(test_type == 1 || test_type == 2){
+    TestIsolationPSPP1[j] = new Isolation::PSPP1(insulationData, testTitle);
+   // TestIsolationPSPP1[j]->SetInitialParameters(ParametersInsulationInitial[j]);
     
+    
+    TestIsolationPSPP1[j]->SetIsolationPar("LV", ParametersInsulationLV[j]);
     }
-
-
-
+    /*
+    TestIsolationPSPP1[j]->SetIsolationPar("HV", ParametersInsulationHV[j]);
+    TestIsolationPSPP1[j]->SetIsolationPar("Tsensor", ParametersInsulationTsensor[j]);
+    */
+    
+    if(test_type == 0 || test_type == 2){
+    TestContinuityPSPP1[j] = new Continuity::PSPP1(continuityData, testTitle);
+   // TestContinuityPSPP1[j]->SetParameters(ParametersContinuity[j]);
+    }
+  
+  }

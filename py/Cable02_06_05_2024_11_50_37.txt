@@ -1,0 +1,96 @@
+500 40 2 2 1 On
+50 100 10 3 1 On
+1 8 8
+1.2 1 10 1
+50 100 1 2
+ContinuityTest
+Passed    LV1            0.586033224362684 
+Passed    LVreturn1      0.579884572377516 
+Passed    LV2            0.584974562502323 
+Passed    LVreturn2      0.58109442809532 
+Passed    LV3            0.588738253260508 
+Passed    LVreturn3      0.581054191019276 
+Passed    LV4            0.582980388623102 
+Passed    LVreturn4      0.577692566215864 
+Passed    LV5            0.581564775128263 
+Passed    LVreturn5      0.581154478883056 
+Passed    LV6            0.572017004735805 
+Passed    LVreturn6      0.574336733121258 
+Passed    LV7            0.58703335956756 
+Passed    LVreturn7      0.581000541584552 
+Passed    LV8            0.571222017663245 
+Passed    LVreturn8      0.571079663766483 
+Passed    LVreturn9      0.578471092670305 
+Passed    LV10           0.585705231226473 
+Passed    LVreturn10     0.583877187698346 
+Passed    LV11           0.586662995570544 
+Passed    LVreturn11     0.588282842715459 
+Passed    LV12           0.587206500925872 
+Passed    LVreturn12     0.587386043637243 
+Passed    PH             0.590650124037676 
+Passed    PHreturn       0.581026146996579 
+Passed    Tsensor1       12.3203787553088 
+Passed    Tsensor2       12.3766620366244 
+Passed    Tsensor3       12.1234608044904 
+Passed    Tsensor4       12.2073527718908 
+Passed    H1             12.0593488464153 
+Passed    H2             12.3946410785046 
+Passed    H3             12.0629875337787 
+Passed    H4             12.2009023706427 
+Passed    HR1            12.1590513352553 
+Passed    H5             12.1379726747991 
+Passed    H6             12.0096691263306 
+Passed    H7             12.3782424770902 
+Passed    H8             12.249369204211 
+Passed    HR2            12.4109539198497 
+Passed    H9             12.2179502972986 
+Passed    H10            12.1891164524202 
+Passed    H11            12.030729406874 
+Passed    H12            12.0530454637919 
+Passed    HR3            12.2007002213165 
+InsulationTest
+Passed    LV1             568268488.8955  568,3M
+Passed    LVR1             1651708605.77895  1,652G
+Passed    LV2             1504714724.23853  1,505G
+Passed    LVR3             1703689823.60472  1,704G
+Passed    LV4             1668401227.18297  1,668G
+Passed    LVR4             1827078705.7644  1,827G
+Passed    LV5             2209476127.22024  2,209G
+Passed    LVR5             2209429848.28769  2,209G
+Passed    LV6             906279854.475365  906,3M
+Passed    LVR6             1546621704.30928  1,547G
+Passed    LVR7             1927239077.3793  1,927G
+Passed    LV8             975671481.063455  975,7M
+Passed    LVR8             1171700901.53477  1,172G
+Passed    LVR9             1397672731.51379  1,398G
+Passed    LV10             1295185079.35057  1,295G
+Passed    LVR10             2198713374.99574  2,199G
+Passed    LV11             1700880327.13316  1,701G
+Passed    LVR11             1754106007.7083  1,754G
+Passed    LV12             1847472804.48581  1,847G
+Passed    LVR12             1483334769.37787  1,483G
+Passed    PHR             2644147465.72211  2,644G
+Passed    Tsensor1       4091793466.18633 
+Passed    Tsensor2       4091793466.18633 
+Passed    Tsensor3       2457958035.50843 
+Passed    Tsensor4       4091793466.18633 
+Passed    HV1            27024238694.3657 
+Passed    HV2            61240068714.2616 
+Passed    HV3            11892947795.9941 
+Passed    HV4            98203043188.472 
+Passed    HV5            44469218671.7257 
+Passed    HV6            49004431564.1994 
+Passed    HV7            98203043188.472 
+Passed    HV8            68750380277.5637 
+Passed    HV9            49087715674.2026 
+Passed    HV10           98203043188.472 
+Passed    HV11           98203043188.472 
+Passed    HV12           98203043188.472 
+Passed    HVreturn1      98203043188.472 
+Passed    HVreturn2      98203043188.472 
+Passed    HVreturn3      98203043188.472 
+Passed    Tsensor1       4091793466.18633 
+Passed    Tsensor2       4091793466.18633 
+Passed    Tsensor3       2457958035.50843 
+Passed    Tsensor4       4091793466.18633 
+Passed    HV_group       3794003195.70032 

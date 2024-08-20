@@ -1,121 +1,14 @@
 // identified by pair of letter and number //
-#ifndef USERFUNC_h
-#define USERFUNC_h
+#ifndef USERFUNC_H
+#define USERFUNC_H
 #include "def_variables.h"
 #include "root.h"
 
-// functions defined in src directory //
-void plotting(std::vector<TH1F*> &h, std::string sTitle, Int_t number_pad);
+//***** functions defined in src directory *****//
 void plottingGraph(std::vector<std::pair<std::string, TGraph*>> gr[], std::string Title);
-void ReadTestOutput(std::vector<std::string> &TestNameFile, Int_t j);
+void ReadTestOutput(std::vector<std::string> &TestNameFile, int j);
 TGraph* ReadTestTime(std::string pathFile);
-
-
-// ***** functions in this header files, called only by the main function **** //
-void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v);
-void fill_LVcables_RTN(std::vector<std::pair<std::string,Int_t>> &v);
-void fill_HVcables(std::vector<std::pair<std::string, Int_t>> &v);
-void fill_HVcables_RTN(std::vector<std::pair<std::string, Int_t>> &v);
-void fill_DRAINcables(std::vector<std::pair<std::string, Int_t>> &v);
-void fill_Tsensors(std::vector<std::pair<std::string, Int_t>> &v);
-
-// automatic range setting of histograms //
-Float_t FindMax(TTree *tree, Int_t Cable, TString Option); 
-Float_t FindMin(TTree *tree, Int_t Cable, TString Option);
-
-// interface to the terminal //
-void start(int number_arg, char *argument[]);
-// ***************************************************************************** //
-
-
-void fill_LVcables(std::vector<std::pair<std::string, Int_t>> &v){
-    std::string name = "LV";
-    for(int i=0; i<NumberLVcables; ++i){
-    v.push_back(make_pair(name, i+1));
-    }
-}
-void fill_LVcables_RTN(std::vector<std::pair<std::string,Int_t>> &v){
-    std::string name = "LVR";
-    for(int i=0; i<NumberLVcables; ++i){
-    v.push_back(make_pair(name, i+1));
-    }
-}
-void fill_HVcables(std::vector<std::pair<std::string, Int_t>> &v){
-    std::string name = "HV_RTN";
-    for(int i=0; i<NumberHVcables; ++i){
-    v.push_back(make_pair(name, i+1));
-    }
-}
-void fill_HVcables_RTN(std::vector<std::pair<std::string, Int_t>> &v){
-    std::string name = "HV_RTN";
-    for(int i=0; i<NumberHVRTNwires; ++i){
-    v.push_back(make_pair(name, i+1));
-    }
-}
-void fill_DRAINcables(std::vector<std::pair<std::string, Int_t>> &v){
-    std::string name = "D";
-    for(int i=0; i<NumberDrainWire; ++i){
-    v.push_back(make_pair(name, i+1));
-    }
-}
-void fill_Tsensors(std::vector<std::pair<std::string, Int_t>> &v){
-    std::string name = "T";
-    for(int i=0; i<NumberSensorWire; ++i){
-    v.push_back(make_pair(name, i+1));
-    }
-}
-
-
-// FindMax, FindMin --> automatic setting of histograms //
-Float_t FindMax(TTree *tree, Int_t Cable, TString Option){
- Option.ToUpper();
- Float_t max=0;
-  if(Option == "HV_CONT" || Option == "LV_CONT"){
-    tree->GetEntry(0);
-    max = resistenceCon;
-     for(int i=0; i<tree->GetEntries(); i++){
-      tree->GetEntry(i);
-      if( Option == "HV_CONT" && resistenceCon > max && channelCon.find("HV")) max = resistenceCon;
-      else if(Option == "LV_CONT" && resistenceCon > max && channelCon.find("HV")) max = resistenceCon;
-     }
-  }
-  else if(Option == "HV_INS" || Option == "LV_INS"){
-    tree->GetEntry(0);
-    Float_t max = resistenceIns;
-     for(int i=0; i<tree->GetEntries(); i++){
-      tree->GetEntry(i);
-      if( Option == "HV_INS" && resistenceIns > max && channelIns.find("HV")) max = resistenceIns;
-      else if(Option == "LV_INS" && resistenceIns > max && channelIns.find("HV")) max = resistenceIns;
-     }
-   }
- return max;
-}
-
-
-Float_t FindMin(TTree *tree, Int_t Cable, TString Option){
- Option.ToUpper();
- Float_t min=0;
-  if(Option == "HV_CONT" || Option == "LV_CONT"){
-   tree->GetEntry(0);
-   Float_t min = resistenceCon;
-   for(int i=0; i<tree->GetEntries(); i++){
-    tree->GetEntry(i);
-    if( Option == "HV_CONT" && resistenceCon < min && channelCon.find("HV")) min = resistenceCon;
-    else if(Option == "LV_CONT" && resistenceCon < min && channelCon.find("HV")) min = resistenceCon;
-   }
-  }
- else if(Option == "HV_INS" || Option == "LV_INS"){
-    tree->GetEntry(0);
-    Float_t min = resistenceIns;
-     for(int i=0; i<tree->GetEntries(); i++){
-        tree->GetEntry(i);
-        if( Option == "HV_INS" && resistenceIns < min && channelIns.find("HV")) min = resistenceIns;
-        else if(Option == "LV_INS" && resistenceIns < min && channelIns.find("HV")) min = resistenceIns;
-     }
-  }
- return min;
-}
-
+// ******************************************* //
 
 
 void printlogo(){    
@@ -158,7 +51,13 @@ void printlogo(){
 std::cout << green << textCMS  << reset << std::endl;
 std::cout<< green << "Test su cavo PS-PP1" << reset <<std::endl;
 std::system("mkdir -p ./output/plots && mkdir -p ./output/plots/SingleCable && mkdir -p ./output/plots/CheckCable && mkdir -p ./output/report && mkdir -p ./output/plotsTimeResistence" );
-
+std::cout<<"*****************************************"<<std::endl;
+std::cout<<"Input Directory ---> " ;
+std::cout<<sInputTestDir<<std::endl;
+std::cout<<"Histograms will be saved in -----> "+ std::string(WORKDIR)+ "/output/rootFiles/" << std::endl; 
+std::cout<<"Plots will be saved in -----> " + std::string(WORKDIR) + "/output/plots/" << std::endl; 
+std::cout<<"Final Report will be saved in -----> " + std::string(WORKDIR)+ "/output/report" << std::endl; 
+std::cout<<"****************************************"<<std::endl;
 }
 
 void start(int number_arg, char *argument[]){

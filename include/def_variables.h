@@ -7,17 +7,28 @@
 #include <string>
 #include <vector>
 
+namespace Continuity{
+    class PSPP1;
+    class Octopus;
+}
+namespace Isolation{
+    class PSPP1;
+    class Octopus;
+}
+
 // declare in Makefile //
 #ifdef WORKDIR
 #else
 #define WORKDIR "."
 #endif
 
+extern std::vector<Continuity::PSPP1*> TestContinuityPSPP1;
+extern std::vector<Isolation::PSPP1*> TestIsolationPSPP1;
+
 // input-output paths //
 extern const std::string sInputTestDir;
 extern const std::string sInputTimeAcquisition;
 extern const std::string sOutputRoot;
-
 
 extern Int_t IterationTest; // number of cable to be test
 extern std::string sPDFTitle; // final pdf name 
@@ -26,13 +37,11 @@ extern std::string currentDate; // date of execution
 // vectors of paths to cable to be test //
 extern std::vector<std::string> TestName;
 extern std::vector<std::string> TestNameTimeAcquisition;
+extern std::vector<std::string> TestPath;
 extern const int MaxCables;
 
 extern const int NumberHVcables;
 extern const int NumberLVcables;
-extern const int NumberSensorWire;
-extern const int NumberDrainWire;
-extern const int NumberHVRTNwires;
 
 // treshold values //
 extern const Float_t ThreshContLV;
@@ -54,15 +63,6 @@ extern Int_t test_type;
 extern Int_t CompareTest;
 extern Bool_t CommandLine;
 
-// I/O variables //
-extern TTree *ContinuityTree;
-extern TTree *InsulationTree;
-extern Int_t statusCon, statusIns;
-extern std::string channelIns, channelCon;
-extern Float_t resistenceIns, resistenceCon;
-extern Int_t cableIns, cableCon;
-extern Float_t FieldIns;
-
 // cables variables (needed??) //
 extern std::vector<std::pair<std::string,Int_t>> HVcables;
 extern std::vector<std::pair<std::string, Int_t>> LVcables; 
@@ -72,9 +72,9 @@ extern std::vector<std::pair<std::string,Int_t>> TSensor;
 extern std::vector<std::pair<std::string,Int_t>> Drain;
 
 // test parameters //
-extern std::vector<std::tuple<double,double,double,double,double, std::string, double>> ParametersContinuity;
+extern std::vector<std::tuple<double,double,double,double,double, std::string>> ParametersContinuity;
 extern std::vector<std::tuple<double,double,double,double,double, double, double>> ParametersInsulationInitial;
-extern std::vector<std::tuple<double,double,double>> ParametersInsulationLV;
+extern std::vector<std::tuple<double,double,double, double>> ParametersInsulationLV;
 extern std::vector<std::tuple<double,double,double,double>> ParametersInsulationHV;
 extern std::vector<std::tuple<double,double,double,double>> ParametersInsulationTsensor;
 
@@ -83,16 +83,16 @@ extern TCanvas *c_plot;
 extern TCanvas *c_graph;
 
 // histograms and histograms variables for range, maximum/minimum values to be stored 
-extern std::vector<TH1F*> h_passedHV_Cont;
-extern std::vector<TH1F*> h_passedLV_Cont;
+extern std::vector<TH1I*> h_passedHV_Cont;
+extern std::vector<TH1I*> h_passedLV_Cont;
 extern std::vector<TH1F*> hCont_ResChannel_HV;
 extern std::vector<TH1F*> hCont_ResChannel_LV; 
-extern std::vector<TH1F*> h_passedCont_tot;
+extern std::vector<TH1I*> h_passedCont_tot;
 extern std::vector<TH1F*> hCont_ResHV;
 extern std::vector<TH1F*> hCont_ResLV; 
-extern std::vector<TH1F*> h_passedHV_Ins;
-extern std::vector<TH1F*> h_passedLV_Ins;
-extern std::vector<TH1F*> h_passedIns_tot;
+extern std::vector<TH1I*> h_passedHV_Ins;
+extern std::vector<TH1I*> h_passedLV_Ins;
+extern std::vector<TH1I*> h_passedIns_tot;
 extern std::vector<TH1F*> hIns_ResHV;
 extern std::vector<TH1F*> hIns_ResLV;
 extern std::vector<TH1F*> hIns_ResTot;
@@ -110,11 +110,11 @@ extern Float_t ResMaxHV_cont[];
 extern Float_t ResMaxLV_cont[];
 extern Float_t ResMinHV_cont[];
 extern Float_t ResMinLV_cont[];
-extern const char *labelsContHV[];
-extern const char *labelsContLV[];
-extern const char *labelsInsHV[];
-extern const char *labelsInsLV[];
 
+extern const char *labelLV_con[];
+extern const char *labelHV_con[];
+extern const char *labelLV_iso[];
+extern const char *labelHV_iso[];
 
 
 

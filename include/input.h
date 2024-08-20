@@ -71,6 +71,7 @@ std::vector<std::string> listAndChooseFiles() {
         std::cout << "*******************************************************************" << std::endl;
         std::cin >> number_test2;
         TestTemp.push_back(sInputTestDir + FileName[number_test - 1].second + "/" + FileName2[number_test2 - 1].second);
+        TestPath.push_back(sInputTestDir + FileName[number_test - 1].second + "/tmp/processed_" + FileName2[number_test2 - 1].second);
         number_test = 0;
         std::cout << "************** Use other cables for comparison? (y/n) ****************" << std::endl;
         std::cin >> str;
