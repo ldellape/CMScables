@@ -24,7 +24,6 @@ void plotting(std::vector<T> &h, std::string title, Int_t number_pad){
   std::vector<Float_t> lenght;
   std::vector<Float_t> mean;
   std::vector<Float_t> StdDev;
-  /*
   if constexpr (std::is_same<TH1F*, T>::value){
    for(int ii=0; ii<IterationTest; ++ii){
      if((test_type==1 || test_type==2)){
@@ -35,6 +34,7 @@ void plotting(std::vector<T> &h, std::string title, Int_t number_pad){
        lenght.push_back(TestContinuityPSPP1[ii]->GetLenght(h[ii]));
        StdDev.push_back(TestContinuityPSPP1[ii]->GetStdDev(h[ii]));
        mean.push_back(TestContinuityPSPP1[ii]->GetMean(h[ii]));
+       std::cout<<mean[ii]<< "   " << StdDev[ii] << "  " << lenght[ii] << std::endl;
      }
    }
   }
@@ -49,7 +49,7 @@ if(sTitle.Contains("LV") && !sTitle.Contains("Passed")){
   }
  }
  else if(sTitle.Contains("HV") && !sTitle.Contains("Passed")){
-   std::cout<<"bin : " << h[0]->GetNbinsX()<<std::endl;
+   std::cout<<sTitle<<" bin : " << h[0]->GetNbinsX()<<std::endl;
 
   for(int k=0; k<h[0]->GetNbinsX(); k++){
     h[0]->GetXaxis()->SetBinLabel(k+1, labelHV_con[k]);
@@ -72,7 +72,6 @@ for(int i=0; i<IterationTest; i++){
 }
 text.DrawLatexNDC(0.15, 0.92, sTitle);
 // *************************************************************************** //
-
 
 // *************************************************************************** //
 // ********************** INSULATION PLOTS *********************************** //
@@ -173,12 +172,12 @@ else if(sTitle == "ContinuityTest_ResistenceHV" || sTitle == "ContinuityTest_Res
   TAxis *x = h[0]->GetXaxis();
   TAxis *y = h[0]->GetYaxis();
 
-  std::vector<double> Param = TestContinuityPSPP1[0]->GetParameters();
+  //std::vector<double> Param = TestContinuityPSPP1[0]->GetParameters();
   TLatex textPar; textPar.SetTextSize(0.020); textPar.SetTextFont(52);
-  textPar.DrawLatexNDC(0.01, 0.02, Form("Parameters : i=%i, Thresh.= %i, T_{rise} = %i s, T_{wait} = %i s, T_{meas} = %i s, V_{lim}= %i", int(Param[0]), int(Param[1]), int(Param[2]), int(Param[3]), int(Param[4]), int(Param[6])));
+  //textPar.DrawLatexNDC(0.01, 0.02, Form("Parameters : i=%i, Thresh.= %i, T_{rise} = %i s, T_{wait} = %i s, T_{meas} = %i s, V_{lim}= %i", int(Param[0]), int(Param[1]), int(Param[2]), int(Param[3]), int(Param[4]), int(Param[6])));
   y->SetTitle("R[#Omega]");
 
-  if( sTitle == "ContinuityTest_ResistenceHV"){
+  if(sTitle == "ContinuityTest_ResistenceHV"){
    y->SetRangeUser(9,14);
    TLine *lineThresh = new TLine(x->GetXmin(), ThreshContHV, x->GetXmax(), ThreshContHV);
    lineThresh->SetLineColor(46); lineThresh->SetLineStyle(kDashed);
@@ -190,18 +189,18 @@ else if(sTitle == "ContinuityTest_ResistenceHV" || sTitle == "ContinuityTest_Res
    TArrow *arrow = new TArrow(x->GetXmax()-0.4, ThreshContHV+0.2, x->GetXmax()-0.4, ThreshContHV-0.5, 0.005, ">" );
    arrow->SetLineColor(kRed); arrow->SetFillColor(kRed); arrow->SetLineWidth(1);
    arrow->Draw();
-
    // draw mean, RMS, lenght //
    for(int jj =0; jj<IterationTest; jj++){
      textMean[jj].SetTextSize(0.02); textMean[jj].SetTextColor(jj+3); 
      textStdDev[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
      textLenght[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
-     lineMean[jj]->SetLineColor(jj+3); lineMean[jj]->SetLineWidth(1); lineMean[jj]->Draw("same");
 
      textStdDev[jj].DrawLatex(2*(jj+1)*x->GetBinWidth(2), 9.95, Form("#sigma_{%i} = %.3f", jj+1, StdDev[jj]));
      textMean[jj].DrawLatex(2*(jj+1)*x->GetBinWidth(2), 9.8, Form("#mu_{%i} = %.3f" ,jj+1, mean[jj]));
      textLenght[jj].DrawLatex(2*(jj+1)*x->GetBinWidth(2), 9.65, Form("L_{%i} = %.3f" , jj+1,lenght[jj]));
+
      lineMean[jj] = new TLine(x->GetXmin(), mean[jj], x->GetXmax(), mean[jj]);
+     lineMean[jj]->SetLineColor(jj+3); lineMean[jj]->SetLineWidth(1); lineMean[jj]->Draw("same");
    }
   }
   else if(sTitle == "ContinuityTest_ResistenceLV"){
@@ -221,11 +220,12 @@ else if(sTitle == "ContinuityTest_ResistenceHV" || sTitle == "ContinuityTest_Res
      textMean[jj].SetTextSize(0.02); textMean[jj].SetTextColor(jj+3); 
      textStdDev[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
      textLenght[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
-     lineMean[jj]->SetLineColor(jj+3); lineMean[jj]->SetLineWidth(1); lineMean[jj]->Draw("same");
 
      textStdDev[jj].DrawLatex(2.5*(jj+1)*x->GetBinWidth(2), 0.23, Form("#sigma_{%i} = %.3f", jj+1, StdDev[jj]));
      textMean[jj].DrawLatex(2.5*(jj+1)*x->GetBinWidth(2), 0.20, Form("#mu_{%i} = %.3f" ,jj+1, mean[jj]));
      textLenght[jj].DrawLatex(2.5*(jj+1)*x->GetBinWidth(2), 0.17, Form("L_{%i} = %.3f" , jj+1,lenght[jj]));
+
+     lineMean[jj]->SetLineColor(jj+3); lineMean[jj]->SetLineWidth(1); lineMean[jj]->Draw("same");
      lineMean[jj] = new TLine(x->GetXmin(), mean[jj], x->GetXmax(), mean[jj]);
    }
   } 
@@ -250,6 +250,6 @@ l->Draw("same");
 
 if(IterationTest == 1) c_plot->SaveAs((std::string(WORKDIR) + "/output/plots/SingleCable/" + sPDFTitle +".pdf").c_str());
 else if(IterationTest >1) c_plot->SaveAs((std::string(WORKDIR) + "/output/plots/CheckCable/" + sPDFTitle +".pdf").c_str());
-*/
+
 }
 

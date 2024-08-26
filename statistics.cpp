@@ -141,12 +141,12 @@ int main(){
 // ******************************************************************** //
 // ************* INPUT FILES AND OUTPUT FILES DEFINITIONS ************* //
 // ******************************************************************** //
- std::system("mkdir stat_root");
+ std::system("mkdir -p stat_root");
  std::set<std::string> tests;
  const char *pathOutFile = "./docs/statistics.root";
  const char *TestProcessedTXT = "./docs/statistics_tests.txt";
- 
- if(gSystem->AccessPathName(pathOutFile)){
+ if(!gSystem->AccessPathName(pathOutFile)){
+    std::cout << "check if new tests exist..." 
     f_StatOut = TFile::Open(pathOutFile, "UPDATE");
     std::ifstream TestProcessed(TestProcessedTXT);
     std::string str;
@@ -156,7 +156,8 @@ int main(){
     TestProcessed.close();
  }
  else{
-    f_StatOut = TFile::Open(pathOutFile, "RECREATE");
+    std::cout << "creating statistics.root ..." << std::endl;
+    f_StatOut = new TFile(pathOutFile, "RECREATE");
  }
  
  std::vector<std::string> FileNames;
@@ -165,9 +166,16 @@ int main(){
     std::string dir = sInputDir + Form("Cable0%i", i + 1);
     for (const auto& entry : std::filesystem::directory_iterator(dir)) {
         std::string fullpath = sInputDir + Form("Cable0%i/", i + 1) + entry.path().filename().string();
-        if(entry.path().filename() != "VALORI" && tests.find(fullpath) == tests.end()) FileNames.push_back(fullpath);
+        if(entry.path().filename() != "VALORI" && tests.find(fullpath) == tests.end()){
+         std::cout<<" new test(s) will be added : "<<fullpath << std::endl;
+         FileNames.push_back(fullpath);
+        }
     }
  }
+if(FileNames.empty()){
+ std::cout << "statistics is already updated. End." << std::endl;
+ return 0;
+}
 Int_t file = 0;
 std::ofstream UpdateTests(TestProcessedTXT, std::ios::app);
 for (int j=0; j<int(FileNames.size()); j++) {
@@ -176,7 +184,6 @@ for (int j=0; j<int(FileNames.size()); j++) {
     UpdateTests << FileNames[j] << "\n";
 }
 UpdateTests.close();
-
 // ********************************************************************* //
 // ************** END INPUT FILES AND OUTPUT DEFINITIONS *************** //
 // ********************************************************************* //
