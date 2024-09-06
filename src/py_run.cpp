@@ -10,13 +10,12 @@ namespace Python{
       std::system((pythonScript + TestName).c_str());
       return;
     }
-    // changing .INI files from CEETIS //
+    // changing .INI files from CEETIS for time vs resistenc plots//
     void ChangeTextFileINI(std::string path){
       std::string PythonINIcommand = "python3 " + std::string(WORKDIR) +"/py/ManageINI.py " + path + " 2>/dev/null";
       std::system(PythonINIcommand.c_str());
       return;
     }
-
     void WriteFinalReport(std::string PDFname, std::string CableName){
       std::string command;
       std::cout<<"creating Final Report..." <<std::endl;

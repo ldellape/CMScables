@@ -137,16 +137,16 @@ void ReadOutput(const std::string TestNameFile, Int_t file) {
 int main(){
 
  ROOT::EnableImplicitMT();
-
-// ******************************************************************** //
-// ************* INPUT FILES AND OUTPUT FILES DEFINITIONS ************* //
-// ******************************************************************** //
  std::system("mkdir -p stat_root");
  std::set<std::string> tests;
  const char *pathOutFile = "./docs/statistics.root";
  const char *TestProcessedTXT = "./docs/statistics_tests.txt";
- if(!gSystem->AccessPathName(pathOutFile)){
-    std::cout << "check if new tests exist..." 
+
+// ******************************************************************** //
+// ************* INPUT FILES AND OUTPUT FILES DEFINITIONS ************* //
+// ******************************************************************** //
+if(!gSystem->AccessPathName(pathOutFile)){
+    std::cout << "check if new tests exist..." << std::endl;
     f_StatOut = TFile::Open(pathOutFile, "UPDATE");
     std::ifstream TestProcessed(TestProcessedTXT);
     std::string str;
@@ -154,35 +154,39 @@ int main(){
         tests.insert(str);
     }
     TestProcessed.close();
- }
- else{
+}
+else{
     std::cout << "creating statistics.root ..." << std::endl;
     f_StatOut = new TFile(pathOutFile, "RECREATE");
- }
- 
- std::vector<std::string> FileNames;
- std::string sInputDir = "./input/FULL_TEST_su_cavo_ps_pp1_V3/";
- for (int i = 0; i < 3; i++) {
+}
+
+std::vector<std::string> FileNames;
+std::string sInputDir = "./input/FULL_TEST_su_cavo_ps_pp1_V3/";
+
+for (int i = 0; i < 3; i++) {
     std::string dir = sInputDir + Form("Cable0%i", i + 1);
     for (const auto& entry : std::filesystem::directory_iterator(dir)) {
         std::string fullpath = sInputDir + Form("Cable0%i/", i + 1) + entry.path().filename().string();
         if(entry.path().filename() != "VALORI" && tests.find(fullpath) == tests.end()){
-         std::cout<<" new test(s) will be added : "<<fullpath << std::endl;
-         FileNames.push_back(fullpath);
+            std::cout << "new test(s) will be added: " << fullpath << std::endl;
+            FileNames.push_back(fullpath);
         }
     }
- }
-if(FileNames.empty()){
- std::cout << "statistics is already updated. End." << std::endl;
- return 0;
 }
-Int_t file = 0;
+if(FileNames.empty()){
+    std::cout << "statistics is already updated. End." << std::endl;
+    return 0;
+}
 std::ofstream UpdateTests(TestProcessedTXT, std::ios::app);
-for (int j=0; j<int(FileNames.size()); j++) {
+
+Int_t file = 0;
+for (int j = 0; j < int(FileNames.size()); j++) {
     ++file;
     ReadOutput(FileNames[j], file);
     UpdateTests << FileNames[j] << "\n";
+    tests.insert(FileNames[j]);
 }
+
 UpdateTests.close();
 // ********************************************************************* //
 // ************** END INPUT FILES AND OUTPUT DEFINITIONS *************** //

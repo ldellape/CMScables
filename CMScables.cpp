@@ -14,7 +14,6 @@
 #include "./include/def_variables.h"
 #include "./include/py_run.h"
 #include "./include/user_func.h"
-#include "./include/input.h"
 #include "./include/Continuity.h"
 #include "./include/Isolation.h"
 #include "./include/plotting.h"
@@ -28,6 +27,7 @@
 
 int main(int argc, char* argv[]){
  printlogo();
+ std::this_thread::sleep_for(std::chrono::seconds(2));
  if(argc>1) start(argc, argv); // mode 3, from command line 
 
  #ifdef TIME_RES
@@ -74,31 +74,33 @@ std::string name[IterationTest];
  for(int j=0; j<IterationTest; j++){
       name[j] = TestName[j].substr( TestName[j].rfind("/") +1, TestName[j].rfind(".") - TestName[j].rfind("/")-1);
       std::cout<<TestName[j]<<std::endl;
-    }
+ }
 std::cout<<"*****************************************"<<std::endl;
 // *************************************************** //
 // *************************************************** //
 
 
-// ********* changing txt files and store Continuity/Isolation class object **************** //
+// ********* changing txt files and store Continuity/Isolation class objects **************** //
+// ***************************************************************************************** //
 std::cout<<"preparing text files..." <<std::endl;
 for(int i=0; i<int(TestName.size()); i++){
-//    Python::PSPP1::ChangeTextFile(TestName[i]);
+//Python::PSPP1::ChangeTextFile(TestName[i]); to be test 
 std::cout<<TestPath[i]<<std::endl;
 }
 for(int i=0; i<IterationTest; ++i){
   ReadTestOutput(TestName, i);
 }
-// ***************************************************************************************** //
 std::cout<<"done"<<std::endl;
 std::cout<<"****************************************"<<std::endl;
+// ***************************************************************************************** //
+
 
 // ***************************************************** //
 // ****************Drawing Plots************************ //
 // ***************************************************** //
 for(int it = 0; it< IterationTest; it++){
   if(test_type == 0 || test_type == 2){
-  h_passedCont_tot[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_passed_continuity_all_%i", it+1));
+  // h_passedCont_tot[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_passed_continuity_all_%i", it+1));
    h_passedHV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedHV_continuity_%i", it+1), "HV");
    h_passedLV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedLV_continuity_%i", it+1), "LV");
    hCont_ResChannel_HV[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_continuity_%i", it+1), "HV");
@@ -184,7 +186,6 @@ if (Ins_Time) {
     }
    }
  }
-
   plottingGraph(grRes_TimeLVR, "LVR");
     std::cout << "done" << std::endl;
     std::cout << "*****************************************" << std::endl;
@@ -215,33 +216,33 @@ std::cout<<"*****************************************"<<std::endl;
 
 
 if(CreateReport == "y") {
-Python::PSPP1::WriteFinalReport(sPDFTitle, name[0]);
-Python::PSPP1::UpdateHTML(sPDFTitle);
+ Python::PSPP1::WriteFinalReport(sPDFTitle, name[0]);
+ Python::PSPP1::UpdateHTML(sPDFTitle);
 }
 
 TFile *f_OutPut = new TFile((sOutputRoot + sPDFTitle + ".root").c_str(), "RECREATE");
 for(int i=0; i<IterationTest; ++i){
  if(test_type == 0 || test_type == 2){
-  h_passedLV_Cont[i]->Write(); h_passedHV_Cont[i]->Write(); hCont_ResChannel_HV[i]->Write(); hCont_ResChannel_LV[i]->Write(); h_passedCont_tot[it]->Write();
+  h_passedLV_Cont[i]->Write(); h_passedHV_Cont[i]->Write(); hCont_ResChannel_HV[i]->Write(); hCont_ResChannel_LV[i]->Write(); 
  }
  if(test_type == 1 || test_type == 2){ 
-  h_passedHV_Ins[i]->Write(); h_passedLV_Ins[i]->Write(); h_passedIns_tot[i]->Write(); hIns_ResChannel_HV[i]->Write(); hIns_ResChannel_LV[i]->Write();
+  h_passedHV_Ins[i]->Write(); h_passedLV_Ins[i]->Write();  hIns_ResChannel_HV[i]->Write(); hIns_ResChannel_LV[i]->Write();
  }
 }
 f_OutPut->Write();
 f_OutPut->Close();
 
 
-/*
 std::cout<<"removing temporary files...";
-std::system(("rm -r " + sInputTestDir + "//tmp").c_str());
+std::system(("rm -r " + sInputTestDir + "/\*/tmp").c_str());
 std::cout<<"done"<<std::endl;
-std::cout<<" Updating comulative statistics..."<<std::endl;
+std::cout<<"Updating comulative statistics..."<<std::endl;
 std::system("./statistics");
 std::cout<<"done"<<std::endl;
-*/
+
 
 return 0;
+
 gROOT->ProcessLine(".q");
 
 

@@ -38,7 +38,7 @@ void ReadTestOutput(std::vector<std::string> &TestNameFile, int j){
             else if(lineCounter==1 && iss >> V >> Thresh >> Trise >> Twait >> Tmeas >> i >> Vramp)
             ParametersInsulationInitial.push_back(std::make_tuple(V, Thresh, Trise, Twait, Tmeas, i, Vramp));
             else if(lineCounter==2 && iss>> Trise >> Twait >> Tmeas)
-            ParametersInsulationLV.push_back(std::make_tuple(Trise, Twait,  Tmeas, 0));
+            ParametersInsulationLV.push_back(std::make_tuple(Trise, Twait,  Tmeas, Tmeas));
             else if(lineCounter == 3 && iss >> V >> Thresh >> Trise >> Tmeas)
             ParametersInsulationHV.push_back(std::make_tuple(V, Thresh, Trise, Tmeas));
             else if(lineCounter == 4 && iss>> V >> Thresh >> Trise >> Tmeas)
@@ -60,11 +60,9 @@ void ReadTestOutput(std::vector<std::string> &TestNameFile, int j){
     int lastSlash = path.Last('/');
     TString testTitle = path( lastSlash+1, path.Length()-lastSlash-4);
     if(test_type == 1 || test_type == 2){
-    TestIsolationPSPP1[j] = new Isolation::PSPP1(insulationData, testTitle);
-   // TestIsolationPSPP1[j]->SetInitialParameters(ParametersInsulationInitial[j]);
-    
-    
-    TestIsolationPSPP1[j]->SetIsolationPar("LV", ParametersInsulationLV[j]);
+     TestIsolationPSPP1[j] = new Isolation::PSPP1(insulationData, testTitle);
+     TestIsolationPSPP1[j]->SetInitialParameters(ParametersInsulationInitial[j]);
+     TestIsolationPSPP1[j]->SetIsolationPar("LV", ParametersInsulationLV[j]);
     }
     /*
     TestIsolationPSPP1[j]->SetIsolationPar("HV", ParametersInsulationHV[j]);

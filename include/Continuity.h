@@ -24,7 +24,6 @@ namespace Continuity{
     PSPP1();
     PSPP1(std::vector<std::tuple<Bool_t, std::string, double>> &TestOutput, ::TString TestName);
     void SetChannels(std::vector<::TString> &channelNames);
-    void SetLabels(std::vector<::TString>);
     void SetStatus(std::vector<Bool_t> &statusChannels);
     void SetResistence(std::vector<double> &resistenceChannel);
     void SetName(::TString name);
@@ -32,7 +31,6 @@ namespace Continuity{
     ::TString GetName();
     std::vector<double> GetResistence(::TString option= "all");
     std::vector<Bool_t> GetStatus(::TString = "all");
-    std::vector<std::string> GetChannelName(::TString = "all");
     Float_t GetMean(::TString option = "all");
     Float_t GetMean(TH1F *h);
     Float_t GetLenght(::TString option);
@@ -47,24 +45,34 @@ namespace Continuity{
 
     // ************************************************** //
     // ---> template method
-    template<typename histo> histo* Add(::TString option, PSPP1 *cable1, Float_t c1);
+ //   template<typename histo> histo* Add(histo *h, ::TString option, PSPP1 *cable1, Float_t c1);
     template <typename T> std::vector<T> FilterChannel(::TString option, ::TString vector);
  };
+// ************ template method implementation ************ //
+// ******************************************************** //
+
 //////////////////////////////////////////////////////////////////////
-// add method
-template<typename histo> histo* PSPP1::Add(TString option, PSPP1 *cable1, Float_t c1){
-    histo *Histo2;
+// sum/difference operation between two cables
+/*
+ template<typename histo> histo* PSPP1::Add(histo *h, ::TString option, PSPP1 *cable1, Float_t c1){
     option.ToUpper();
+    histo *Histo2;
     if(std::is_same<histo, TH1F>::value){
-     Histo2 = (histo*) cable1->FillResistenceHistogram(option);
-     this->histo::Add(Histo2, c1);
+     Histo2 = (histo*) cable1->FillResistenceChannelHistogram(option);
+     h->histo::Add(Histo2, c1);
+     return *this;
     }
     else if(std::is_same<histo, TH1I>::value){
      Histo2 = (histo*) cable1->FillStatusHistogram(option);
-     this->histo::Add(Histo2);
+      h->histo::Add(Histo2, c1);
+      return *this;
     }
-    return *this;
+    else{
+     Error("Continuity::PSPP1::Add", "histograms are of different type");
+     return h;
+    }
 }
+*/
 
 /////////////////////////////////////////////////////////////////////
 // filter entries based on channel option
@@ -97,7 +105,13 @@ template <typename T> std::vector<T> PSPP1::FilterChannel(TString option, TStrin
  return filtered;
 }
 
-  
+
+
+ class Octopus{
+    public:
+    Octopus();
+ };
+
 }
 
 #endif

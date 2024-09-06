@@ -7,6 +7,15 @@
 #include <string>
 #include <vector>
 
+// defined in Makefile, absolute path//
+#ifdef WORKDIR
+#else
+#define WORKDIR "."
+#endif
+
+
+// ************************************************************** //
+// ******classes and objects of the classes declaration********** //
 namespace Continuity{
     class PSPP1;
     class Octopus;
@@ -16,44 +25,47 @@ namespace Isolation{
     class Octopus;
 }
 
-// declare in Makefile //
-#ifdef WORKDIR
-#else
-#define WORKDIR "."
-#endif
-
 extern std::vector<Continuity::PSPP1*> TestContinuityPSPP1;
 extern std::vector<Isolation::PSPP1*> TestIsolationPSPP1;
+// ************************************************************** //
+// ************************************************************** //
 
-// input-output paths //
+
+// ************************************************************** //
+// ************ input-output paths variables ******************** //
 extern const std::string sInputTestDir;
 extern const std::string sInputTimeAcquisition;
-extern const std::string sOutputRoot;
+extern const std::string sOutputRoot; 
+extern std::vector<std::string> TestName; // path to original txt file from CEETIS 
+extern std::vector<std::string> TestPath; // path to modified txt file from CEETIS
+extern std::vector<std::string> TestNameTimeAcquisition; // paths to .INI files from CEETIS 
+extern std::string currentDate; // date of execution
+extern std::string sPDFTitle; // final pdf name (name of the test + currentDaate)
+// ************************************************************** //
+// ************************************************************** //
+
+
 
 extern Int_t IterationTest; // number of cable to be test
-extern std::string sPDFTitle; // final pdf name 
-extern std::string currentDate; // date of execution
 
-// vectors of paths to cable to be test //
-extern std::vector<std::string> TestName;
-extern std::vector<std::string> TestNameTimeAcquisition;
-extern std::vector<std::string> TestPath;
+
 extern const int MaxCables;
 
+
+// ************************************************************** //
+// ***********parameters of tests******************************** //
 extern const int NumberHVcables;
 extern const int NumberLVcables;
-
-// treshold values //
 extern const Float_t ThreshContLV;
 extern const Float_t ThreshContHV;
 extern const Float_t ThreshIsoLV;
 extern const Float_t ThreshIsoHV;
-
-// param to compute lenght of cables //
 extern Float_t diamLV;
 extern Float_t diamHV;
 extern Float_t ResistivityLV;
 extern Float_t ResistivityHV;
+// ************************************************************** //
+// ************************************************************** //
 
 // control vairables //
 extern Bool_t InsulationTest; 

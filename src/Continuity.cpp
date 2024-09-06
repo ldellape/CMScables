@@ -204,6 +204,10 @@ std::vector<double> PSPP1::GetParameters(){
        }   
     return h_temp;
     }
+   else{
+    Error("Continuity::PSPP1::FillResistenceChannelHistogram():", "invalid option");
+    return h_temp;
+   } 
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -314,7 +318,10 @@ Float_t PSPP1::GetLenght(TH1F *h){
  double mean = this->GetMean(h);
  if(name.Contains("LV")) return (mean*TMath::Pi()*TMath::Power(diamLV, 2))/(4*ResistivityLV);
  else if(name.Contains("HV")) return (mean*TMath::Pi()*TMath::Power(diamHV, 2))/(4*ResistivityHV);
- else Error("Isolation::PSPP1::GetLenght(TH1F *h, TString option):", "invalid option");
+ else{
+   Error("Isolation::PSPP1::GetLenght(TH1F *h, TString option):", "invalid option");
+   return 0;
+ }
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -345,3 +352,4 @@ Float_t PSPP1::GetStdDev(TString option){
 
 
 
+Octopus::Octopus(){};

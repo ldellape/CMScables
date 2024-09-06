@@ -88,9 +88,5 @@ Passed    HV12           98206101872.463
 Passed    HVR1      98206101872.463
 Passed    HVR2      98206101872.463
 Passed    HVR3      98206101872.463
-Passed    Tsensor1       4091920911.35262
-Passed    Tsensor2       4091920911.35262
-Passed    Tsensor3       4091920911.35262
-Passed    Tsensor4       4091920911.35262
 Passed    LV_group             204150783.758022  204,2M
 Passed    HV_group       4919000459.10671

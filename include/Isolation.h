@@ -34,7 +34,7 @@ namespace Isolation{
     std::vector<double> GetResistence(::TString option= "all");
     std::vector<Bool_t> GetStatus(::TString option = "all");
     std::vector<double> GetFieldB(::TString option = "all");
-    template <typename T> std::vector<T> FilterChannel(::TString option, ::TString vector);
+    template <typename T> std::vector<T> FilterChannel(TString option, TString vector);
     //Float_t GetStdDev(::TString option = "all");
     Float_t GetStdDev(TH1F *h);
     Float_t GetMean(TH1F *h);
@@ -45,11 +45,14 @@ namespace Isolation{
     TH1F* FillResistenceHistogram(::TString title, ::TString option= "all");
 
     // *************************************************** //
-    // ---> template method, implemented in this file //
+    // ---> template methods //
     template<typename... TT> std::tuple<TT ...> GetIsolationPar(TString option); 
     template<typename... TT> void SetIsolationPar(::TString option, std::tuple<TT...> pars);
-    template<typename histo> histo* Add(::TString option, PSPP1 *cable1, Float_t c1 = 1);
+    template<typename histo> histo* Add(histo *h, ::TString option, PSPP1 *cable1, Float_t c1 = 1);
  };
+
+// ************ template method implementation ************ //
+// ******************************************************** //
 
 //////////////////////////////////////////////////////////////////////
 // set isolation parameters 
@@ -87,22 +90,23 @@ template<typename...TT> std::tuple<TT...>  PSPP1::GetIsolationPar(TString option
 
 //////////////////////////////////////////////////////////////////////
 // sum/difference operation between two cables
- template<typename histo> histo* PSPP1::Add(::TString option,PSPP1 *cable1, Float_t c1){
+ template<typename histo> 
+ histo* PSPP1::Add(histo *h, ::TString option, PSPP1 *cable1, Float_t c1){
     option.ToUpper();
     histo *Histo2;
     if(std::is_same<histo, TH1F>::value){
      Histo2 = (histo*) cable1->FillResistenceChannelHistogram(option);
-     this->histo::Add(Histo2, c1);
+     h->histo::Add(Histo2, c1);
      return *this;
     }
     else if(std::is_same<histo, TH1I>::value){
      Histo2 = (histo*) cable1->FillStatusHistogram(option);
-      this->histo::Add(Histo2);
+      h->histo::Add(Histo2, c1);
       return *this;
     }
     else{
-     Error("Isolation::PSPP1::Add", "histograms are of different type, addition/subtraction not performed");
-     return *this;
+     Error("Isolation::PSPP1::Add", "histograms are of different type");
+     return h;
     }
 }
 
@@ -134,5 +138,9 @@ template<typename T> std::vector<T> PSPP1::FilterChannel(::TString option, ::TSt
  }
 }
 
+class Octopus{
+
+};
 }
+
 #endif
