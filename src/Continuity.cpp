@@ -232,7 +232,7 @@ std::tuple<double,double,double,double,double, std::string, double> PSPP1::GetPa
         // find position //
        for(int j=0; j<int(resistence.size()); j++){
         for(int i=0; i< NumberLVcables; i++ ){
-          if(channel[j].CompareTo(labelLV_iso[i])){
+          if(channel[j].CompareTo(labelLV_con[i]) == 0){
             h_temp->SetBinContent(i+1, resistence[j]);
             break;
           }
@@ -245,7 +245,7 @@ std::tuple<double,double,double,double,double, std::string, double> PSPP1::GetPa
         // find position //
        for(int j=0; j<int(resistence.size()); j++){
         for(int i=0; i< NumberHVcables; i++ ){
-          if(channel[j].CompareTo(labelHV_iso[i]) == 0){
+          if(channel[j].CompareTo(labelHV_con[i]) == 0){
             h_temp->SetBinContent(i+1, resistence[j]);
             break;
           }

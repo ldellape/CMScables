@@ -261,7 +261,7 @@ else if(sTitle == "ContinuityTest_ResistenceHV" || sTitle == "ContinuityTest_Res
 
 
 TString name[IterationTest];
-TLegend *l = new TLegend(0.50,0.9,0.9,1.0);
+TLegend *l = new TLegend(0.80,0.9,0.9,1.0);
 l->SetTextSize(0.018);
 for(int i=0; i<IterationTest; ++i){
  if(ContinuityTest) name[i] = TestContinuityPSPP1[i]->GetName();

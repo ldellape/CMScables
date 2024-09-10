@@ -88,27 +88,27 @@ const char *labelHV_iso[] = {
     "HV9", "HV10", "HV11", "HV12", 
     "HVR1", "HVR2", "HVR3", 
 };
-const char *labelLV_con[] = {"LV1", "LV1R", 
-    "LV2", "LV2R", 
-    "LV3", "LV3R", 
-    "LV4", "LV4R", 
-    "LV5", "LV5R", 
-    "LV6", "LV6R", 
-    "LV7", "LV7R", 
-    "LV8", "LV8R", 
-    "LV9R", 
-    "LV10", "LV10R", 
-    "LV11", "LV11R", 
-    "LV12", "LV12R", 
+const char *labelLV_con[] = {"LV1", "LVR1", 
+    "LV2", "LVR2", 
+    "LV3", "LVR3", 
+    "LV4", "LVR4", 
+    "LV5", "LVR5", 
+    "LV6", "LVR6", 
+    "LV7", "LVR7", 
+    "LV8", "LVR8", 
+    "LV9", "LVR9", 
+    "LV10", "LVR10", 
+    "LV11", "LVR11", 
+    "LV12", "LVR12", 
     "PH", "PHR"
 };
 const char *labelHV_con[] =  {
     "Tsensor1", "Tsensor2", "Tsensor3", "Tsensor4", 
-    "H1", "H2", "H3", "H4", 
-    "HR1", "H5", "H6", "H7", 
-    "H8", "HR2", "H9", 
-    "H10", "H11", "H12", 
-    "HR3"
+    "HV1", "HV2", "HV3", "HV4", 
+    "HVR1", "HV5", "HV6", "HV7", 
+    "HV8", "HVR2", "HV9", 
+    "HV10", "HV11", "HV12", 
+    "HVR3"
 };
 //////////////////////////////////////////////////
  
