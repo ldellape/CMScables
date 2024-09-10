@@ -8,37 +8,40 @@
 namespace Continuity{
  class PSPP1{
   private:
-    const double diamLV = 0.0012;
-    const double diamHV = 0.00038;
-    const double ResistivityLV = 1.724*TMath::Power(10, -8);
-    const double ResistivityHV = 1.724*TMath::Power(10,-8);
-    std::pair<double,double> FindMaxMinResistence(::TString option);
-  protected:
     TString CableName;
     std::vector<Bool_t> status;
     std::vector<::TString> channel;
     std::vector<double> resistence;
-    std::vector<double> Parameters;
-    std::string ParString;
+    std::tuple<double,double,double,double,double, std::string, double> Parameters;
+    const double diamLV = 0.0012;
+    const double diamHV = 0.00038;
+    Float_t ThreshContLV = 0.65;
+    Float_t ThreshContHV = 13;
+    const double ResistivityLV = 1.724*TMath::Power(10, -8);
+    const double ResistivityHV = 1.724*TMath::Power(10,-8);
+    std::pair<double,double> FindMaxMinResistence(::TString option);
   public:
     PSPP1();
-    PSPP1(std::vector<std::tuple<Bool_t, std::string, double>> &TestOutput, ::TString TestName);
+    PSPP1(std::vector<std::tuple<Bool_t, std::string, double>> &TestOutput, ::TString TestTitle);
     void SetChannels(std::vector<::TString> &channelNames);
     void SetStatus(std::vector<Bool_t> &statusChannels);
     void SetResistence(std::vector<double> &resistenceChannel);
     void SetName(::TString name);
     void SetParameters(std::tuple<double,double,double,double,double,std::string,double> param); 
+    void SetThreshold(::TString option, Float_t Thresh);
     ::TString GetName();
     std::vector<double> GetResistence(::TString option= "all");
     std::vector<Bool_t> GetStatus(::TString = "all");
-    Float_t GetMean(::TString option = "all");
-    Float_t GetMean(TH1F *h);
-    Float_t GetLenght(::TString option);
-    Float_t GetLenght(TH1F* h);
-    Float_t GetStdDev(::TString option);
-    Float_t GetStdDev(TH1F *h);
+    Double_t GetMean(::TString option = "all");
+    Double_t GetMean(TH1F *h);
+    Double_t GetLenght(::TString option);
+    Double_t GetLenght(TH1F* h);
+    Double_t GetStdDev(::TString option);
+    Double_t GetStdDev(TH1F *h);
+    Double_t GetThreshold(::TString option);
+    std::vector<std::pair<TString, double>> GetOverThreshold(::TString option);
     double GetParameter(int param);
-    std::vector<double> GetParameters();
+    std::tuple<double,double,double,double,double, std::string, double> GetParameters();
     TH1F* FillResistenceChannelHistogram(::TString title, ::TString option);
     TH1F* FillResistenceHistogram(::TString option= "all");
     TH1I* FillStatusHistogram(::TString title, ::TString option = "all");

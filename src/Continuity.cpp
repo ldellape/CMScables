@@ -46,15 +46,17 @@ using namespace Continuity;
  //////////////////////////////////////////////////////////////////////
  //
 void PSPP1::SetParameters(std::tuple<double,double,double,double,double,std::string,double> param){ 
-        Parameters.push_back(std::get<0>(param));
-        Parameters.push_back(std::get<1>(param));
-        Parameters.push_back(std::get<2>(param));
-        Parameters.push_back(std::get<3>(param));
-        Parameters.push_back(std::get<4>(param));
-    //    Parameters.push_back(std::get<6>(param));
-        ParString = std::get<5>(param);
+    Parameters = param;
 }
 TString PSPP1::GetName(){ return CableName;}
+
+//////////////////////////////////////////////////////////////////////
+// 
+void PSPP1::SetThreshold(::TString option, Float_t Thresh){
+option.ToUpper();
+if(option == "LV") ThreshContLV = Thresh;
+else if(option == "HV") ThreshContHV = Thresh;
+}
 
 //////////////////////////////////////////////////////////////////////
 // get measured values of resistence based on channel option
@@ -86,6 +88,33 @@ std::vector<double> PSPP1::GetResistence(TString option){
 return vec;
 }
 
+//////////////////////////////////////////////////////////////////////
+// get entries over threshold
+std::vector<std::pair<TString, double>> PSPP1::GetOverThreshold(::TString option){
+   option.ToUpper();
+   std::vector<std::pair<TString, double>> vec;
+   if(option == "LV"){
+      for(int i=0; i<int(resistence.size()); i++){
+        if(resistence[i]>ThreshContLV){
+          vec.push_back(std::make_pair(channel[i], resistence[i]));
+        }
+      }
+    return vec;
+   }
+   else if(option == "HV"){
+      for(int i=0; i<int(resistence.size()); i++){
+        if(resistence[i]>ThreshContHV){
+          vec.push_back(std::make_pair(channel[i], resistence[i]));
+        }
+      }
+    return vec;
+   }
+   else{
+     Error("Continuity::PSPP1::GetOverThreshold(::TString option)", "Invalid Option");
+     return vec;
+   }
+}
+
  //////////////////////////////////////////////////////////////////////
 // get measured status (passed or failed) based on channel option
 std::vector<Bool_t> PSPP1::GetStatus(TString option){
@@ -112,30 +141,40 @@ return status;
 
  //////////////////////////////////////////////////////////////////////
  // get mean value of measured resistence
-Float_t PSPP1::GetMean(TString option){
+Double_t PSPP1::GetMean(TString option){
     option.ToUpper();
     if(option != "LV" && option != "HV"){
         Error("Continuity::PSPP1::GetMean", "invalid option");
         return 0.0;
     }
-    Double_t sum=0;
-    Double_t count=0;
+    Float_t sum=0;
+    Float_t count=0;
+    if(option == "LV"){
     for(int i=0; i<int(resistence.size()); i++){
-        if((channel[i].Contains("LV") || channel[i].Contains("PH")) && option.Contains("LV")){
+        if((channel[i].Contains("LV") || channel[i].Contains("PH"))){
+              if(resistence[i] < ThreshContLV){
                 sum+= resistence[i];
                 count++;
+              }
         }
-        if((channel[i].Contains("HV") || channel[i].Contains("Tsensor")) && option.Contains("HV")){
+    }
+    }
+    else if(option == "HV"){
+    for(int i=0; i<int(resistence.size()); i++){
+     if(channel[i].Contains("HV") || channel[i].Contains("Tsensor")){
+              if(resistence[i] < ThreshContHV){
                 sum+= resistence[i];
                 count++;
+              }
         }
+    }
     }
  return sum/count;    
 }
 
  //////////////////////////////////////////////////////////////////////
  // get mean values of resistence. option = LV, HV
- Float_t PSPP1::GetMean(TH1F *h){
+ Double_t PSPP1::GetMean(TH1F *h){
   Float_t sum =0;
   Float_t count=0;
   for(int i=0; i<h->GetNbinsX(); i++){
@@ -147,25 +186,38 @@ Float_t PSPP1::GetMean(TString option){
 
  //////////////////////////////////////////////////////////////////////
  // get mean values of resistence. option = LV, HV
-Float_t PSPP1::GetStdDev(TH1F* h){
-  Float_t mean = this->GetMean(h);
-  Float_t std = 0;
+Double_t PSPP1::GetStdDev(TH1F* h){
+  Double_t mean = this->GetMean(h);
+  Double_t std = 0;
   for(int i=0; i<h->GetNbinsX(); i++){
     std+= TMath::Power((h->GetBinContent(i) - mean),2);
   }
   return std;
 }
 
+  //////////////////////////////////////////////////////////////////////
+  // get threshold values 
+Double_t PSPP1::GetThreshold(TString option){
+  option.ToUpper();
+  if(option == "LV") return ThreshContLV;
+  else if(option == "HV") return ThreshContHV;
+  else{
+    Error("Isolation::PSPP1::GetThreshold", "invalid option");
+  }
+}
+
+
 
 //////////////////////////////////////////////////////////////////////
 // get the param entry of the parameters vector
-double PSPP1::GetParameter(int param){ 
- return Parameters[param];
+/*
+ PSPP1::GetParameter(int param){ 
+ return std::get<param>(Parameters);
 }
-
+*/
 //////////////////////////////////////////////////////////////////////
 // get vector of parameters
-std::vector<double> PSPP1::GetParameters(){ 
+std::tuple<double,double,double,double,double, std::string, double> PSPP1::GetParameters(){ 
  return Parameters;
 }
 
@@ -174,7 +226,6 @@ std::vector<double> PSPP1::GetParameters(){
 // create histogram for resistence versus channel (to appear on final report)
  TH1F* PSPP1::FillResistenceChannelHistogram(::TString title, ::TString option){
     option.ToUpper();
-    std::cout<<"fill resistence "<<option<<std::endl;
     TH1F *h_temp;
     if(option == "LV"){
         h_temp = new TH1F(title,title, NumberLVcables, 0, NumberLVcables);
@@ -183,7 +234,6 @@ std::vector<double> PSPP1::GetParameters(){
         for(int i=0; i< NumberLVcables; i++ ){
           if(channel[j].CompareTo(labelLV_iso[i])){
             h_temp->SetBinContent(i+1, resistence[j]);
-            std::cout<<"ok   "<<i<<"    "<<resistence[j]<<std::endl;
             break;
           }
         }
@@ -197,7 +247,6 @@ std::vector<double> PSPP1::GetParameters(){
         for(int i=0; i< NumberHVcables; i++ ){
           if(channel[j].CompareTo(labelHV_iso[i]) == 0){
             h_temp->SetBinContent(i+1, resistence[j]);
-            std::cout<<" entry "<< channel[j] << "   " << resistence[j] << std::endl;
             break;
           }
         }
@@ -299,7 +348,7 @@ TH1F* PSPP1::FillResistenceHistogram(::TString option){
 
 //////////////////////////////////////////////////////////////////////
 // compute cable lenght based on measured resistence
-Float_t PSPP1::GetLenght(TString option){
+Double_t PSPP1::GetLenght(TString option){
  if(option == "LV"){
     double mean = GetMean("LV");
     return (mean*TMath::Pi()*TMath::Power(diamLV, 2))/(4*ResistivityLV);
@@ -313,7 +362,7 @@ else{
     return 0.0;
 }
 }
-Float_t PSPP1::GetLenght(TH1F *h){
+Double_t PSPP1::GetLenght(TH1F *h){
  TString name(h->GetTitle());
  double mean = this->GetMean(h);
  if(name.Contains("LV")) return (mean*TMath::Pi()*TMath::Power(diamLV, 2))/(4*ResistivityLV);
@@ -326,20 +375,20 @@ Float_t PSPP1::GetLenght(TH1F *h){
 
 //////////////////////////////////////////////////////////////////////
 // get RMS of measured resistence based on channel 
-Float_t PSPP1::GetStdDev(TString option){
+Double_t PSPP1::GetStdDev(TString option){
  double std = 0;
- if(option="LV"){
-    double mean = GetMean();
+ if(option == "LV"){
+    Double_t mean = this->GetMean("LV");
     for(int j=0; j<int(resistence.size()); j++){
-     if(channel[j].Contains("LV") || channel[j].Contains("PH")){
+     if((channel[j].Contains("LV") || channel[j].Contains("PH")) && resistence[j] < ThreshContLV){
         std+= TMath::Power((resistence[j] - mean),2);
      }
     }
  }
  else if(option == "HV"){
-    double mean = GetMean();
+    Double_t mean = this->GetMean("HV");
     for(int j=0; j<int(resistence.size()); j++){
-     if(channel[j].Contains("LV") || channel[j].Contains("PH")){
+     if((channel[j].Contains("HV") || channel[j].Contains("Tsensor")) && resistence[j] < ThreshContHV){
         std+= TMath::Power((resistence[j] - mean),2);
      }
     }

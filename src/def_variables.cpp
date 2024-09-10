@@ -1,59 +1,52 @@
-// inizialization of global variables //
 #include "../include/def_variables.h"
 
-Int_t IterationTest;
-std::string sPDFTitle;
-std::string currentDate;
-const Float_t ThreshIsoLV = 10000;
-const Float_t ThreshIsoHV = 1e+9;
-const Float_t ThreshContLV = 0.65;
-const Float_t ThreshContHV = 13;
-std::vector<std::string> TestName;
-std::vector<std::string> TestNameTimeAcquisition;
-std::vector<std::string> TestPath;
-
-const int MaxCables = 200;
-const std::string sInputTestDir = std::string(WORKDIR) + "/input/FULL_TEST_su_cavo_ps_pp1_V3/";
-const std::string sInputTimeAcquisition = std::string(WORKDIR) + (sInputTestDir + "/VALORI/").c_str();
-const std::string sOutputRoot= std::string(WORKDIR) + "/output/rootFiles/";
+//////////////////////////////////////////////////
+// vector of objects of the cables classes
+std::vector<Continuity::PSPP1*> TestContinuityPSPP1(100, nullptr);
+std::vector<Isolation::PSPP1*> TestIsolationPSPP1(100, nullptr);
+//////////////////////////////////////////////////
 
 
-const int NumberSensorWire = 4;
-const int NumberHVcables = 19;
-const int NumberLVcables = 25;
-
-
+//////////////////////////////////////////////////
+// control variables
 Bool_t InsulationTest = false; 
 Bool_t ContinuityTest = false;
 Bool_t CommandLine = false;
 Bool_t Ins_Time = false;
-Int_t test_type = 0;
 Int_t CompareTest;
+//////////////////////////////////////////////////
 
-TTree *ContinuityTree;
-TTree *InsulationTree;
-Int_t statusCon, statusIns;
-std::string channelIns, channelCon;
-Float_t resistenceIns, resistenceCon;
-Int_t cableIns, cableCon;
-Float_t FieldIns;
 
-std::vector<std::pair<std::string,Int_t>> HVcables;
-std::vector<std::pair<std::string, Int_t>> LVcables; 
-std::vector<std::pair<std::string,Int_t>> HVcables_rtn;
-std::vector<std::pair<std::string, Int_t>> LVcables_rtn;
-std::vector<std::pair<std::string,Int_t>> TSensor;
-std::vector<std::pair<std::string,Int_t>> Drain;
+//////////////////////////////////////////////////
+// input-output paths
+std::vector<std::string> TestName;
+std::vector<std::string> TestNameTimeAcquisition;
+std::vector<std::string> TestPath;
+std::string sPDFTitle;
+std::string currentDate;
+const std::string sInputTestDir = std::string(WORKDIR) + "/input/FULL_TEST_su_cavo_ps_pp1_V3/";
+const std::string sInputTimeAcquisition = std::string(WORKDIR) + (sInputTestDir + "/VALORI/").c_str();
+const std::string sOutputRoot= std::string(WORKDIR) + "/output/rootFiles/";
+//////////////////////////////////////////////////
 
-std::vector<std::tuple<double,double,double,double,double, std::string>> ParametersContinuity;
-std::vector<std::tuple<double,double,double,double,double, double, double>> ParametersInsulationInitial;
-std::vector<std::tuple<double,double,double, double>> ParametersInsulationLV;
-std::vector<std::tuple<double,double,double,double>> ParametersInsulationHV;
-std::vector<std::tuple<double,double,double,double>> ParametersInsulationTsensor;
 
+//////////////////////////////////////////////////
+Int_t IterationTest; // number of processed test (needed ??)
+const int MaxCables = 200;
+const int NumberHVcables = 19;
+const int NumberLVcables = 25;
+//////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////
+// canvases for final plots
 TCanvas *c_plot;
 TCanvas *c_graph;
+//////////////////////////////////////////////////
 
+
+//////////////////////////////////////////////////
+// vectors of final histograms
 std::vector<TH1I*> h_passedHV_Cont(MaxCables, nullptr);
 std::vector<TH1I*> h_passedLV_Cont(MaxCables, nullptr);
 std::vector<TH1F*> hCont_ResChannel_HV(MaxCables, nullptr);
@@ -69,23 +62,11 @@ std::vector<TH1F*> hIns_ResLV(MaxCables, nullptr);
 std::vector<TH1F*> hIns_ResTot(MaxCables, nullptr);
 std::vector<TH1F*> hIns_ResChannel_LV(MaxCables, nullptr);
 std::vector<TH1F*> hIns_ResChannel_HV(MaxCables, nullptr);
-std::vector<Continuity::PSPP1*> TestContinuityPSPP1(100, nullptr);
-std::vector<Isolation::PSPP1*> TestIsolationPSPP1(100, nullptr);
+//////////////////////////////////////////////////
 
-float OverThreshHV[100] = {0};
-float OverThreshLV[100] = {0};
-float BelowThreshLV[100] = {0};
-float BelowThreshHV[100] = {0};
 
-Float_t ResMaxHV_ins[MaxCables];
-Float_t ResMaxLV_ins[MaxCables];
-Float_t ResMinHV_ins[MaxCables];
-Float_t ResMinLV_ins[MaxCables];
-Float_t ResMaxHV_cont[MaxCables];
-Float_t ResMaxLV_cont[MaxCables];
-Float_t ResMinHV_cont[MaxCables];
-Float_t ResMinLV_cont[MaxCables];
-
+//////////////////////////////////////////////////
+// channel labels
 const char *labelLV_iso[] = {
     "LV1", "LVR1", 
     "LV2", "LVR3", 
@@ -129,6 +110,7 @@ const char *labelHV_con[] =  {
     "H10", "H11", "H12", 
     "HR3"
 };
+//////////////////////////////////////////////////
  
 
 

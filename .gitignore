@@ -8,3 +8,4 @@ auto_commit.log
 cron_env.log
 StatCable.cpp   
 stat_root/
+output/

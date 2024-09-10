@@ -14,6 +14,12 @@
 #include "TSystem.h"
 #include "ROOT/RDataFrame.hxx"
 
+#ifdef WORKDIR
+#else
+#define WORKDIR "."
+#endif
+
+
 
 // ROOT file to appear on web page, defined in main  //
 TFile *f_StatOut;
@@ -137,7 +143,7 @@ void ReadOutput(const std::string TestNameFile, Int_t file) {
 int main(){
 
  ROOT::EnableImplicitMT();
- std::system("mkdir -p stat_root");
+ std::system("mkdir  stat_root");
  std::set<std::string> tests;
  const char *pathOutFile = "./docs/statistics.root";
  const char *TestProcessedTXT = "./docs/statistics_tests.txt";
@@ -146,7 +152,7 @@ int main(){
 // ************* INPUT FILES AND OUTPUT FILES DEFINITIONS ************* //
 // ******************************************************************** //
 if(!gSystem->AccessPathName(pathOutFile)){
-    std::cout << "check if new tests exist..." << std::endl;
+    std::cout << "searching for new test(s)..." << std::endl;
     f_StatOut = TFile::Open(pathOutFile, "UPDATE");
     std::ifstream TestProcessed(TestProcessedTXT);
     std::string str;
@@ -161,28 +167,41 @@ else{
 }
 
 std::vector<std::string> FileNames;
-std::string sInputDir = "./input/FULL_TEST_su_cavo_ps_pp1_V3/";
+std::vector<std::string> FileNamesProcessed;
 
+std::string sInputDir = "/input/FULL_TEST_su_cavo_ps_pp1_V3/";
 for (int i = 0; i < 3; i++) {
-    std::string dir = sInputDir + Form("Cable0%i", i + 1);
+    std::string dir = std::string(WORKDIR) + sInputDir + Form("Cable0%i", i + 1);
     for (const auto& entry : std::filesystem::directory_iterator(dir)) {
-        std::string fullpath = sInputDir + Form("Cable0%i/", i + 1) + entry.path().filename().string();
+        std::string processedText;
+        std::string fullpath;
+        if( entry.path().filename().string() != "tmp"){
+        fullpath = std::string(WORKDIR) + sInputDir + Form("Cable0%i/", i + 1) + entry.path().filename().string();
+        processedText = std::string(WORKDIR) + sInputDir + Form("Cable0%i/",i+1) + "tmp/processed_" + entry.path().filename().string();
         if(entry.path().filename() != "VALORI" && tests.find(fullpath) == tests.end()){
-            std::cout << "new test(s) will be added: " << fullpath << std::endl;
+            FileNamesProcessed.push_back(processedText);
             FileNames.push_back(fullpath);
+        }
         }
     }
 }
 if(FileNames.empty()){
-    std::cout << "statistics is already updated. End." << std::endl;
+    std::cout << "\033[32mstatistics is already up to date. End. \033[0m " << std::endl;
+    std::system("rm -r stat_root");
     return 0;
 }
 std::ofstream UpdateTests(TestProcessedTXT, std::ios::app);
 
 Int_t file = 0;
 for (int j = 0; j < int(FileNames.size()); j++) {
+    std::cout<<"\033[32mnew test will be added: \033[0m "<<std::endl;
+    std::cout<<FileNamesProcessed[j]<<std::endl;
     ++file;
-    ReadOutput(FileNames[j], file);
+    if(!std::filesystem::exists(FileNamesProcessed[j].c_str())){
+        std::string command = "python3 " + std::string(WORKDIR) + "/py/ManageTXT.py ";
+        std::system((command + FileNames[j]).c_str());
+    }
+    ReadOutput(FileNamesProcessed[j], file);
     UpdateTests << FileNames[j] << "\n";
     tests.insert(FileNames[j]);
 }
@@ -191,8 +210,6 @@ UpdateTests.close();
 // ********************************************************************* //
 // ************** END INPUT FILES AND OUTPUT DEFINITIONS *************** //
 // ********************************************************************* //
-
-
 
 TChain inputChain_continuity("TestResultContinuity");
 TChain inputChain_isolation("TestResultIsolation");
@@ -219,6 +236,7 @@ DrawPlot("Continuity Test HV and Tsensors channels resistence, all cables", h_HV
 DrawPlot("Isolation Test LV and PH channels resistence, all cables", h_LV_ResistenceIsolation, "hist");
 DrawPlot("Continuity Test LV and PH channels resistence, all cables", h_LV_ResistenceContinuity, "hist");
 f_StatOut->Close(); 
+std::cout<<"\033[32mdone \033[0m"<<std::endl;
 
 std::system("rm -r stat_root");
 

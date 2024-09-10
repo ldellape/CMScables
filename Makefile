@@ -9,7 +9,7 @@ TARGET_STAT = $(PREFIX)/statistics
 
 CXX = g++
 CXXFLAGS = -Wall -I include -I src $(shell root-config --cflags) -DPREFIX='"$(PREFIX)"' -DWORKDIR='"$(PWD)"'
-CXXFLAGS_STAT = -Wall $(shell root-config --cflags) 
+CXXFLAGS_STAT = -Wall $(shell root-config --cflags)  -DWORKDIR='"$(PWD)"'
 
 SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SOURCES))

@@ -53,13 +53,8 @@ using namespace Isolation;
 
  //////////////////////////////////////////////////////////////////////
  // set initial parameters of the test 
- void PSPP1::SetInitialParameters(std::tuple<double,double,double,double,double,double,double> param){ 
-    InitialParameters.push_back(std::get<0>(param));
-    InitialParameters.push_back(std::get<1>(param));
-    InitialParameters.push_back(std::get<2>(param));
-    InitialParameters.push_back(std::get<3>(param));
-    InitialParameters.push_back(std::get<4>(param));
-    InitialParameters.push_back(std::get<5>(param));
+ void PSPP1::SetInitialParameters(std::tuple<double,double,double,double,double, std::string, double, std::string, double, double> param){ 
+    InitialParameters = param;
  }
 
 
@@ -67,6 +62,26 @@ using namespace Isolation;
  // functions to get class fields 
  TString PSPP1::GetName(){ 
   return CableName;
+ }
+
+  //////////////////////////////////////////////////////////////////////
+ // set threshold values 
+ void PSPP1::SetThreshold(Float_t thresh, TString option){
+  option.ToUpper();
+  if(option == "LV") ThreshIsoLV = thresh;
+  else if(option == "HV") ThreshIsoHV = thresh;
+  else{
+    Error("Isolation::PSPP1::SetThreshold", "invalid option");
+  } 
+ }
+
+ //////////////////////////////////////////////////////////////////////
+ // set isolation parameters 
+ void PSPP1::SetIsolationPar(TString option, std::vector<double> &pars){
+  option.ToUpper();
+  if(option=="LV") for(int i=0; i<int(pars.size()); i++){ IsolationParLV.push_back(pars[i]);}
+  else if(option == "HV")  for(int i=0; i<int(pars.size()); i++){ IsolationParHV.push_back(pars[i]);}
+  else if(option = "TSENSOR") for(int i=0; i<int(pars.size()); i++){ IsolationParTsensor.push_back(pars[i]);}
  }
 
  
@@ -127,46 +142,47 @@ return status;
   return FieldB;
  }
 
- std::vector<double> PSPP1::GetInitialParameters(){
+ std::tuple<double,double,double,double,double, std::string, double, std::string, double, double> PSPP1::GetInitialParameters(){
     return InitialParameters;
  }
 
  //////////////////////////////////////////////////////////////////////
  // get mean values of resistence. option = LV, HV
- Float_t PSPP1::GetMean(TString option){
- std::cout<<option<<std::endl;
- if(option == "LV"){
-  double count=0;
-  double sum=0;
-    for(int i=0; i<NumberHVcables; i++){
-     if(channel[i].Contains("LV") || channel[i].Contains("PH")){
-      sum+= resistence[i];
-      count++;
-     }
+Double_t PSPP1::GetMean(TString option){
+    option.ToUpper();
+    if(option != "LV" && option != "HV"){
+        Error("Isolation::PSPP1::GetMean", "invalid option");
+        return 0.0;
     }
-  return sum/count;
- }
- else if(option == "HV"){
- double count=0;
- double sum=0;
-    for(int i=0; i<NumberLVcables; i++){
-     if(channel[i].Contains("HV") || channel[i].Contains("Tsensor") && resistence[i] != 0){
-      std::cout<<"mean " <<  channel[i] << std::endl;
-      sum+= resistence[i];
-      count++;
-     }
+    Double_t sum=0;
+    Double_t count=0;
+    if(option == "LV"){
+    for(int i=0; i<int(resistence.size()); i++){
+        if((channel[i].Contains("LV") || channel[i].Contains("PH"))){
+              if(resistence[i] > ThreshIsoLV){
+                sum+= resistence[i];
+                count++;
+              }
+        }
     }
- return sum/count;
- }
- else{
-    Error("Isolation::PSPP1::GetMean()", "invalid option");
-    return 0.0;
- }
+    }
+    else if(option == "HV"){
+    for(int i=0; i<int(resistence.size()); i++){
+     if(channel[i].Contains("HV") || channel[i].Contains("Tsensor")){
+              if(resistence[i] > ThreshIsoHV){
+                sum+= resistence[i];
+                count++;
+              }
+        }
+    }
+    }
+ return sum/count;    
 }
+
 
  //////////////////////////////////////////////////////////////////////
  // get mean values of resistence. option = LV, HV
- Float_t PSPP1::GetMean(TH1F *h){
+ Double_t PSPP1::GetMean(TH1F *h){
   Float_t sum =0;
   Float_t count=0;
   for(int i=0; i<h->GetNbinsX(); i++){
@@ -178,21 +194,40 @@ return status;
 
  //////////////////////////////////////////////////////////////////////
  // get mean values of resistence. option = LV, HV
-Float_t PSPP1::GetStdDev(TH1F* h){
-  Float_t mean = this->GetMean(h);
-  Float_t std = 0;
+Double_t PSPP1::GetStdDev(TH1F* h){
+  Double_t mean = this->GetMean(h);
+  Double_t std = 0;
   for(int i=0; i<h->GetNbinsX(); i++){
     std+= TMath::Power((h->GetBinContent(i) - mean),2);
   }
   return std;
 }
 
+  //////////////////////////////////////////////////////////////////////
+  // get threshold values 
+Double_t PSPP1::GetThreshold(TString option){
+  option.ToUpper();
+  if(option == "LV") return ThreshIsoLV;
+  else if(option == "HV") return ThreshIsoHV;
+  else{
+    Error("Isolation::PSPP1::GetThreshold", "invalid option");
+  }
+}
+
+//////////////////////////////////////////////////////////////////////
+//
+std::vector<double> PSPP1::GetIsolationPar(TString option){
+  option.ToUpper();
+  if(option == "LV") return IsolationParLV;
+  if(option == "HV") return IsolationParHV;
+  if(option == "TSENSOR") return IsolationParTsensor;
+ }
+
 
 //////////////////////////////////////////////////////////////////////
 // create histogram for resistence versus channel (to appear on final report)
  TH1F* PSPP1::FillResistenceChannelHistogram(::TString title, ::TString option){
     option.ToUpper();
-    std::cout<<"fill resistence "<<option<<std::endl;
     TH1F *h_temp;
     if(option == "LV"){
         h_temp = new TH1F(title,title, NumberLVcables, 0, NumberLVcables);
@@ -201,7 +236,6 @@ Float_t PSPP1::GetStdDev(TH1F* h){
         for(int i=0; i< NumberLVcables; i++ ){
           if(channel[j].CompareTo(labelLV_iso[i]) == 0){
             h_temp->SetBinContent(i+1, resistence[j]);
-            std::cout<<" entry "<< channel[j] << "   " << resistence[j] << std::endl;
             break;
           }
         }
@@ -215,7 +249,6 @@ Float_t PSPP1::GetStdDev(TH1F* h){
         for(int i=0; i< NumberHVcables; i++ ){
           if(channel[j].CompareTo(labelHV_iso[i]) == 0){
             h_temp->SetBinContent(i+1, resistence[j]);
-            std::cout<<" entry "<< channel[j] << "   " << resistence[j] << std::endl;
             break;
           }
         }
@@ -303,37 +336,30 @@ std::pair<double,double> PSPP1::FindMaxMinResistence(::TString Option){
     }
     return std::make_pair(min, max);
 }
-/*
+
 //////////////////////////////////////////////////////////////////////
-// get standard deviation
-Float_t PSPP1::GetStdDev(TString option){
- option.ToUpper();
+// get RMS of measured resistence based on channel 
+Double_t PSPP1::GetStdDev(TString option){
+ double std = 0;
  if(option == "LV"){
-    double mean = GetMean("LV");
-    double std = 0;
+    Double_t mean = this->GetMean("LV");
     for(int j=0; j<int(resistence.size()); j++){
-     if(channel[j].Contains("LV") || channel[j].Contains("PH")){
+     if((channel[j].Contains("LV") || channel[j].Contains("PH")) && resistence[j] > ThreshIsoLV){
         std+= TMath::Power((resistence[j] - mean),2);
      }
     }
-  std::cout<<std<<std::endl;
-  return std;
  }
  else if(option == "HV"){
-    double mean = GetMean("HV");
-    double std = 0;
+    Double_t mean = this->GetMean("HV");
     for(int j=0; j<int(resistence.size()); j++){
-     if(channel[j].Contains("LV") || channel[j].Contains("PH")){
+     if((channel[j].Contains("HV") || channel[j].Contains("Tsensor")) && resistence[j] > ThreshIsoLV){
         std+= TMath::Power((resistence[j] - mean),2);
      }
     }
-   return std;
  }
- else{
-    Error("Isolation::PSPP1::GetStdDev()", "invalid option");
-    return 0.0;
+ else {
+    Error("Continuity::PSPP1::GetMean", "invalid option");
  }
+ return std;
 }
-
-*/
 

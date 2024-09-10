@@ -33,6 +33,31 @@ Insulation_test_index = None
 continuity_labels = []
 insulation_labels = []
 
+def changeLine(riga):
+        riga = riga.replace("Current", "")
+        riga = riga.replace("Threshold", "")
+        riga = riga.replace(";", "")
+        riga = riga.replace("Twait", "")
+        riga = riga.replace("Tmeas", "")
+        riga = riga.replace("Auto ranging", "")
+        riga = riga.replace("Trise", "")
+        riga = riga.replace("m", "")
+        riga = riga.replace("A", "")
+        riga = riga.replace("s", "")
+        riga = riga.replace("Ohm", "")
+        riga = riga.replace("=", "")
+        riga = riga.replace("MOh", "")
+        riga = riga.replace("GOh", "")
+        riga = riga.replace("Voltage", "")
+        riga = riga.replace("k", "")
+        riga = riga.replace(",", ".")
+        riga = riga.replace("Oh", "")
+        riga = riga.replace("V", "")
+        return riga
+def cleanParam(riga):
+    matches = re.findall(r'\d+.\d+|Off\b|\d+',riga)
+    return ' '.join(matches)
+
 for index, line in enumerate(lines):
     line = line.strip()
 
@@ -54,35 +79,25 @@ for index, line in enumerate(lines):
         filtered_lines.append("InsulationTest")
         Insulation_test_index = len(filtered_lines) - 1
     elif "Tmeas=" in line:
-        line = line.replace("Current", "")
-        line = line.replace("Threshold", "")
-        line = line.replace(";", "")
-        line = line.replace("Twait", "")
-        line = line.replace("Tmeas", "")
-        line = line.replace("Auto ranging", "")
-        line = line.replace("Trise", "")
-        line = line.replace("m", "")
-        line = line.replace("A", "")
-        line = line.replace("s", "")
-        line = line.replace("Ohm", "")
-        line = line.replace("=", "")
-        line = line.replace("MOh", "")
-        line = line.replace("GOh", "")
-        line = line.replace("Voltage", "")
-        line = line.replace("k", "")
-        line = line.replace(",", ".")
-        line = line.replace("Oh", "")
-        line = line.replace("V", "")
+        line = changeLine(line)
+        if "Voltage limit" in lines[index +1]:
+            next_line = lines[index +1].strip()
+            next_line = next_line.replace("Voltage limit=", "")
+            next_line = next_line.replace("V", "")
+            line+= " " + next_line
+        elif "Current limit" in lines[index+1]:
+            next_line = lines[index +1].strip()
+            next_line = next_line.replace(",",".")
+            next_line = cleanParam(next_line)
+            line+= " " + next_line
         param_lines.append(line)
     if re.search(r'Tsensor\d', line) and Insulation_test_index is not None and index > Insulation_test_index:
         tsensors_lines.append(line)
 
 final_lines = param_lines + filtered_lines
 filtered_text = '\n'.join(final_lines)
-print(output_dir)
-print(output_filename)
 # Write the processed data to the new file
 with open(output_dir + output_filename, 'w', encoding='utf-8') as file:
     file.write(filtered_text)
 
-print(f"\033[32mInput text file processed and saved as: '{output_filename}'.\033[0m")
+print(f"\033[32mInput text file processed and saved as: '{output_dir + output_filename}'.\033[0m")

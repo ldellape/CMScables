@@ -4,18 +4,22 @@
 
 namespace Python{
  namespace PSPP1{
-    // changing TXT file form CEETIS //
+    // change text file mfrom ceetis, new files store in temporarly dirs
     void ChangeTextFile(std::string TestName){
       std::string pythonScript = "python3 " + std::string(WORKDIR) + "/py/ManageTXT.py ";
       std::system((pythonScript + TestName).c_str());
       return;
     }
-    // changing .INI files from CEETIS for time vs resistenc plots//
+
+
+    // changing .INI files from CEETIS for time vs resistenc plots 
     void ChangeTextFileINI(std::string path){
       std::string PythonINIcommand = "python3 " + std::string(WORKDIR) +"/py/ManageINI.py " + path + " 2>/dev/null";
       std::system(PythonINIcommand.c_str());
       return;
     }
+
+    // building final pdf file
     void WriteFinalReport(std::string PDFname, std::string CableName){
       std::string command;
       std::cout<<"creating Final Report..." <<std::endl;
@@ -50,13 +54,13 @@ namespace Python{
         + sInputPlotsCheck;
       }
       std::cout<<command<<std::endl;
-      // run python script //
       std::system(command.c_str());
       std::cout<<"*****************************************"<<std::endl;
       std::cout<<"\033[32mFinal REPORT saved as "<< std::string(WORKDIR) <<"/output/report/Report_"+ PDFname +"\033[0m" <<std::endl;
       return;
     }
 
+    // updating the HTML page with new processed test (push once a day)
     void UpdateHTML(std::string ReportTitle){
       std::system(" mv index.html index.txt");
       std::string command;

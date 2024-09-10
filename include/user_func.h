@@ -26,6 +26,7 @@ std::vector<std::string> DirTimeAcquisition();
 
 
 //////////////////////////////////////////////////////////////////////
+// print logo and store date and time of execution
 void printlogo(){    
     TDatime dt;
     int day = dt.GetDay();
@@ -62,8 +63,8 @@ void printlogo(){
  * )"+currentDate + R"(                                      *
  ************************************************************ )"; 
  std::cout << green << textCMS  << reset << std::endl;
- std::cout<< green << "Test su cavo PS-PP1" << reset <<std::endl;
- std::system("mkdir -p ./output/plots && mkdir -p ./output/plots/SingleCable && mkdir -p ./output/plots/CheckCable && mkdir -p ./output/report && mkdir -p ./output/plotsTimeResistence" );
+  std::cout<<"*****************************************"<<std::endl;
+ std::system(" mkdir -v ./output && mkdir -v ./output/rootFiles && mkdir -v ./output/plots && mkdir -v ./output/plots/SingleCable && mkdir -v ./output/plots/CheckCable && mkdir -p ./output/report && mkdir -p ./output/plotsTimeResistence" );
  std::cout<<"*****************************************"<<std::endl;
  std::cout<<"Input Directory ---> " ;
  std::cout<<sInputTestDir<<std::endl;
@@ -73,9 +74,11 @@ void printlogo(){
  std::cout<<"****************************************"<<std::endl;
 }
 
+
 //////////////////////////////////////////////////////////////////////
 // only for command line input 
 void start(int number_arg, char *argument[]){
+    Int_t test_type;
     Bool_t ValidOption= false;
     for (int i = 1; i < number_arg; ++i) {
     std::string arg = argument[i];
@@ -142,6 +145,8 @@ void start(int number_arg, char *argument[]){
     }
 
 }
+//////////////////////////////////////////////////////////////////////
+
 
 //////////////////////////////////////////////////////////////////////
 // only for mode 1
@@ -220,10 +225,13 @@ std::vector<std::string> listAndChooseFiles() {
     }
     return TestTemp;
 }
+//////////////////////////////////////////////////////////////////////
+
 
 //////////////////////////////////////////////////////////////////////
 // only for mode 1
 void TestType() {
+    Int_t test_type;
     std::cout << "0 for continuity test, 1 for insulation test, 2 for both: " << std::endl;
     std::cout<<"*****************************************"<<std::endl;
     std::cin >> test_type;
@@ -242,6 +250,8 @@ void TestType() {
         gROOT->ProcessLine(".q");
     }
 }
+//////////////////////////////////////////////////////////////////////
+
 
 //////////////////////////////////////////////////////////////////////
 // only for mode 1
@@ -261,6 +271,8 @@ Bool_t TimeAcquisition() {
 
 return choice;
 }
+//////////////////////////////////////////////////////////////////////
+
 
 //////////////////////////////////////////////////////////////////////
 // only for TimeRes = true, form command line in mode 1 or from makefile 
@@ -276,6 +288,7 @@ std::vector<std::string> DirTimeAcquisition(){
     }
  return Directories;
 }
+//////////////////////////////////////////////////////////////////////
 
 
 #endif

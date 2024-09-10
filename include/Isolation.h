@@ -11,82 +11,49 @@
 namespace Isolation{
  class PSPP1{
   private: 
-    std::pair<double,double> FindMaxMinResistence(::TString Option = "all");
-    std::string CableName;
+    TString CableName;
     std::vector<bool> status;
     std::vector<::TString> channel;
     std::vector<double> resistence;
-    std::vector<double> InitialParameters;
+    std::tuple<double,double,double,double,double, std::string, double, std::string, double, double> InitialParameters;
     std::vector<double> FieldB;
-    std::tuple<double,double,double, double> IsolationParLV;
-    std::tuple<double,double,double,double> IsolationParHV;
-    std::tuple<double,double,double,double> IsolationParTsensor;
+    std::vector<double> IsolationParLV;
+    std::vector<double> IsolationParHV;
+    std::vector<double> IsolationParTsensor;
+    std::pair<double,double> FindMaxMinResistence(::TString Option = "all");
+    Float_t ThreshIsoLV = 10000;
+    Float_t ThreshIsoHV = 1e+9;
  public:
     PSPP1();
-    PSPP1(std::vector<std::tuple<bool, std::string, double, double>> &TestOutput, ::TString TestName);
+    PSPP1(std::vector<std::tuple<bool, std::string, double, double>> &TestOutput, ::TString TestTitle);
     void SetChannels(std::vector<::TString> &channelNames);
     void SetStatus(std::vector<Bool_t> &statusChannels);
     void SetResistence(std::vector<double> &resistenceChannel);
     void SetField(std::vector<double> &B);
     void SetName(::TString name);
-    void SetInitialParameters(std::tuple<double,double,double,double,double,double,double> param);
+    void SetInitialParameters(std::tuple<double,double,double,double,double, std::string, double, std::string, double, double> param);
+    void SetThreshold(Float_t thresh, ::TString option);
+    void SetIsolationPar(::TString option, std::vector<double> &pars);
     TString GetName();
     std::vector<double> GetResistence(::TString option= "all");
     std::vector<Bool_t> GetStatus(::TString option = "all");
     std::vector<double> GetFieldB(::TString option = "all");
-    template <typename T> std::vector<T> FilterChannel(TString option, TString vector);
-    //Float_t GetStdDev(::TString option = "all");
-    Float_t GetStdDev(TH1F *h);
-    Float_t GetMean(TH1F *h);
-    Float_t GetMean(::TString option = "all");
-    std::vector<double> GetInitialParameters();
+    std::vector<double> GetIsolationPar(TString option);
+    Double_t GetStdDev(::TString option );
+    Double_t GetStdDev(TH1F *h);
+    Double_t GetMean(TH1F *h);
+    Double_t GetMean(::TString option = "all");
+    Double_t GetThreshold(::TString option);
+    std::tuple<double,double,double,double,double, std::string, double, std::string, double, double> GetInitialParameters();
     TH1F* FillResistenceChannelHistogram(::TString title, ::TString option= "all");
     TH1I* FillStatusHistogram(::TString title, ::TString option = "all");
     TH1F* FillResistenceHistogram(::TString title, ::TString option= "all");
-
-    // *************************************************** //
-    // ---> template methods //
-    template<typename... TT> std::tuple<TT ...> GetIsolationPar(TString option); 
-    template<typename... TT> void SetIsolationPar(::TString option, std::tuple<TT...> pars);
+    //////////////////////////////////////////////////////////////////////
+    // template methods 
+    template <typename T> std::vector<T> FilterChannel(TString option, TString vector);
     template<typename histo> histo* Add(histo *h, ::TString option, PSPP1 *cable1, Float_t c1 = 1);
  };
 
-// ************ template method implementation ************ //
-// ******************************************************** //
-
-//////////////////////////////////////////////////////////////////////
-// set isolation parameters 
-template<typename... TT> void PSPP1::SetIsolationPar(::TString option, std::tuple<TT ...> pars){
-    option.ToUpper();
-    if(option == "LV"){
-        IsolationParLV = pars;
-    }
-    else if(option == "HV"){
-        IsolationParHV = pars;
-    }
-    else if(option == "TSENSOR" || option=="TSENSORS"){
-        IsolationParTsensor = pars;
-    }
-    else{
-        Error("Isolation::PSPP1::SetIsolationPar", "invalid option");
-        return;
-    }
-}
-
-//////////////////////////////////////////////////////////////////////
-// get parameters of isolation test for LV,HV and Tsensor (not the initial parameters)
-template<typename...TT> std::tuple<TT...>  PSPP1::GetIsolationPar(TString option){
-    option.ToUpper();
-    if(option == "LV"){
-        return IsolationParLV;
-    }
-    else if(option == "HV"){
-        return IsolationParHV;
-    }
-    else if (option == "TSENSOR"){
-        return IsolationParTsensor;
-    }
-}
 
 //////////////////////////////////////////////////////////////////////
 // sum/difference operation between two cables
