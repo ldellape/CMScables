@@ -27,8 +27,6 @@ extern std::vector<Isolation::PSPP1*> TestIsolationPSPP1;
 extern Bool_t InsulationTest; 
 extern Bool_t ContinuityTest;
 extern Bool_t Ins_Time;
-extern Int_t CompareTest;
-extern Bool_t CommandLine;
 //////////////////////////////////////////////////
 
 
@@ -50,6 +48,10 @@ extern Int_t IterationTest; // number of processed test (needed ??)
 extern const int MaxCables;
 extern const int NumberHVcables;
 extern const int NumberLVcables;
+#ifdef AUTO_TEST
+extern Int_t NumberNewTests;
+#else
+#endif
 //////////////////////////////////////////////////
 
 

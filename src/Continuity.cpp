@@ -48,7 +48,13 @@ using namespace Continuity;
 void PSPP1::SetParameters(std::tuple<double,double,double,double,double,std::string,double> param){ 
     Parameters = param;
 }
+void PSPP1::SetPath(std::string path){
+  TestPath = path;
+}
+
 TString PSPP1::GetName(){ return CableName;}
+
+std::string PSPP1::GetPath(){ return TestPath; }
 
 //////////////////////////////////////////////////////////////////////
 // 

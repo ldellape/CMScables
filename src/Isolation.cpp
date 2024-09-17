@@ -1,7 +1,12 @@
 #include "../include/def_variables.h"
 #include "../include/root.h"
 #include "../include/Isolation.h"
+#include "../include/py_run.h"
 #include "TError.h"
+#include <filesystem>
+#include <sstream>
+#include <fstream>
+
 
 using namespace Isolation;
 
@@ -57,11 +62,19 @@ using namespace Isolation;
     InitialParameters = param;
  }
 
+ void PSPP1::SetPath(std::string path){
+   TestPath = path;
+ }
+
 
  //////////////////////////////////////////////////////////////////////
  // functions to get class fields 
  TString PSPP1::GetName(){ 
   return CableName;
+ }
+
+ std::string PSPP1::GetPath(){
+  return TestPath;
  }
 
   //////////////////////////////////////////////////////////////////////
@@ -362,4 +375,47 @@ Double_t PSPP1::GetStdDev(TString option){
  }
  return std;
 }
+/*
+
+//////////////////////////////////////////////////////////////////////
+// fill Graph resistence vs time
+std::vector<std::pair<std::string,TGraph*>> PSPP1::FillGraphTimeResistence(TString option){
+  TString path = this->GetPath();
+  TString pathVAL = path + "/VALORI/" + 
+  int NumberChannel;
+  if(option = "LV") NumberChannel = NumberLVcables;
+  //else if(option = "LVR") NumberChannel = NumberLVRcables;
+  TGraph *gr_temp;
+  std::vector<std::pair<std::string, TGraph*>> gr_Time;
+  if(gSystem->AccessPathName(pathVAL.c_str()) || (option.Contains("LV") && option.Contains("LVR"))){
+    Error("Isolation::PSPP1::FillGraphResistence()", "no measurements available or incorrect option");
+    return gr_Time;
+  }
+  else{
+  Int_t number_point=0;
+  std::vector<double> ResTime;
+  std::vector<double> number_value;
+  std::string line;
+  for(int i=1; i< NumberChannel; i++){ 
+  std::string pathINI = pathVAL + option + std::to_string(i);
+  if(!gSystem->AccessPathName(pathINI.c_str())) Python::PSPP1::ChangeTextFile(pathINI);
+  std::ifstream inputTimeTesolution(pathINI);
+    while(std::getline(inputTimeTesolution, line)){
+        std::stringstream ss(line);
+        double value;
+        if(ss >> value){
+            number_point++;
+            number_value.push_back(number_point);
+            ResTime.push_back(value);
+        }
+    }
+    inputTimeTesolution.close();
+    TGraph *gr_temp = new TGraph(number_point, &number_value[0], &ResTime[0]);
+    gr_Time.push_back(std::make_pair(Form("LV%i", i), gr_temp));
+  }
+    return gr_Time;
+  }
+}
+
+*/
 

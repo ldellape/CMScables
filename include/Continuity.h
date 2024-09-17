@@ -12,6 +12,7 @@ namespace Continuity{
     std::vector<Bool_t> status;
     std::vector<::TString> channel;
     std::vector<double> resistence;
+    std::string TestPath;
     std::tuple<double,double,double,double,double, std::string, double> Parameters;
     const double diamLV = 0.0012;
     const double diamHV = 0.00038;
@@ -23,6 +24,7 @@ namespace Continuity{
   public:
     PSPP1();
     PSPP1(std::vector<std::tuple<Bool_t, std::string, double>> &TestOutput, ::TString TestTitle);
+    void SetPath(std::string path);
     void SetChannels(std::vector<::TString> &channelNames);
     void SetStatus(std::vector<Bool_t> &statusChannels);
     void SetResistence(std::vector<double> &resistenceChannel);
@@ -39,6 +41,7 @@ namespace Continuity{
     Double_t GetStdDev(::TString option);
     Double_t GetStdDev(TH1F *h);
     Double_t GetThreshold(::TString option);
+    std::string GetPath();
     std::vector<std::pair<TString, double>> GetOverThreshold(::TString option);
     double GetParameter(int param);
     std::tuple<double,double,double,double,double, std::string, double> GetParameters();
@@ -111,9 +114,20 @@ template <typename T> std::vector<T> PSPP1::FilterChannel(TString option, TStrin
 
 
  class Octopus{
+    private: 
+    TString OctopusName;
+    const int NumberBranch = 12;
+    std::vector<std::pair<int, TString>> Channel;
+    std::vector<bool> status;
+    std::string TestPath;
     public:
     Octopus();
+    Octopus(std::vector<std::tuple<bool, std::string, double, double>> &TestOutput, ::TString TestTitle);
+    void SetPath(std::string path);
+    void SetName(std::string )
+
  };
+
 
 }
 

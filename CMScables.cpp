@@ -20,55 +20,56 @@
 
 
 #ifdef AUTO_TEST // automatic test--> report for the more recently txt file 
-#define AutoTest 
+ #define AutoTest 
 #elif defined(INTER_TEST) // --> choose test from command line
-#define InterTest
+ #define InterTest
 #endif
 
 
-int main(int argc, char* argv[]){
+int main(){
  printlogo();
- if(argc>1) start(argc, argv); // mode 3, from command line 
+ std::this_thread::sleep_for(std::chrono::seconds(3));
 
  #ifdef TIME_RES
  Ins_Time = true;
  #endif
-
 
 // ************************************* //
 // ************ INPUT TESTS ************ //
 // ************************************* //
 // mode 1 and mode 2 //
 std::string pathTEST;
-if(!CommandLine){
-  #ifdef InterTest // mode 1 
+#ifdef InterTest // mode 1 
    TestName = listAndChooseFiles();
    TestType();
    IterationTest = TestName.size();
-   if(!ContinuityTest){
+   if(InsulationTest){
     Ins_Time = TimeAcquisition();
     if(Ins_Time){
       TestNameTimeAcquisition = DirTimeAcquisition();
     }
    }
-  #elif defined(AutoTest) // mode 2 
-    std::string commandTXT = "cd " + sInputTestDir + " && find . -type f -name \"*.txt\" -exec stat --format='%Y %n' {} + | sort -nr | head -n 1 | cut -d' ' -f2- > temp";
-    std::system(commandTXT.c_str());
-    std::ifstream pathTemp((sInputTestDir + "temp").c_str());
-    std::string recentTEST;
-    while(std::getline(pathTemp, recentTEST)){
-      pathTEST = sInputTestDir + recentTEST;
-    } 
-    TestName.push_back(pathTEST);
-  
-    pathTemp.close();
-    std::system(("cd " + sInputTestDir + " && rm temp").c_str());
-    ContinuityTest =n true;
-    InsulationTest = true;
+#elif defined(AutoTest) // mode 2 
+    // searching for new tests //
+    int NumberCables = 0;
+    for(const auto& entry : std;;filesystem::directory_iteratior(sInputDir)){
+      if(std::filesystem::is_directory(entry)) ++NumberCables;
+    }
+    for(int i=0; i<NumberCables; i++){
+      std::string dir = std::string(WORKDIR) + sInputDir + Form("Cable0%i", i + 1);
+      for (const auto& entry : std::filesystem::directory_iterator(dir)) {
+       std::string fullpath;
+       fullpath = std::string(WORKDIR) + sInputDir + Form("Cable0%i/", i + 1) + entry.path().filename().string();
+        if(entry.path().filename() != "VALORI" && tests.find(fullpath) == tests.end()){
+            TestName.push_back(fullpath);
+        }
+      }
+    }
+    ContinuityTest = true;
+    IsolationTest = true;
     std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST && ISOLATION TEST\033[0m" << std::endl;
-    TestNameTimeAcquisition = DirTimeAcquisition();
 #endif
-}
+
 IterationTest = TestName.size();
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"Test Processati:   "<<std::endl;
@@ -83,7 +84,7 @@ std::cout<<"*****************************************"<<std::endl;
 
 
 // ********* changing txt files and store Continuity/Isolation class objects **************** //
-// ***************************************************************************************** //
+// ****************************************************************************************** //
 std::cout<<"preparing text files..." <<std::endl;
 for(int i=0; i<int(TestName.size()); i++){
 Python::PSPP1::ChangeTextFile(TestName[i]);
@@ -135,27 +136,27 @@ c_plot = new TCanvas("c_plot","c_plot", 3000, 3500);
 c_plot->Divide(2,3);
 
 if(InsulationTest && ContinuityTest){
- sPDFTitle = TestIsolationPSPP1[0]->GetName() + "___" + currentDate;
- plotting<TH1I*>(h_passedCont_tot ,"ContinuityTest_All_Passed-Failed",1);
- plotting<TH1I*>(h_passedIns_tot , "InsulationTest_All_Passed-Failed",2);
- plotting<TH1F*>(hIns_ResChannel_HV , "InsulationTest_HV_Resistence",3);
- plotting<TH1F*>(hIns_ResChannel_LV , "InsulationTest_LV_Resistence",4);
- plotting<TH1F*>(hCont_ResChannel_HV,"ContinuityTest_ResistenceHV",5);
- plotting<TH1F*>(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV", 6);
+  sPDFTitle = TestIsolationPSPP1[0]->GetName() + "___" + currentDate;
+  plotting<TH1I*>(h_passedCont_tot ,"ContinuityTest_All_Passed-Failed",1);
+  plotting<TH1I*>(h_passedIns_tot , "InsulationTest_All_Passed-Failed",2);
+  plotting<TH1F*>(hIns_ResChannel_HV , "InsulationTest_HV_Resistence",3);
+  plotting<TH1F*>(hIns_ResChannel_LV , "InsulationTest_LV_Resistence",4);
+  plotting<TH1F*>(hCont_ResChannel_HV,"ContinuityTest_ResistenceHV",5);
+  plotting<TH1F*>(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV", 6);
 }
 else if(InsulationTest && !ContinuityTest){
- sPDFTitle = TestIsolationPSPP1[0]->GetName() + "___" + currentDate;
- plotting<TH1I*>(h_passedHV_Ins , "InsulationTest_HV_Passed-Failed", 1);
- plotting<TH1I*>(h_passedLV_Ins , "InsulationTest_LV_Passed-Failed", 2);
- plotting<TH1F*>(hIns_ResChannel_HV , "InsulationTest_HV_Resistence", 3);
- plotting<TH1F*>(hIns_ResChannel_LV , "InsulationTest_LV_Resistence", 4);
+  sPDFTitle = TestIsolationPSPP1[0]->GetName() + "___" + currentDate;
+  plotting<TH1I*>(h_passedHV_Ins , "InsulationTest_HV_Passed-Failed", 1);
+  plotting<TH1I*>(h_passedLV_Ins , "InsulationTest_LV_Passed-Failed", 2);
+  plotting<TH1F*>(hIns_ResChannel_HV , "InsulationTest_HV_Resistence", 3);
+  plotting<TH1F*>(hIns_ResChannel_LV , "InsulationTest_LV_Resistence", 4);
 }
 else if(!InsulationTest && ContinuityTest){
- sPDFTitle = TestContinuityPSPP1[0]->GetName() + "___" + currentDate;
- plotting<TH1I*>(h_passedHV_Cont ,"ContinuityTest_HV_Passed-Failed", 1);
- plotting<TH1I*>(h_passedLV_Cont , "ContinuityTest_LV_Passed-Failed", 2);
- plotting<TH1F*>(hCont_ResChannel_HV,"ContinuityTest_ResistenceHV", 3);
- plotting<TH1F*>(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV", 4);
+  sPDFTitle = TestContinuityPSPP1[0]->GetName() + "___" + currentDate;
+  plotting<TH1I*>(h_passedHV_Cont ,"ContinuityTest_HV_Passed-Failed", 1);
+  plotting<TH1I*>(h_passedLV_Cont , "ContinuityTest_LV_Passed-Failed", 2);
+  plotting<TH1F*>(hCont_ResChannel_HV,"ContinuityTest_ResistenceHV", 3);
+  plotting<TH1F*>(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV", 4);
 }
 
 gErrorIgnoreLevel = kPrint;
@@ -170,41 +171,13 @@ if (Ins_Time) {
  std::cout << "Plotting LV cables resistance versus time acquisition..."<<std::endl;
  std::vector<std::pair<std::string, TGraph*>> grRes_TimeLV[IterationTest];
  std::vector<std::pair<std::string, TGraph*>> grRes_TimeLVR[IterationTest];
- for (int k = 0; k < IterationTest; k++) {
-  if(!std::filesystem::exists(TestNameTimeAcquisition[k])){
-      std::cout<<"\033[33mLV: no available time measurements for "<<TestNameTimeAcquisition[k] <<"\033[0m"<< std::endl;
-      continue;
-    }
-  for (const auto& pair : LVcables) {
-    std::string pathINI = TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini";
-    gErrorIgnoreLevel = kError;
-    TGraph *gr_temp = ReadTestTime(pathINI);
-    gErrorIgnoreLevel = kWarning;
-    if (gr_temp != nullptr) {
-     grRes_TimeLV[k].push_back(std::make_pair(pair.first + std::to_string(pair.second), gr_temp));
-    }
-   }
- }
- plottingGraph(grRes_TimeLV, "LV");
- for (int k = 0; k < IterationTest; k++) {
- if(!std::filesystem::exists(TestNameTimeAcquisition[k])){
-      std::cout<<"\033[33mLVR: no available time measurements for "<<TestNameTimeAcquisition[k] <<"\033[0m" <<std::endl;
-      continue;
-    }
-  for (const auto& pair : LVcables_rtn) {
-    std::string pathINI = TestNameTimeAcquisition[k] + "/" + pair.first + std::to_string(pair.second) + ".ini";
-    gErrorIgnoreLevel = kError;
-    TGraph *gr_temp = ReadTestTime(pathINI);
-    gErrorIgnoreLevel = kWarning;
-    if (gr_temp != nullptr) {
-     grRes_TimeLVR[k].push_back(std::make_pair(pair.first + std::to_string(pair.second), gr_temp));
-    }
-   }
- }
-  plottingGraph(grRes_TimeLVR, "LVR");
-    std::cout << "done" << std::endl;
-    std::cout << "*****************************************" << std::endl;
+ for (int k = 0; k < IterationTest; k++){
+  grRes_TimeLV[k] = TestIsolationPSPP1[k]->FillGraphTimeResistence("LV");
+  grRes_TimeLVR[k] = TestIsolationPSPP1[k]->FillGraphTimeResistence("LVR");
 }
+plottingGraph(grRes_TimeLV, "LV");
+plottingGraph(grRes_TimeLVR, "LVR");
+std::cout<<"done"<<std::endl;
 // ***************************************************** //
 // ***************************************************** //
 */
@@ -229,10 +202,18 @@ std::cout<<"\033[32mplot pdf has been saved as" + std::string(WORKDIR) +"/output
 
 std::cout<<"*****************************************"<<std::endl;
 
+#ifndef AutoTest
 if(CreateReport == "y") {
  Python::PSPP1::WriteFinalReport(sPDFTitle, name[0]);
  Python::PSPP1::UpdateHTML(sPDFTitle);
 }
+#else
+ for(int i=0; i<IterationTest; i++){
+ Python::PSPP1::WriteFinalReport(sPDFTitle, name[i]);
+ Python::PSPP1::UpdateHTML(sPDFTitle);
+}
+#endif
+
 
 TFile *f_OutPut = new TFile((sOutputRoot + sPDFTitle + ".root").c_str(), "RECREATE");
 for(int i=0; i<IterationTest; ++i){
@@ -255,6 +236,9 @@ std::cout<<"*****************************************"<<std::endl;
 std::cout<<"removing temporary files...";
 std::system(("rm -r " + sInputTestDir + "/*/tmp").c_str());
 std::cout<<"done"<<std::endl;
+std::cout<<"*****************************************"<<std::endl;
+std::cout<<" END " << std::endl;
+
 
 return 0;
 

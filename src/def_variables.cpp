@@ -11,9 +11,7 @@ std::vector<Isolation::PSPP1*> TestIsolationPSPP1(100, nullptr);
 // control variables
 Bool_t InsulationTest = false; 
 Bool_t ContinuityTest = false;
-Bool_t CommandLine = false;
 Bool_t Ins_Time = false;
-Int_t CompareTest;
 //////////////////////////////////////////////////
 
 
@@ -35,6 +33,10 @@ Int_t IterationTest; // number of processed test (needed ??)
 const int MaxCables = 200;
 const int NumberHVcables = 19;
 const int NumberLVcables = 25;
+#ifdef AUTO_TEST
+Int_t NumberNewTests;
+#else
+#endif
 //////////////////////////////////////////////////
 
 

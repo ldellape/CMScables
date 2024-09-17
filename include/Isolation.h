@@ -15,18 +15,21 @@ namespace Isolation{
     std::vector<bool> status;
     std::vector<::TString> channel;
     std::vector<double> resistence;
+    std::string TestPath;
     std::tuple<double,double,double,double,double, std::string, double, std::string, double, double> InitialParameters;
     std::vector<double> FieldB;
     std::vector<double> IsolationParLV;
     std::vector<double> IsolationParHV;
     std::vector<double> IsolationParTsensor;
     std::pair<double,double> FindMaxMinResistence(::TString Option = "all");
+    
     Float_t ThreshIsoLV = 10000;
     Float_t ThreshIsoHV = 1e+9;
  public:
     PSPP1();
     PSPP1(std::vector<std::tuple<bool, std::string, double, double>> &TestOutput, ::TString TestTitle);
     void SetChannels(std::vector<::TString> &channelNames);
+    void SetPath(std::string path);
     void SetStatus(std::vector<Bool_t> &statusChannels);
     void SetResistence(std::vector<double> &resistenceChannel);
     void SetField(std::vector<double> &B);
@@ -39,6 +42,7 @@ namespace Isolation{
     std::vector<Bool_t> GetStatus(::TString option = "all");
     std::vector<double> GetFieldB(::TString option = "all");
     std::vector<double> GetIsolationPar(TString option);
+    std::string GetPath();
     Double_t GetStdDev(::TString option );
     Double_t GetStdDev(TH1F *h);
     Double_t GetMean(TH1F *h);
@@ -48,6 +52,7 @@ namespace Isolation{
     TH1F* FillResistenceChannelHistogram(::TString title, ::TString option= "all");
     TH1I* FillStatusHistogram(::TString title, ::TString option = "all");
     TH1F* FillResistenceHistogram(::TString title, ::TString option= "all");
+    std::vector<std::pair<std::string, TGraph*>> FillGraphTimeResistence(TString option);
     //////////////////////////////////////////////////////////////////////
     // template methods 
     template <typename T> std::vector<T> FilterChannel(TString option, TString vector);

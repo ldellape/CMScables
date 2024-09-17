@@ -73,10 +73,12 @@ void ReadTestOutput(std::vector<std::string> &TestNameFile, int j){
       TestIsolationPSPP1[j]->SetIsolationPar("LV", ParametersInsulationLV[j]);
       TestIsolationPSPP1[j]->SetIsolationPar("HV", ParametersInsulationHV[j]);
       TestIsolationPSPP1[j]->SetIsolationPar("Tsensor", ParametersInsulationTsensor[j]);
+      TestIsolationPSPP1[j]->SetPath(TestName[j]);
     }
     if(ContinuityTest){
       TestContinuityPSPP1[j] = new Continuity::PSPP1(continuityData, testTitle);
       TestContinuityPSPP1[j]->SetParameters(ParametersContinuity[j]);
+      TestContinuityPSPP1[j]->SetPath(TestName[j]);
     }
     // ************************************************************* //
   }
