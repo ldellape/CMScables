@@ -7,7 +7,6 @@ if len(sys.argv) != 2:
     sys.exit(1)
 
 filename = sys.argv[1]
-
 base, ext = os.path.splitext(filename)
 output_filename = f"processed_{os.path.basename(base)}{ext}"
 output_dir = f"{os.path.dirname(filename)}/tmp/"
@@ -78,6 +77,10 @@ for index, line in enumerate(lines):
     elif "INSULATION TEST" in line:
         filtered_lines.append("InsulationTest")
         Insulation_test_index = len(filtered_lines) - 1
+    elif "Probe Cable Insertion" in line:
+            next_line = lines[index +1].strip()
+            next_line = next_line.replace(";", "")
+            param_lines.append(next_line)
     elif "Tmeas=" in line:
         line = changeLine(line)
         if "Voltage limit" in lines[index +1]:

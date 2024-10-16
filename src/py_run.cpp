@@ -3,6 +3,15 @@
 #include "../include/root.h"
 
 namespace Python{
+ std::string AutoRunNewTests(){
+  std::string NewTestInput = std::string(WORKDIR) + "/docs/NewTests.txt";
+  std::string ProcessedTestsOutput = std::string(WORKDIR) + "/docs/processedTests.txt";
+  std::string command = "python3 " + std::string(WORKDIR) + "/py/AutoRun.py " + sInputTestDir + " " +  ProcessedTestsOutput + " " + NewTestInput;
+  std::system(command.c_str());
+  return NewTestInput;
+ }
+
+
  namespace PSPP1{
     // change text file mfrom ceetis, new files store in temporarly dirs
     void ChangeTextFile(std::string TestName){
@@ -22,11 +31,14 @@ namespace Python{
     // building final pdf file
     void WriteFinalReport(std::string PDFname, std::string CableName){
       std::string command;
-      std::cout<<"creating Final Report..." <<std::endl;
-      std::cout<<"*****************************************"<<std::endl;
+      #ifdef AutoTest
+        std::cout<<"\033[32mcreating Final Report for..."<<CableName<<"\033[0m" <<std::endl;
+      #else 
+        std::cout<<"\033[32mcreating Final Report for...\033[0m" <<std::endl;
+      #endif
       std::string pythonScript = "python3 " + std::string(WORKDIR) + "/py/WriteReport.py ";
       std::string sOutputReport = std::string(WORKDIR) + "/output/report/Report_" + PDFname + ".pdf ";
-      std::string sInputPDFCeetis = std::string(WORKDIR) + "/input/pdf_ceetis/" + CableName + ".pdf ";
+      std::string sInputPDFCeetis = CableName + ".pdf ";
       std::string sInputPlotsSingle = std::string(WORKDIR) + "/output/plots/SingleCable/" + PDFname + ".pdf ";
       std::string sInputPlotsCheck = std::string(WORKDIR)  + "/output/plots/CheckCable/" + PDFname + ".pdf ";
       std::string sInputPlotsTimeResLV = std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistenceLV_" + currentDate + "_Cable0.pdf ";
@@ -55,8 +67,8 @@ namespace Python{
       }
       std::cout<<command<<std::endl;
       std::system(command.c_str());
-      std::cout<<"*****************************************"<<std::endl;
-      std::cout<<"\033[32mFinal REPORT saved as "<< std::string(WORKDIR) <<"/output/report/Report_"+ PDFname +"\033[0m" <<std::endl;
+      std::cout<<"\033[32mFINAL REPORT saved as "<< std::string(WORKDIR) <<"/output/report/Report_"+ PDFname +"\033[0m" <<std::endl;
+      std::cout<<"*******************************************************************"<<std::endl;
       return;
     }
 

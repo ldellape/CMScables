@@ -112,7 +112,12 @@ template <typename T> std::vector<T> PSPP1::FilterChannel(TString option, TStrin
 }
 
 
+class Octopus {
 
+};
+}
+
+/*
  class Octopus{
     private: 
     TString OctopusName;
@@ -127,8 +132,9 @@ template <typename T> std::vector<T> PSPP1::FilterChannel(TString option, TStrin
     void SetName(std::string )
 
  };
+*/
 
 
-}
+
 
 #endif

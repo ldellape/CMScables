@@ -10,3 +10,5 @@ StatCable.cpp
 stat_root/
 CMScables
 statistics
+input/
+output/

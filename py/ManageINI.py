@@ -1,9 +1,13 @@
 import sys
 import re
+import os
 import warnings
 
 warnings.filterwarnings("ignore")
 filename = sys.argv[1]
+base, ext = os.path.splitext(filename)
+output_dir = os.path.dirname(filename)
+output_filename = f"{os.path.basename(base)}_tmp{ext}"
 
 try:
     with open(filename, 'r', encoding='utf-8') as file:
@@ -37,8 +41,9 @@ for line in lines:
 
 filtered_text = '\n'.join(filtered_numbers)
 
-with open(filename, 'w' , encoding='utf-8') as file:
+with open(output_dir + "/" + output_filename, 'w' , encoding='utf-8') as file:
     file.write(filtered_text)
+
     
 
 

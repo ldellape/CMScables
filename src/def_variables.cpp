@@ -12,6 +12,7 @@ std::vector<Isolation::PSPP1*> TestIsolationPSPP1(100, nullptr);
 Bool_t InsulationTest = false; 
 Bool_t ContinuityTest = false;
 Bool_t Ins_Time = false;
+Bool_t CommandLine = false;
 //////////////////////////////////////////////////
 
 
@@ -20,7 +21,11 @@ Bool_t Ins_Time = false;
 std::vector<std::string> TestName;
 std::vector<std::string> TestNameTimeAcquisition;
 std::vector<std::string> TestPath;
-std::string sPDFTitle;
+#ifdef AUTO_TEST
+    std::vector<std::string> sPDFTitle;
+#else
+    std::string sPDFTitle;
+#endif
 std::string currentDate;
 const std::string sInputTestDir = std::string(WORKDIR) + "/input/FULL_TEST_su_cavo_ps_pp1_V3/";
 const std::string sInputTimeAcquisition = std::string(WORKDIR) + (sInputTestDir + "/VALORI/").c_str();

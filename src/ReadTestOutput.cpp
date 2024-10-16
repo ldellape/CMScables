@@ -64,7 +64,7 @@ void ReadTestOutput(std::vector<std::string> &TestNameFile, int j){
     // ***** get cable name ******* //
     TString path(TestNameFile[j].c_str());
     int lastSlash = path.Last('/');
-    TString testTitle = path( lastSlash+1, path.Length()-lastSlash-4);
+    TString testTitle = path(lastSlash+1, path.Length()-lastSlash-5);
 
     // ******declaration of Continuity/Isolation objects ********** //
     if(InsulationTest){

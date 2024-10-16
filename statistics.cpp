@@ -73,12 +73,6 @@ void ReadOutput(const std::string TestNameFile, Int_t file) {
     TestResultIsolation->Branch("channelPHR_Ins", &channelPHR_Ins, "PHR_Ins/O");
     TestResultIsolation->Branch("channelTsensor_Ins", &channelTsensor_Ins, "channelTsensor_Ins/O");
 
-    std::ifstream inputFile(TestNameFile);
-    if (!inputFile.is_open()) {
-        std::cerr << "Error opening file: " << TestNameFile << std::endl;
-        return;
-    }
-
     std::string line;
     std::vector<std::tuple<std::string, std::string, double>> continuityData;
     std::vector<std::tuple<std::string, std::string, double, double>> insulationData;

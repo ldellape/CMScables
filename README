@@ -2,6 +2,5 @@ Script to produce the CMScables phase II report.
 wiki: https://github.com/ldellape/CMScables/wiki/CMScables 
 web page : https://ldellape.github.io/CMScables/ 
 
-TODO in this branch:
-- update instructions/documentation
-- rewrite shell script to push automatically
+
+

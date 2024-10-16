@@ -30,7 +30,7 @@ ifeq ($(TIME), YES)
 endif
 
 
-all: $(TARGET)
+all: $(TARGET) $(TARGET_STAT)
 
 $(TARGET): $(OBJECTS) $(OBJDIR)/CMScables.o
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)

@@ -14,7 +14,7 @@ TGraph* ReadTestTime(std::string pathFile);
 
 
 //////////////////////////////////////////////////////////////////////
-// Functions used only from the main script, source files not needed 
+// Functions used only on the main script, source files not needed 
 void start(int number_arg, char *argument[]);
 void printlogo();
 std::vector<std::string> listAndChooseFiles();
@@ -58,20 +58,20 @@ void printlogo(){
  * ÆÆÆÆÆ              ÆÆ   ÆÆ   ÆÆÆ   ÆÆ       ÆÆ    ÆÆÆ    *
  * ÆÆÆÆÆ              ÆÆ   ÆÆ    ÆÆ   ÆÆ       ÆÆ     ÆÆ    *
  * ÆÆÆÆÆÆ                                                   *
- *   ÆÆÆÆÆÆ  https://github.com/ldellape/CMScables   v.4.0  *   
+ *   ÆÆÆÆÆÆ  https://github.com/ldellape/CMScables          *   
  *      ÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆÆ                                   *                                                         
  * )"+currentDate + R"(                                      *
  ************************************************************ )"; 
  std::cout << green << textCMS  << reset << std::endl;
-  std::cout<<"*****************************************"<<std::endl;
+  std::cout<<"*******************************************************************"<<std::endl;
  std::system(" mkdir -v ./output && mkdir -v ./output/rootFiles && mkdir -v ./output/plots && mkdir -v ./output/plots/SingleCable && mkdir -v ./output/plots/CheckCable && mkdir -p ./output/report && mkdir -p ./output/plotsTimeResistence" );
- std::cout<<"*****************************************"<<std::endl;
+ std::cout<<"*******************************************************************"<<std::endl;
  std::cout<<"Input Directory ---> " ;
  std::cout<<sInputTestDir<<std::endl;
  std::cout<<"Histograms will be saved in -----> "+ std::string(WORKDIR)+ "/output/rootFiles/" << std::endl; 
  std::cout<<"Plots will be saved in -----> " + std::string(WORKDIR) + "/output/plots/" << std::endl; 
  std::cout<<"Final Report will be saved in -----> " + std::string(WORKDIR)+ "/output/report" << std::endl; 
- std::cout<<"****************************************"<<std::endl;
+ std::cout<<"*******************************************************************"<<std::endl;
 }
 
 
@@ -138,14 +138,14 @@ std::vector<std::string> listAndChooseFiles() {
         TestTemp.push_back(sInputTestDir + FileName[number_test - 1].second + "/" + FileName2[number_test2 - 1].second);
         TestPath.push_back(sInputTestDir + FileName[number_test - 1].second + "/tmp/processed_" + FileName2[number_test2 - 1].second);
         number_test = 0;
-        std::cout << "************** Use other cables for comparison? (y/n) ****************" << std::endl;
+        std::cout << "************ Use other cables for comparison? (y/n) ***************" << std::endl;
         std::cin >> str;
         if (str == "y") {
             number_test = 0;
         } else if (str == "n") {
             number_test = -1;
         }
-        std::cout<<"*****************************************"<<std::endl;
+        std::cout<<"*******************************************************************"<<std::endl;
 
         FileName2.clear();
         FileName.clear();
@@ -159,8 +159,7 @@ std::vector<std::string> listAndChooseFiles() {
 // only for mode 1
 void TestType() {
     Int_t test_type;
-    std::cout << "0 for continuity test, 1 for insulation test, 2 for both: " << std::endl;
-    std::cout<<"*****************************************"<<std::endl;
+    std::cout << "0 for continuity test, 1 for insulation test, 2 for both: ";
     std::cin >> test_type;
     if (test_type == 0) {
         ContinuityTest = true;
@@ -171,7 +170,8 @@ void TestType() {
     } else if (test_type == 2) {
         ContinuityTest = true;
         InsulationTest = true;
-        std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST && ISOLATION TEST\033[0m" << std::endl;
+        std::cout<<"*******************************************************************"<<std::endl;
+        std::cout << "\033[32mPlotting Histograms for ----> CONTINUITY TEST && ISOLATION TEST\033[0m" << std::endl;
     }
     if (!ContinuityTest && !InsulationTest) {
         gROOT->ProcessLine(".q");
@@ -185,7 +185,8 @@ void TestType() {
 Bool_t TimeAcquisition() {
     TString risp;
     Bool_t choice;
-    std::cout << "Plot resistance vs time? (y/n)" << std::endl;
+    std::cout<< "*******************************************************************"<<std::endl;
+    std::cout << "Plot LV channels resistence vs time? (y/n)" << std::endl;
     std::cin >> risp;
     risp.ToUpper();
     if (risp == "N") {
@@ -216,6 +217,87 @@ std::vector<std::string> DirTimeAcquisition(){
  return Directories;
 }
 //////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////
+// command line inputs 
+void start(int number_arg, char *argument[]){
+    Bool_t ValidOption= false;
+    for (int i = 1; i < number_arg; ++i) {
+    std::string arg = argument[i];
+    std::string inputPath;
+    std::string outputPath;
+    if(arg== "--help" || arg=="-h"){
+        std::cout<<" CMScables --help, -h : print this message"<<std::endl;
+        std::cout<<" CMScables --doc, -D : print documentation on what it is expected as input and what you can expect as output"<<std::endl;
+ std::cout<<" CMScables --input/-I <path> --mode/-M [OPTION]: perform test giving the input text file, path should be of type CableXX/TEST_NAME.txt " << std::endl;
+        std::cout<<"[OPTION] = 0 for continuity test, 1 for isolation test, 2 for both. Default is continuity test" <<std::endl;
+        gROOT->ProcessLine(".q");
+    }
+    else if(arg == "--doc" || arg == "-D"){
+        std::ifstream readme(".doc");
+        std::string readme_line;
+        while(std::getline(readme, readme_line)){
+        if(readme_line.find("COSA SERVE:") != std::string::npos ){
+            break;
+        }
+        else std::cout<<readme_line<<std::endl;
+        }
+        readme.close();
+        gROOT->ProcessLine(".q");
+    }
+    else if(arg == "--input" || arg=="-I") {
+     while (i + 1 < number_arg && argument[i + 1][0] != '-') {
+                inputPath = argument[++i];
+                std::cout<<inputPath<<std::endl;
+                TestName.push_back((sInputTestDir + inputPath).c_str());
+                std::size_t LastSlash = inputPath.find_last_of("/");
+                std::string cable = inputPath.substr(0, LastSlash);
+                std::string test = inputPath.substr(LastSlash+1);
+                TestPath.push_back((sInputTestDir + cable + "/tmp/processed_" + test).c_str());
+                std::cout<<test<<std::endl;
+            }
+    CommandLine = true;
+    ValidOption=true;
+    Ins_Time = false;
+    } 
+    else if((arg == "--mode" || arg=="-M") && CommandLine==true){
+        int test_type = std::stoi(argument[++i]);
+        if(test_type==0){
+         std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST\033[0m" << std::endl<<std::endl;
+         ContinuityTest=true;
+         InsulationTest=false;
+        }
+        else if(test_type==1){
+         InsulationTest=true;
+         ContinuityTest=false;
+         std::cout << "Plotting Histograms for ----> \033[32mISOLATION TEST\033[0m" << std::endl<<std::endl;
+        }
+        else if(test_type ==2){
+         ContinuityTest=true;
+         InsulationTest=true;
+         Ins_Time = true;
+         std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST && ISOLATION TEST\033[0m" << std::endl;
+        }
+        else if(test_type != 0 && test_type != 1 && test_type != 2){
+        std::cout<<"Mode not found! "<<std::endl;
+        std::cout<<"possible tests are: "<<std::endl;
+        std::cout<<"0 for continuity, 1 for isolation, 2 for both"<<std::endl;
+        gROOT->ProcessLine(".q");
+        }
+    }
+    else if(!ValidOption){
+        std::cout<<" command not found, possible command are: "<<std::endl;
+        std::cout<<" CMScables --help, -h : print this message"<<std::endl;
+        std::cout<<" CMScables --doc, -D : print documentation on what it is expected as input and what you can expect as output"<<std::endl;
+        std::cout<<" CMScables --input/-I <path> --mode/-M [OPTION]: perform test giving the input text file, path should be of type CableXX/TEST_NAME.txt " << std::endl;
+        std::cout<<"[OPTION] = 0 for continuity test, 1 for isolation test, 2 for both. Default is continuity test" <<std::endl;
+        gROOT->ProcessLine(".q");
+    }
+    }
+
+}
+
 
 
 #endif

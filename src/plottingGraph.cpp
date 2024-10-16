@@ -8,7 +8,7 @@
 #include <TLatex.h>
 #include "root.h"
 #include "def_variables.h"
-#include "style.h"
+#include "../include/style.h"
 
 void plottingGraph(std::vector<std::pair<std::string, TGraph*>> gr[], std::string Title) {
     gStyle->SetOptStat(0);
@@ -23,9 +23,6 @@ void plottingGraph(std::vector<std::pair<std::string, TGraph*>> gr[], std::strin
     for (int kk = 0; kk < IterationTest; kk++) {
         c[kk] = new TCanvas(("c_" + Title + std::to_string(kk)).c_str(), ("c_" + Title + std::to_string(kk)).c_str(), 3000, 3500);
         c[kk]->SetFillStyle(4000);
-        sPDFTitle = name[kk] + "____" + currentDate;
-
-
         const int Nx = 3;
         int Ny = (int(gr[kk].size()) + Nx - 1) / Nx; // Calculate the number of rows needed
 

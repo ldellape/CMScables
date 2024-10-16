@@ -27,6 +27,7 @@ extern std::vector<Isolation::PSPP1*> TestIsolationPSPP1;
 extern Bool_t InsulationTest; 
 extern Bool_t ContinuityTest;
 extern Bool_t Ins_Time;
+extern Bool_t CommandLine;
 //////////////////////////////////////////////////
 
 
@@ -36,10 +37,14 @@ extern const std::string sInputTestDir;
 extern const std::string sInputTimeAcquisition;
 extern const std::string sOutputRoot; 
 extern std::vector<std::string> TestName; // path to original txt file from CEETIS 
-extern std::vector<std::string> TestPath; // path to modified txt file from CEETIS
+extern std::vector<std::string> TestPath; // path to temporaly txt file from CEETIS
 extern std::vector<std::string> TestNameTimeAcquisition; // paths to .INI files from CEETIS 
 extern std::string currentDate; // date of execution
-extern std::string sPDFTitle; // final pdf name (name of the test + currentDaate)
+#ifdef AUTO_TEST
+    extern std::vector<std::string> sPDFTitle; // final pdf name (name of the test + currentDaate)
+#else
+    extern std::string sPDFTitle; // final pdf name (name of the test + currentDaate)
+#endif
 //////////////////////////////////////////////////
 
 

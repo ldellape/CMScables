@@ -1,0 +1,6 @@
+-aggiungere metodo SetPathTimeRes su isolation ok 
+-constructors class Octopus
+-update instructions/documentation
+-rewrite shell script to push automatically 
+-update paths on writeFinal report (add "processed_" ) ok 
+-script python per caricare file 

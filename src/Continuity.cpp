@@ -405,6 +405,3 @@ Double_t PSPP1::GetStdDev(TString option){
  return std;
 }
 
-
-
-Octopus::Octopus(){};

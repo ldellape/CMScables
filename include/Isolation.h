@@ -48,6 +48,7 @@ namespace Isolation{
     Double_t GetMean(TH1F *h);
     Double_t GetMean(::TString option = "all");
     Double_t GetThreshold(::TString option);
+    TString GetPathTimeRes();
     std::tuple<double,double,double,double,double, std::string, double, std::string, double, double> GetInitialParameters();
     TH1F* FillResistenceChannelHistogram(::TString title, ::TString option= "all");
     TH1I* FillStatusHistogram(::TString title, ::TString option = "all");

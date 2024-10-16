@@ -236,6 +236,17 @@ std::vector<double> PSPP1::GetIsolationPar(TString option){
   if(option == "TSENSOR") return IsolationParTsensor;
  }
 
+//////////////////////////////////////////////////////////////////////
+// get path for LV channel time vs resistence
+TString PSPP1::GetPathTimeRes(){
+  TString path = this->GetPath();
+  TString name = this->GetName();
+  size_t lastDot = path.Last('/');
+  std::string Date = name(18, 18);
+  path.Remove(lastDot);
+  return (path + "/VALORI/" + Date);
+}
+
 
 //////////////////////////////////////////////////////////////////////
 // create histogram for resistence versus channel (to appear on final report)
@@ -375,47 +386,55 @@ Double_t PSPP1::GetStdDev(TString option){
  }
  return std;
 }
-/*
 
 //////////////////////////////////////////////////////////////////////
 // fill Graph resistence vs time
-std::vector<std::pair<std::string,TGraph*>> PSPP1::FillGraphTimeResistence(TString option){
-  TString path = this->GetPath();
-  TString pathVAL = path + "/VALORI/" + 
-  int NumberChannel;
-  if(option = "LV") NumberChannel = NumberLVcables;
-  //else if(option = "LVR") NumberChannel = NumberLVRcables;
+std::vector<std::pair<std::string,TGraph*>> PSPP1::FillGraphTimeResistence(TString option){  
   TGraph *gr_temp;
   std::vector<std::pair<std::string, TGraph*>> gr_Time;
-  if(gSystem->AccessPathName(pathVAL.c_str()) || (option.Contains("LV") && option.Contains("LVR"))){
-    Error("Isolation::PSPP1::FillGraphResistence()", "no measurements available or incorrect option");
+
+  TString pathVAL = this->GetPathTimeRes();
+  if(gSystem->AccessPathName(pathVAL)){ 
+    Error("Isolation::PSPP1::FillGraphResistence()", "no measurements available for test " + this->GetName() + ", " + option + " channels." );
+    return gr_Time;
+  }
+  else if(!option.Contains("LV") && !option.Contains("LVR")){
+    Error("Isolation::PSPP1::FillGraphResistence()", "incorrect option for test " + this->GetName() + ", " + option + " channels.");
     return gr_Time;
   }
   else{
-  Int_t number_point=0;
-  std::vector<double> ResTime;
-  std::vector<double> number_value;
-  std::string line;
-  for(int i=1; i< NumberChannel; i++){ 
-  std::string pathINI = pathVAL + option + std::to_string(i);
-  if(!gSystem->AccessPathName(pathINI.c_str())) Python::PSPP1::ChangeTextFile(pathINI);
-  std::ifstream inputTimeTesolution(pathINI);
-    while(std::getline(inputTimeTesolution, line)){
-        std::stringstream ss(line);
-        double value;
+
+
+    int number_point=0;
+    std::vector<double> ResTime[NumberLVcables];
+    std::vector<double> number_value[NumberLVcables];
+    std::string line;
+    TString pathINI, pathINItmp; 
+
+    for(int i=1; i< NumberLVcables; i++){ 
+      pathINI = pathVAL + "/"  + option + Form("%i.ini",i);
+      pathINItmp = pathVAL + "/" + option + Form("%i_tmp.ini",i);
+      if(!gSystem->AccessPathName(pathINI)) Python::PSPP1::ChangeTextFileINI(pathINI.Data());
+      else break;
+      std::ifstream inputTimeTesolution(pathINItmp.Data());
+      while(std::getline(inputTimeTesolution, line)){
+       std::stringstream ss(line);
+       double value;
         if(ss >> value){
-            number_point++;
-            number_value.push_back(number_point);
-            ResTime.push_back(value);
+          number_point++;
+          number_value[i].push_back(number_point);
+          ResTime[i].push_back(value);
         }
+      }
+      number_point=0;
+      inputTimeTesolution.close();
+      TGraph *gr_temp = new TGraph(int(number_value[i].size()), &number_value[i][0], &ResTime[i][0]);
+      gr_Time.push_back(std::make_pair(Form("LV%i", i), gr_temp));
     }
-    inputTimeTesolution.close();
-    TGraph *gr_temp = new TGraph(number_point, &number_value[0], &ResTime[0]);
-    gr_Time.push_back(std::make_pair(Form("LV%i", i), gr_temp));
-  }
+    TString command = "rm " + pathINItmp + " 2>/dev/null";
+    std::system(command.Data());
     return gr_Time;
   }
 }
 
-*/
 
