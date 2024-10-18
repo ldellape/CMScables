@@ -117,7 +117,7 @@ class Octopus {
 };
 }
 
-/*
+
  class Octopus{
     private: 
     TString OctopusName;
@@ -132,7 +132,7 @@ class Octopus {
     void SetName(std::string )
 
  };
-*/
+
 
 
 

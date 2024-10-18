@@ -9,6 +9,12 @@
 void plottingGraph(std::vector<std::pair<std::string, TGraph*>> gr[], std::string Title);
 void ReadTestOutput(std::vector<std::string> &TestNameFile, int j);
 TGraph* ReadTestTime(std::string pathFile);
+template <typename T> 
+Bool_t FindCableType(std::vector<T*>& vectorOfTest){
+        for(int i=0; i<int(vectorOfTest.size()); i++){
+            if(vectorOfTest[i] != nullptr) return true;
+        }
+}
 //////////////////////////////////////////////////////////////////////
 
 

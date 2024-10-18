@@ -14,11 +14,15 @@
 
 
 //////////////////////////////////////////////////
-// classes and object of the classes
-namespace Continuity{ class PSPP1; class Octopus; }
-namespace Isolation {  class PSPP1; class Octopus; }
+// classes and objects of the classes
+namespace Continuity{ class PSPP1; class OCTOPUS; class PP0;}
+namespace Isolation {  class PSPP1; class OCTOPUS; class PP0;}
 extern std::vector<Continuity::PSPP1*> TestContinuityPSPP1;
 extern std::vector<Isolation::PSPP1*> TestIsolationPSPP1;
+extern std::vector<Continuity::OCTOPUS*> TestContinuityOctopus;
+extern std::vector<Isolation::OCTOPUS*> TestIsolationOctopus;
+extern std::vector<Continuity::PP0*> TestContinuityPP0;
+extern std::vector<Isolation::PP0*> TestIsolationPP0;
 //////////////////////////////////////////////////
 
 
@@ -28,6 +32,10 @@ extern Bool_t InsulationTest;
 extern Bool_t ContinuityTest;
 extern Bool_t Ins_Time;
 extern Bool_t CommandLine;
+extern Bool_t PSPP1test;
+extern Bool_t OCTOPUStest;
+extern Bool_t PP0test;
+extern Bool_t CHAINtest;
 //////////////////////////////////////////////////
 
 

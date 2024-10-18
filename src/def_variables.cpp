@@ -4,6 +4,10 @@
 // vector of objects of the cables classes
 std::vector<Continuity::PSPP1*> TestContinuityPSPP1(100, nullptr);
 std::vector<Isolation::PSPP1*> TestIsolationPSPP1(100, nullptr);
+std::vector<Continuity::OCTOPUS*> TestContinuityOctopus(100, nullptr);
+std::vector<Isolation::OCTOPUS*> TestIsolationOctopus(100, nullptr);
+std::vector<Continuity::PP0*> TestContinuityPP0(100, nullptr);
+std::vector<Isolation::PP0*> TestIsolationPP0(100, nullptr);
 //////////////////////////////////////////////////
 
 
@@ -13,6 +17,10 @@ Bool_t InsulationTest = false;
 Bool_t ContinuityTest = false;
 Bool_t Ins_Time = false;
 Bool_t CommandLine = false;
+Bool_t PSPP1test = false;
+Bool_t OCTOPUStest = false;
+Bool_t PP0test = false;
+Bool_t CHAINtest = false;
 //////////////////////////////////////////////////
 
 

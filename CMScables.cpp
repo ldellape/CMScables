@@ -107,9 +107,16 @@ std::cout<<"done"<<std::endl;
 std::cout<<"****************************************"<<std::endl;
 // ***************************************************************************************** //
 
+if (FindCableType(TestContinuityOctopus) || FindCableType(TestIsolationOctopus)) PSPP1test = true;
+else if( FindCableType(TestIsolationOctopus) && FindCableType(TestContinuityOctopus)) OCTOPUStest = true;
+else if( FindCableType(TestIsolationPP0) && FindCableType(TestContinuityPP0)) PP0test = true;
+if(!PSPP1test && !OCTOPUStest) return 0;
+
+
 // ***************************************************** //
 // *** HISTOGRAMS (FILLILING AND PLOTTING) ************* //
 // ***************************************************** //
+if(PSPP1test){
 for(int it = 0; it< IterationTest; it++){
   if(ContinuityTest && InsulationTest){
    h_passedCont_tot[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passed_continuity_all_%i", it+1));
@@ -137,6 +144,9 @@ for(int it = 0; it< IterationTest; it++){
    hIns_ResChannel_LV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_isolation_%i",it+1), "LV");
   }
 }  
+}
+else if(OCTOPUStest){}
+else if(PP0test){}
      
 gErrorIgnoreLevel = kWarning;
 std::cout<<"\033[32mDRAWING HISTOGRAMS...\033[0m" <<std::endl;
@@ -156,8 +166,8 @@ if(InsulationTest && ContinuityTest){
   plotting<TH1I*>(h_passedIns_tot , "InsulationTest_All_Passed-Failed",2);
   plotting<TH1F*>(hIns_ResChannel_HV , "InsulationTest_HV_Resistence",3);
   plotting<TH1F*>(hIns_ResChannel_LV , "InsulationTest_LV_Resistence",4);
-  plotting<TH1F*>(hCont_ResChannel_HV,"ContinuityTest_ResistenceHV",5);
-  plotting<TH1F*>(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV", 6);
+  plotting<TH1F*>(hCont_ResChannel_HV, "ContinuityTest_ResistenceHV",5);
+  plotting<TH1F*>(hCont_ResChannel_LV, "ContinuityTest_ResistenceLV", 6);
 }
 else if(InsulationTest && !ContinuityTest){
  #ifndef AutoTest
