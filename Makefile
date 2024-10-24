@@ -7,6 +7,8 @@ WORKDIR = $(PWD)
 TARGET = $(PREFIX)/CMScables
 TARGET_STAT = $(PREFIX)/statistics
 
+
+
 CXX = g++
 CXXFLAGS = -Wall -I include -I src $(shell root-config --cflags) -DPREFIX='"$(PREFIX)"' -DWORKDIR='"$(PWD)"'
 CXXFLAGS_STAT = -Wall $(shell root-config --cflags)  -DWORKDIR='"$(PWD)"'
@@ -18,16 +20,6 @@ DEPS = $(patsubst $(SRCDIR)/%.cpp,$(DEPDIR)/%.d,$(SOURCES))
 
 OPTION ?= NONE
 TIME ?= NONE
-
-ifeq ($(OPTION), AUTO_TEST)
-	CXXFLAGS+=-DAUTO_TEST
-else
-	CXXFLAGS+=-DINTER_TEST
-endif
-
-ifeq ($(TIME), YES)
-	CXXFLAGS+=-DTIME_RES
-endif
 
 
 all: $(TARGET) $(TARGET_STAT)

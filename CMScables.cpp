@@ -19,31 +19,14 @@
 #include "./include/plotting.h"
 
 
-#ifdef AUTO_TEST // automatic test--> report for the more recently txt file 
- #define AutoTest 
-#elif defined(INTER_TEST) // --> choose test from command line
- #define InterTest
-#endif
-
-
 int main(int argc, char* argv[]){
-  printlogo();
-
- #ifdef TIME_RES
- Ins_Time = true;
- #endif
-
- if(argc>1) start(argc, argv);
- if(CommandLine) 
-
+if(argc<2)  printlogo();
 
 // ************************************* //
 // ************ INPUT TESTS ************ //
 // ************************************* //
-// mode 1 and mode 2 //
-std::string pathTEST;
-if(!CommandLine){
-#ifdef InterTest // mode 1 
+if(argc>1) start(argc, argv); // auto mode
+else if(!CommandLine){ // input from command line
    TestName = listAndChooseFiles();
    TestType();
    IterationTest = TestName.size();
@@ -53,32 +36,8 @@ if(!CommandLine){
       TestNameTimeAcquisition = DirTimeAcquisition();
     }
    }
-#elif defined(AutoTest) // mode 2 
-    std::string NewTestsFound = Python::AutoRunNewTests();
-    std::cout<<NewTestsFound<<std::endl;
-    std::ifstream inputNewTests(NewTestsFound.c_str());
-    std::string NewTest;
-    std::string fullpath, cableNumber, cableTest;
-    while(getline(inputNewTests,NewTest)){
-      std::istringstream iss(NewTest);
-      if( iss >> fullpath >> cableNumber >> cableTest){      
-      TestName.push_back(fullpath);
-      TestPath.push_back(sInputTestDir + cableNumber + "/tmp/processed_" + cableTest);
-      }
-    } 
-    inputNewTests.close();
-    std::cout<<TestName.size()<<std::endl;
-    std::system(("rm " + NewTestsFound).c_str());
-    ContinuityTest = true;
-    InsulationTest = true;
-    Ins_Time = true;
-    if(int(TestName.size()) == 0){ 
-      return 0;
-      gROOT->ProcessLine(".q");
-    }
-    std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST && ISOLATION TEST\033[0m" << std::endl;
-#endif
 }
+
 IterationTest = TestName.size();
 std::cout<<"*******************************************************************"<<std::endl;
 std::cout<<"Test Processati:   "<<std::endl;
@@ -101,17 +60,11 @@ Python::PSPP1::ChangeTextFile(TestName[i]);
 std::cout<<"Input Tests:"<<std::endl;
 for(int i=0; i<IterationTest; ++i){
   std::cout<<Form("%i",1)<<"-"<<TestPath[i]<<std::endl;
-  ReadTestOutput(TestPath, i);
+  ReadTestOutput(TestPath, i); // read test and set which type of input
 }
 std::cout<<"done"<<std::endl;
 std::cout<<"****************************************"<<std::endl;
 // ***************************************************************************************** //
-
-if (FindCableType(TestContinuityOctopus) || FindCableType(TestIsolationOctopus)) PSPP1test = true;
-else if( FindCableType(TestIsolationOctopus) && FindCableType(TestContinuityOctopus)) OCTOPUStest = true;
-else if( FindCableType(TestIsolationPP0) && FindCableType(TestContinuityPP0)) PP0test = true;
-if(!PSPP1test && !OCTOPUStest) return 0;
-
 
 // ***************************************************** //
 // *** HISTOGRAMS (FILLILING AND PLOTTING) ************* //
@@ -145,9 +98,18 @@ for(int it = 0; it< IterationTest; it++){
   }
 }  
 }
-else if(OCTOPUStest){}
-else if(PP0test){}
-     
+else if(OCTOPUStest){
+  //histograms for octopus cable
+}
+
+else if(PP0test){
+  //histograms for PP0 cable
+}
+else if(CHAINtest){
+  //histograsm for full chain test
+}
+
+
 gErrorIgnoreLevel = kWarning;
 std::cout<<"\033[32mDRAWING HISTOGRAMS...\033[0m" <<std::endl;
 std::cout<<"Drawn and Saved Histograms: "<<std::endl;
@@ -155,13 +117,7 @@ c_plot = new TCanvas("c_plot","c_plot", 3000, 3500);
 c_plot->Divide(2,3);
 
 if(InsulationTest && ContinuityTest){
- #ifdef AutoTest
-    for(int i=0; i<int(IterationTest); i++){
-      sPDFTitle[i] =  TestIsolationPSPP1[i]->GetName() + "___" + currentDate;
-    }
- #else 
-    sPDFTitle =  TestIsolationPSPP1[0]->GetName() + "___" + currentDate;
- #endif
+  sPDFTitle =  TestIsolationPSPP1[0]->GetName() + "___" + currentDate;
   plotting<TH1I*>(h_passedCont_tot ,"ContinuityTest_All_Passed-Failed",1);
   plotting<TH1I*>(h_passedIns_tot , "InsulationTest_All_Passed-Failed",2);
   plotting<TH1F*>(hIns_ResChannel_HV , "InsulationTest_HV_Resistence",3);
@@ -170,25 +126,20 @@ if(InsulationTest && ContinuityTest){
   plotting<TH1F*>(hCont_ResChannel_LV, "ContinuityTest_ResistenceLV", 6);
 }
 else if(InsulationTest && !ContinuityTest){
- #ifndef AutoTest
   sPDFTitle =  TestIsolationPSPP1[0]->GetName() + "___" + currentDate;
- #endif
   plotting<TH1I*>(h_passedHV_Ins , "InsulationTest_HV_Passed-Failed", 1);
   plotting<TH1I*>(h_passedLV_Ins , "InsulationTest_LV_Passed-Failed", 2);
   plotting<TH1F*>(hIns_ResChannel_HV , "InsulationTest_HV_Resistence", 3);
   plotting<TH1F*>(hIns_ResChannel_LV , "InsulationTest_LV_Resistence", 4);
 }
 else if(!InsulationTest && ContinuityTest){
- #ifndef AutoTest
   sPDFTitle =  TestContinuityPSPP1[0]->GetName() + "___" + currentDate;
   std::cout<<"PDF title "<<sPDFTitle<<std::endl;
- #endif
   plotting<TH1I*>(h_passedHV_Cont ,"ContinuityTest_HV_Passed-Failed", 1);
   plotting<TH1I*>(h_passedLV_Cont , "ContinuityTest_LV_Passed-Failed", 2);
   plotting<TH1F*>(hCont_ResChannel_HV,"ContinuityTest_ResistenceHV", 3);
   plotting<TH1F*>(hCont_ResChannel_LV,"ContinuityTest_ResistenceLV", 4);
 }
-
 gErrorIgnoreLevel = kPrint;
 // ***************************************************** //
 // ***************************************************** //
@@ -218,20 +169,11 @@ std::cout<<"*******************************************"<<std::endl;
 std::cout<<"Output: "<<std::endl;
 //std::cout<<"\033[32mroot histograms have been saved in "<< sOutputRoot << sPDFTitle <<".root\033[0m"<<std::endl;
 if(IterationTest==1){
- #ifdef AutoTest
-  for(int i=0; i<IterationTest; i++){
-   std::cout<<"\033[32mplots has been saved as " + std::string(WORKDIR) +"/output/plots/SingleCable/"<< sPDFTitle[i] <<".pdf\033[0m"<<std::endl;
-  }
- #else 
   std::cout<<"\033[32mplots has been saved as " + std::string(WORKDIR) +"/output/plots/SingleCable/"<< sPDFTitle<<".pdf\033[0m"<<std::endl;
- #endif
 }
 else{
- #ifndef AutoTest
   std::cout<<"\033[32mplot pdf has been saved as" + std::string(WORKDIR) +"/output/plots/CheckCable/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
- #endif
 }
-
 std::cout<<"*****************************************"<<std::endl;
 
 
@@ -283,6 +225,7 @@ std::system("./statistics");
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"removing temporary files...";
 std::system(("rm -r " + sInputTestDir + "/*/tmp").c_str());
+std::system(("rm -r " + sInputTestDir + "/tmp").c_str());
 std::cout<<"done"<<std::endl;
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"\033[32mTHE END\033[0m" << std::endl;

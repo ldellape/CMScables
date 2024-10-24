@@ -445,6 +445,18 @@ std::vector<std::pair<std::string,TGraph*>> PSPP1::FillGraphTimeResistence(TStri
     FillModulesParameter();  
   }
 
+void OCTOPUS::SetPath(std::string path){
+  path = TestPath;
+}
+void OCTOPUS::SetTemperature(Float_t T){
+  T = Temperature;
+}
+void OCTOPUS::SetHumidity(Float_t H){
+  H = Humidity;
+}
+void OCTOPUS::SetResistence(std::vector<double> & resistenceChannels){
+  resistence = resistenceChannels;
+}
 
 
 

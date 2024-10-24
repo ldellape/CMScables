@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <set>
@@ -73,6 +74,8 @@ void ReadOutput(const std::string TestNameFile, Int_t file) {
     TestResultIsolation->Branch("channelPHR_Ins", &channelPHR_Ins, "PHR_Ins/O");
     TestResultIsolation->Branch("channelTsensor_Ins", &channelTsensor_Ins, "channelTsensor_Ins/O");
 
+    std::ifstream inputFile(TestNameFile);
+
     std::string line;
     std::vector<std::tuple<std::string, std::string, double>> continuityData;
     std::vector<std::tuple<std::string, std::string, double, double>> insulationData;
@@ -140,7 +143,7 @@ int main(){
  std::system("mkdir  stat_root");
  std::set<std::string> tests;
  const char *pathOutFile = "./docs/statistics.root";
- const char *TestProcessedTXT = "./docs/statistics_tests.txt";
+ const char *TestProcessedTXT = "./docs/processedTest.txt";
 
 // ******************************************************************** //
 // ************* INPUT FILES AND OUTPUT FILES DEFINITIONS ************* //

@@ -48,11 +48,7 @@ extern std::vector<std::string> TestName; // path to original txt file from CEET
 extern std::vector<std::string> TestPath; // path to temporaly txt file from CEETIS
 extern std::vector<std::string> TestNameTimeAcquisition; // paths to .INI files from CEETIS 
 extern std::string currentDate; // date of execution
-#ifdef AUTO_TEST
-    extern std::vector<std::string> sPDFTitle; // final pdf name (name of the test + currentDaate)
-#else
-    extern std::string sPDFTitle; // final pdf name (name of the test + currentDaate)
-#endif
+extern std::string sPDFTitle; // final pdf name (name of the test + currentDaate)
 //////////////////////////////////////////////////
 
 
@@ -61,10 +57,6 @@ extern Int_t IterationTest; // number of processed test (needed ??)
 extern const int MaxCables;
 extern const int NumberHVcables;
 extern const int NumberLVcables;
-#ifdef AUTO_TEST
-extern Int_t NumberNewTests;
-#else
-#endif
 //////////////////////////////////////////////////
 
 

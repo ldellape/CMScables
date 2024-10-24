@@ -29,11 +29,7 @@ Bool_t CHAINtest = false;
 std::vector<std::string> TestName;
 std::vector<std::string> TestNameTimeAcquisition;
 std::vector<std::string> TestPath;
-#ifdef AUTO_TEST
-    std::vector<std::string> sPDFTitle;
-#else
-    std::string sPDFTitle;
-#endif
+std::string sPDFTitle;
 std::string currentDate;
 const std::string sInputTestDir = std::string(WORKDIR) + "/input/FULL_TEST_su_cavo_ps_pp1_V3/";
 const std::string sInputTimeAcquisition = std::string(WORKDIR) + (sInputTestDir + "/VALORI/").c_str();
@@ -46,10 +42,6 @@ Int_t IterationTest; // number of processed test (needed ??)
 const int MaxCables = 200;
 const int NumberHVcables = 19;
 const int NumberLVcables = 25;
-#ifdef AUTO_TEST
-Int_t NumberNewTests;
-#else
-#endif
 //////////////////////////////////////////////////
 
 

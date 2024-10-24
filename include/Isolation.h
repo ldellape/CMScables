@@ -4,13 +4,21 @@
 #include <vector>
 #include <tuple>
 #include <string>
+#include <array>
 #include <map>
 #include "root.h"
 #include "TError.h"
 #include "def_variables.h"
 
 namespace Isolation{
- class PSPP1{
+ class Cable{
+    public:
+        virtual ~Cable(){}
+    };
+
+
+
+ class PSPP1 : public Cable{
   private: 
     TString CableName;
     std::vector<bool> status;
@@ -112,25 +120,27 @@ template<typename T> std::vector<T> PSPP1::FilterChannel(::TString option, ::TSt
  }
 }
 
-class OCTOPUS{
+class OCTOPUS : public Cable{
     private:
+
         TString CableName;
         std::vector<Bool_t> status;
         std::string TestPath;
         Float_t Temperature;
         Float_t Humidity;
-        std::vector<std::pair<TString, double>> resistence;
+        std::vector<double> resistence;
+        std::vector<TString> channel;
         std::vector<std::pair<TString, double>> LenghtChannelTotal;
         std::vector<std::pair<TString, double>> LenghtChannelBundle;
         std::vector<std::pair<TString, double>> LenghtChannelBranch;
         std::pair<double, double> FindMaxMinResistence(::TString option);
         const double MainLenghts = 1000;
-        std::vector<std::tuple<TString, TString[4], double, double>> OCTOPUSmodules;
+        std::vector<std::tuple<TString, std::vector<TString>, double, double>> OCTOPUSmodules;
         void FillModulesParameter(){
-          const TString TsensorChannel[2] = {"PH", "PH_RTN"};
-          const TString PreHeaterChannel[2] = {"Tsens1", "Tsens2"};
+          std::vector<TString> TsensorChannel = {"PH", "PH_RTN"};
+          std::vector<TString> PreHeaterChannel = {"Tsens1", "Tsens2"};
           for(int i=0; i<14; i++){
-            const TString BranchChannel[4] = {"HV" + std::to_string(i+1), "", "LV_RTN" + std::to_string(i+1), "LV1" + std::to_string(i+1)};
+            std::vector<TString> BranchChannel = {"HV" + std::to_string(i+1), "", "LV_RTN" + std::to_string(i+1), "LV1" + std::to_string(i+1)};
             OCTOPUSmodules.emplace_back(std::make_tuple("1", BranchChannel, 1042, 58));
             OCTOPUSmodules.emplace_back(std::make_tuple("2", BranchChannel, 943, 58));
             OCTOPUSmodules.emplace_back(std::make_tuple("3", BranchChannel, 820, 58));
@@ -155,6 +165,7 @@ class OCTOPUS{
         void SetTemperature(Float_t T);
         void SetHumidity(Float_t H);
         void SetResistence(std::vector<double> &resistenceChannels);
+
 };
 }
 

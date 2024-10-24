@@ -4,3 +4,6 @@
 -rewrite shell script to push automatically 
 -update paths on writeFinal report (add "processed_" ) ok 
 -script python per caricare file 
+
+
+-mdofiicare AutoRun con query al database

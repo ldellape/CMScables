@@ -29,6 +29,10 @@ void ReadTestOutput(std::vector<std::string> &TestNameFile, int j){
 
     while(std::getline(inputFile, line)){
       std::istringstream iss(line);
+     if(line.find("PS-PP1")) PSPP1test = true;
+     else if ( line.find("OCTOPUS")) OCTOPUStest = true;
+     else if (line.find("PP0")) PP0test = true;
+
      if(line.find("ContinuityTest") != std::string::npos){
         FirstTree = true;
         SecondTree = false;
@@ -66,19 +70,37 @@ void ReadTestOutput(std::vector<std::string> &TestNameFile, int j){
     int lastSlash = path.Last('/');
     TString testTitle = path(lastSlash+1, path.Length()-lastSlash-5);
 
-    // ******declaration of Continuity/Isolation objects ********** //
-    if(InsulationTest){
-      TestIsolationPSPP1[j] = new Isolation::PSPP1(insulationData, testTitle);
-      TestIsolationPSPP1[j]->SetInitialParameters(ParametersInsulationInitial[j]);
-      TestIsolationPSPP1[j]->SetIsolationPar("LV", ParametersInsulationLV[j]);
-      TestIsolationPSPP1[j]->SetIsolationPar("HV", ParametersInsulationHV[j]);
-      TestIsolationPSPP1[j]->SetIsolationPar("Tsensor", ParametersInsulationTsensor[j]);
-      TestIsolationPSPP1[j]->SetPath(TestName[j]);
+
+    if(PSPP1test){
+     if(InsulationTest){
+       TestIsolationPSPP1[j] = new Isolation::PSPP1(insulationData, testTitle);
+       TestIsolationPSPP1[j]->SetInitialParameters(ParametersInsulationInitial[j]);
+       TestIsolationPSPP1[j]->SetIsolationPar("LV", ParametersInsulationLV[j]);
+       TestIsolationPSPP1[j]->SetIsolationPar("HV", ParametersInsulationHV[j]);
+       TestIsolationPSPP1[j]->SetIsolationPar("Tsensor", ParametersInsulationTsensor[j]);
+       TestIsolationPSPP1[j]->SetPath(TestName[j]);
     }
-    if(ContinuityTest){
-      TestContinuityPSPP1[j] = new Continuity::PSPP1(continuityData, testTitle);
-      TestContinuityPSPP1[j]->SetParameters(ParametersContinuity[j]);
-      TestContinuityPSPP1[j]->SetPath(TestName[j]);
+     if(ContinuityTest){
+       TestContinuityPSPP1[j] = new Continuity::PSPP1(continuityData, testTitle);
+       TestContinuityPSPP1[j]->SetParameters(ParametersContinuity[j]);
+       TestContinuityPSPP1[j]->SetPath(TestName[j]);
+     }
     }
+    /*
+    else if(OCTOPUSoutputTest){
+      if(InsulationTest){
+        TestIsolationOctopus[j] = new Isolation::OCTOPUS(insulationData, testTitle);
+        TestIsolationOctopus[j]->SetInitialParameters(ParametersInsulationInitial[j]);
+        TestIsolationOctopus[j]->SetIsolationPar("LV", ParametersInsulationLV[j]);
+      }
+      if(ContinuityTest){
+        TestContinuityOctopus[j] = new Continuity::OCTOPUS(insulationData, testTitle);
+
+
+
+      
+      
+      }
+    */
     // ************************************************************* //
   }
