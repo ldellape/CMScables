@@ -78,7 +78,10 @@ void printlogo(){
 *                                          https://github.com/ldellape/CMScables *
 ********************************************************************************** )"; 
  std::cout << green << textCMS  << reset << std::endl;
- std::system(" mkdir -v ./output && mkdir -v ./output/rootFiles && mkdir -v ./output/plots && mkdir -v ./output/plots/SingleCable && mkdir -v ./output/plots/CheckCable && mkdir -p ./output/report && mkdir -p ./output/plotsTimeResistence" );
+ std::system(" mkdir -pv ./output/plots/SingleCable");
+ std::system(" mkdir -pv ./output/plots/CheckCable");
+ std::system("mkdir -pv ./output/report");
+ std::system("mkdir -pv ./output/plotsTimeResistence" );
  std::cout<<"*******************************************************************"<<std::endl;
  std::cout<<"Input Directory ---> " ;
  std::cout<<sInputTestDir<<std::endl;
