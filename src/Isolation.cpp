@@ -10,6 +10,85 @@
 
 using namespace Isolation;
 
+Cable::Cable(){}
+
+TString Cable::FindCableType(TString TestNameFile){
+    std::ifstream inputFile(TestNameFile.Data());
+    TString line;
+    while(inputFile.good() && line.ReadLine(inputFile)){
+        if (line.Contains("PS-PP1")) return "PSPP1";
+        else if (line.Contains("OCTOPUS")) return "octopus";
+        else if (line.Contains("PP0"))  return "PP0";
+        else if (line.Contains("CHAIN")) return "CHAINtest" ;
+     }
+}
+
+
+void Cable::ReadTestOutput(std::vector<TString> &TestNameFile, Int_t j){
+    std::vector<std::tuple<double,double,double,double,double, std::string, double, std::string, double, double>> ParametersInsulationInitial;
+    std::vector<std::vector<double>> ParametersInsulationHV;  
+    std::vector<std::vector<double>> ParametersInsulationLV;
+    std::vector<std::vector<double>> ParametersInsulationTsensor;
+    std::ifstream inputFile(TestNameFile[j]);
+    std::string line;
+    std::vector<std::tuple<bool, std::string, double>> continuityData;
+    std::vector<std::tuple<bool, std::string, double, double>> insulationData;
+    Bool_t FirstTree = false;
+    Bool_t SecondTree = false;
+    double i, Thresh, Trise, Twait, Tmeas, Vlimit, V, Vramp, Tmeasfact;
+    double r, B;
+    std::string AR, str1, str2, TmeasRed;
+    int lineCounter=0;
+
+    while(std::getline(inputFile, line)){
+      std::istringstream iss(line);
+     if(line.find("ContinuityTest") != std::string::npos){
+        FirstTree = true;
+        SecondTree = false;
+     }
+     else if (line.find("InsulationTest") != std::string::npos){
+        FirstTree = false;
+        SecondTree = true;
+     }
+     else{
+        if(lineCounter<5){
+            if(lineCounter==1 && iss >> V >> Thresh >> Trise >> Twait >> Tmeas >> AR >> i >> TmeasRed >> Tmeasfact >> Vramp){
+            ParametersInsulationInitial.push_back(std::make_tuple(V, Thresh, Trise, Twait, Tmeas,AR, i, TmeasRed, Tmeasfact, Vramp));
+            }
+            else if(lineCounter==2 && iss>> Trise >> Twait >> Tmeas) ParametersInsulationLV.push_back({Trise, Twait, Tmeas});
+            else if(lineCounter == 3 && iss >> V >> Thresh >> Trise >> Tmeas) ParametersInsulationHV.push_back({V,Thresh,Trise,Tmeas});
+            else if(lineCounter == 4 && iss>> V >> Thresh >> Trise >> Tmeas) ParametersInsulationTsensor.push_back({V,Thresh,Trise,Tmeas});            
+          lineCounter++;
+        }
+        else{
+          if(SecondTree){
+          if(iss>>str1>>str2>>r)  insulationData.push_back(std::make_tuple((str1 == "Passed"),str2,r,B));
+          }
+       }
+     }
+    }//while
+
+    // ***** get cable name ******* //
+    TString path(TestNameFile[j].Data());
+    int lastSlash = path.Last('/');
+    TString testTitle = path(lastSlash+1, path.Length()-lastSlash-5);
+    //CableType[j] = FindCableType(TestNameFile[j]);
+    CableType[j] = "PSPP1";
+
+
+    if((CableType[j] == "PSPP1")){
+       TestIsolationPSPP1[j] = new Isolation::PSPP1(insulationData, testTitle);
+       TestIsolationPSPP1[j]->SetInitialParameters(ParametersInsulationInitial[j]);
+       TestIsolationPSPP1[j]->SetIsolationPar("LV", ParametersInsulationLV[j]);
+       TestIsolationPSPP1[j]->SetIsolationPar("HV", ParametersInsulationHV[j]);
+       TestIsolationPSPP1[j]->SetIsolationPar("Tsensor", ParametersInsulationTsensor[j]);
+       TestIsolationPSPP1[j]->SetPath(TestName[j]);
+    }
+   // else if((FindCableType(TestNameFile[j].Data()) == "OCTOPUS")){}
+ 
+ 
+ }
+
  //////////////////////////////////////////////////////////////////////
  // default constructor
  PSPP1::PSPP1(){}

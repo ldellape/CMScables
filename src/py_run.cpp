@@ -3,14 +3,6 @@
 #include "../include/root.h"
 
 namespace Python{
- std::string AutoRunNewTests(){
-  std::string NewTestInput = std::string(WORKDIR) + "/docs/NewTests.txt";
-  std::string ProcessedTestsOutput = std::string(WORKDIR) + "/docs/processedTests.txt";
-  std::string command = "python3 " + std::string(WORKDIR) + "/py/AutoRun.py " + sInputTestDir + " " +  ProcessedTestsOutput + " " + NewTestInput;
-  std::system(command.c_str());
-  return NewTestInput;
- }
-
 
  namespace PSPP1{
     // change text file mfrom ceetis, new files store in temporarly dirs
@@ -67,7 +59,7 @@ namespace Python{
       }
       std::cout<<command<<std::endl;
       std::system(command.c_str());
-      std::cout<<"\033[32mFINAL REPORT saved as "<< std::string(WORKDIR) <<"/output/report/Report_"+ PDFname +"\033[0m" <<std::endl;
+      std::cout<<"\033[32mFINAL REPORT saved as "<< std::string(WORKDIR) <<"/output/report/Report_"+ PDFname + ".pdf\033[0m" <<std::endl;
       std::cout<<"*******************************************************************"<<std::endl;
       return;
     }

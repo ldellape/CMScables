@@ -1,9 +1,84 @@
+#include<sstream>
+#include<fstream>
 #include "../include/def_variables.h"
 #include "../include/root.h"
 #include "../include/Continuity.h"
 #include "TError.h"
-
 using namespace Continuity;
+
+Cable::Cable(){};
+
+TString Cable::FindCableType(TString TestNameFile){
+    std::ifstream inputFile(TestNameFile.Data());
+    TString line;
+    while(inputFile.good() && line.ReadLine(inputFile)){
+        if (line.Contains("PS-PP1")) return "PSPP1";
+        else if (line.Contains("OCTOPUS")) return "OCTOPUS";
+        else if (line.Contains("PP0"))  return "PP0";
+        else if (line.Contains("CHAIN")) return "CHAINtest" ;
+     }
+}
+
+
+void Cable::ReadTestOutput(std::vector<TString> &TestNameFile, Int_t j){
+   std::vector<std::tuple<double,double,double,double,double, TString, double>> ParametersContinuity;
+    std::ifstream inputFile(TestNameFile[j].Data()); 
+    TString line;
+    std::vector<std::tuple<bool, TString, double>> continuityData;
+    std::vector<std::tuple<bool, TString, double, double>> insulationData;
+    Bool_t FirstTree = false;
+    Bool_t SecondTree = false;
+    double i, Thresh, Trise, Twait, Tmeas, Vlimit, V, Vramp, Tmeasfact;
+    double r, B;
+    TString AR, str1, str2, TmeasRed;
+    int lineCounter = 0;
+    int secondtree = 0;
+    CableType[j] = "PSPP1";
+    TString cabletype ="PSPP1";
+    //CableType[j] = FindCableType(TestNameFile[j]);
+    while (inputFile.good() && line.ReadLine(inputFile)) {  
+        std::istringstream iss(line.Data()); 
+        
+
+        if (line.Contains("ContinuityTest")) {
+            FirstTree = true;
+            SecondTree = false;
+        } else if (line.Contains("InsulationTest")) {
+            FirstTree = false;
+            SecondTree = true;
+        } else {
+            if (lineCounter < 5) {
+                if (lineCounter == 0 && iss >> i >> Thresh >> Trise >> Twait >> Tmeas >> AR >> Vlimit)
+                ParametersContinuity.push_back(std::make_tuple(i, Thresh, Trise, Twait, Tmeas, AR, Vlimit));
+                lineCounter++;
+            } else {
+                if (FirstTree) {
+                    if (iss >> str1 >> str2 >> r)
+                        continuityData.push_back(std::make_tuple((str1 == "Passed"), str2, r));
+                } else if (SecondTree) {
+                    secondtree++;
+                    if (iss >> str1 >> str2 >> r)
+                        insulationData.push_back(std::make_tuple((str1 == "Passed"), str2, r, B));
+                }
+            }
+        }
+    }  // end while
+
+    // ***** get cable name ******* //
+    TString path = TestNameFile[j];
+    int lastSlash = path.Last('/');
+    TString testTitle = path(lastSlash + 1, path.Length() - lastSlash - 5);
+
+    if (cabletype == "PSPP1") {
+            TestContinuityPSPP1[j] = new Continuity::PSPP1(continuityData, testTitle);
+            TestContinuityPSPP1[j]->SetParameters(ParametersContinuity[j]);
+            TestContinuityPSPP1[j]->SetPath(TestNameFile[j]);
+    }
+    else if(cabletype == "OCTOPUS"){ 
+    }
+}
+
+
 
  //////////////////////////////////////////////////////////////////////
  // default constructor
@@ -11,7 +86,7 @@ using namespace Continuity;
 
  //////////////////////////////////////////////////////////////////////
  // constructor of the class
- PSPP1::PSPP1(std::vector<std::tuple<Bool_t, std::string, double>> &TestOutput, ::TString TestName){
+ PSPP1::PSPP1(std::vector<std::tuple<Bool_t, TString, double>> &TestOutput, ::TString TestName){
     CableName = TestName;
     for(int i=0; i<int(TestOutput.size()); i++){
      status.push_back(std::get<0>(TestOutput[i]));
@@ -45,16 +120,16 @@ using namespace Continuity;
  }
  //////////////////////////////////////////////////////////////////////
  //
-void PSPP1::SetParameters(std::tuple<double,double,double,double,double,std::string,double> param){ 
+void PSPP1::SetParameters(std::tuple<double,double,double,double,double,TString,double> param){ 
     Parameters = param;
 }
-void PSPP1::SetPath(std::string path){
+void PSPP1::SetPath(TString path){
   TestPath = path;
 }
 
 TString PSPP1::GetName(){ return CableName;}
 
-std::string PSPP1::GetPath(){ return TestPath; }
+TString PSPP1::GetPath(){ return TestPath; }
 
 //////////////////////////////////////////////////////////////////////
 // 
@@ -223,7 +298,7 @@ Double_t PSPP1::GetThreshold(TString option){
 */
 //////////////////////////////////////////////////////////////////////
 // get vector of parameters
-std::tuple<double,double,double,double,double, std::string, double> PSPP1::GetParameters(){ 
+std::tuple<double,double,double,double,double, TString, double> PSPP1::GetParameters(){ 
  return Parameters;
 }
 

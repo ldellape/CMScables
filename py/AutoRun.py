@@ -13,7 +13,6 @@ def find_new_tests(InputDir, ListTestsFile):
                 full_path = os.path.join(dirpath, filename)
                 immediate_dir = os.path.basename(os.path.dirname(full_path))
                 file_name = os.path.basename(full_path)
-
                 current_test.add((full_path, immediate_dir, file_name))
 
     processed_test = set()
@@ -37,7 +36,7 @@ def find_new_tests(InputDir, ListTestsFile):
 
     return NewTests
 
-ListTestsFile = "/home/ldellape/CMScables/docs/processedTest.txt"
+ListTestsFile = "/home/ldellape/CMScables/stat/processedTest.txt"
 InputDir = "/home/ldellape/CMScables/input/FULL_TEST_su_cavo_ps_pp1_V3/"
 
 if __name__ == "__main__":

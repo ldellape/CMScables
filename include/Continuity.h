@@ -8,16 +8,20 @@
 namespace Continuity{
  class Cable{
     public:
+    Cable();
     virtual ~Cable(){}
- };
+    void ReadTestOutput(std::vector<TString> &TestNameFile, Int_t j);
+    template<typename CableType> CableType* ReadTestOutput(std::vector<TString> &TestNameFile, Int_t j, TString option);
+    TString FindCableType(TString TestNameFile);
+};
  class PSPP1 : public Cable{
   private:
     TString CableName;
     std::vector<Bool_t> status;
     std::vector<::TString> channel;
     std::vector<double> resistence;
-    std::string TestPath;
-    std::tuple<double,double,double,double,double, std::string, double> Parameters;
+    TString TestPath;
+    std::tuple<double,double,double,double,double, TString, double> Parameters;
     const double diamLV = 0.0012;
     const double diamHV = 0.00038;
     Float_t ThreshContLV = 0.65;
@@ -27,13 +31,13 @@ namespace Continuity{
     std::pair<double,double> FindMaxMinResistence(::TString option);
   public:
     PSPP1();
-    PSPP1(std::vector<std::tuple<Bool_t, std::string, double>> &TestOutput, ::TString TestTitle);
-    void SetPath(std::string path);
+    PSPP1(std::vector<std::tuple<Bool_t, TString, double>> &TestOutput, ::TString TestTitle);
+    void SetPath(TString path);
     void SetChannels(std::vector<::TString> &channelNames);
     void SetStatus(std::vector<Bool_t> &statusChannels);
     void SetResistence(std::vector<double> &resistenceChannel);
     void SetName(::TString name);
-    void SetParameters(std::tuple<double,double,double,double,double,std::string,double> param); 
+    void SetParameters(std::tuple<double,double,double,double,double,TString,double> param); 
     void SetThreshold(::TString option, Float_t Thresh);
     ::TString GetName();
     std::vector<double> GetResistence(::TString option= "all");
@@ -45,10 +49,10 @@ namespace Continuity{
     Double_t GetStdDev(::TString option);
     Double_t GetStdDev(TH1F *h);
     Double_t GetThreshold(::TString option);
-    std::string GetPath();
+    TString GetPath();
     std::vector<std::pair<TString, double>> GetOverThreshold(::TString option);
     double GetParameter(int param);
-    std::tuple<double,double,double,double,double, std::string, double> GetParameters();
+    std::tuple<double,double,double,double,double, TString, double> GetParameters();
     TH1F* FillResistenceChannelHistogram(::TString title, ::TString option);
     TH1F* FillResistenceHistogram(::TString option= "all");
     TH1I* FillStatusHistogram(::TString title, ::TString option = "all");
@@ -86,6 +90,75 @@ namespace Continuity{
 
 /////////////////////////////////////////////////////////////////////
 // filter entries based on channel option
+template<typename CableType>
+CableType*  Cable::ReadTestOutput(std::vector<TString> &TestNameFile, Int_t j, TString option) {
+    std::vector<std::tuple<double,double,double,double,double, TString, double>> ParametersContinuity;
+    std::ifstream inputFile(TestNameFile[j].Data()); 
+    TString line;
+    std::vector<std::tuple<bool, TString, double>> continuityData;
+    std::vector<std::tuple<bool, TString, double, double>> insulationData;
+    Bool_t FirstTree = false;
+    Bool_t SecondTree = false;
+    double i, Thresh, Trise, Twait, Tmeas, Vlimit, V, Vramp, Tmeasfact;
+    double r, B;
+    TString AR, str1, str2, TmeasRed;
+    int lineCounter = 0;
+    int secondtree = 0;
+    TString cabletype = FindCableType(TestNameFile[j].Data());
+    
+    Continuity::PSPP1 *pspp1;
+    Continuity::OCTOPUS *octopus;
+
+    while (inputFile.good() && line.ReadLine(inputFile)) {  
+        std::istringstream iss(line.Data()); 
+        
+
+        if (line.Contains("ContinuityTest")) {
+            FirstTree = true;
+            SecondTree = false;
+        } else if (line.Contains("InsulationTest")) {
+            FirstTree = false;
+            SecondTree = true;
+        } else {
+            if (lineCounter < 5) {
+                if (lineCounter == 0 && iss >> i >> Thresh >> Trise >> Twait >> Tmeas >> AR >> Vlimit)
+                ParametersContinuity.push_back(std::make_tuple(i, Thresh, Trise, Twait, Tmeas, AR, Vlimit));
+                lineCounter++;
+            } else {
+                if (FirstTree) {
+                    if (iss >> str1 >> str2 >> r)
+                        continuityData.push_back(std::make_tuple((str1 == "Passed"), str2, r));
+                } else if (SecondTree) {
+                    secondtree++;
+                    if (iss >> str1 >> str2 >> r)
+                        insulationData.push_back(std::make_tuple((str1 == "Passed"), str2, r, B));
+                }
+            }
+        }
+    }  // end while
+
+    // ***** get cable name ******* //
+    TString path = TestNameFile[j];
+    int lastSlash = path.Last('/');
+    TString testTitle = path(lastSlash + 1, path.Length() - lastSlash - 5);
+
+    if (cabletype.CompareTo("PSPP1")) {
+            pspp1 = new Continuity::PSPP1(continuityData, testTitle);
+            pspp1->SetParameters(ParametersContinuity[j]);
+            pspp1->SetPath(TestNameFile[j]);
+        return pspp1;
+    }
+    else if(cabletype.CompareTo("OCTOPUS")){ 
+        return octopus;
+}
+}
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////
+// filter entries based on channel option
 template <typename T> std::vector<T> PSPP1::FilterChannel(TString option, TString vector) {
  std::vector<T> filtered;
  if(vector == "RESISTENCE"){
@@ -117,7 +190,6 @@ template <typename T> std::vector<T> PSPP1::FilterChannel(TString option, TStrin
 
 class OCTOPUS : public Cable{
     private:
-
         TString CableName;
         std::vector<Bool_t> status;
         std::string TestPath;

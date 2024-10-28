@@ -8,6 +8,7 @@ std::vector<Continuity::OCTOPUS*> TestContinuityOctopus(100, nullptr);
 std::vector<Isolation::OCTOPUS*> TestIsolationOctopus(100, nullptr);
 std::vector<Continuity::PP0*> TestContinuityPP0(100, nullptr);
 std::vector<Isolation::PP0*> TestIsolationPP0(100, nullptr);
+std::vector<TString> CableType(100,nullptr);
 //////////////////////////////////////////////////
 
 
@@ -28,7 +29,7 @@ Bool_t CHAINtest = false;
 // input-output paths
 std::vector<std::string> TestName;
 std::vector<std::string> TestNameTimeAcquisition;
-std::vector<std::string> TestPath;
+std::vector<TString> TestPath;
 std::string sPDFTitle;
 std::string currentDate;
 const std::string sInputTestDir = std::string(WORKDIR) + "/input/FULL_TEST_su_cavo_ps_pp1_V3/";

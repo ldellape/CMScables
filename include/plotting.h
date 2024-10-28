@@ -56,7 +56,7 @@ text.DrawLatexNDC(0.15, 0.92, sTitle);
 // ********************** INSULATION PLOTS *********************************** //
 // *************************************************************************** //
 if(sTitle == "InsulationTest_HV_Resistence" || sTitle == "InsulationTest_LV_Resistence"){
-  std::tuple<double,double,double,double,double, std::string, double, std::string, double, double> ParamInitial = TestIsolationPSPP1[0]->GetInitialParameters();
+  std::tuple<double,double,double,double,double, TString, double, TString, double, double> ParamInitial = TestIsolationPSPP1[0]->GetInitialParameters();
   TLatex textParIns; textParIns.SetTextSize(0.020); textParIns.SetTextFont(52);
   textParIns.DrawLatexNDC(0.01, 0.02, Form("Initial Parameters : V=%i kV, Thresh.= %i G #Omega, T_{rise} = %i s, T_{wait} = %i s, T_{meas} = %i s, AR = %s, i_{lim}= %.2f mA, T_{meas} red.=%s, T_{meas} fact.=%i, V_{ramp}= %i V/s", 
       int(std::get<0>(ParamInitial)), 
@@ -64,9 +64,9 @@ if(sTitle == "InsulationTest_HV_Resistence" || sTitle == "InsulationTest_LV_Resi
       int(std::get<2>(ParamInitial)), 
       int(std::get<3>(ParamInitial)),
       int(std::get<4>(ParamInitial)), 
-      std::get<5>(ParamInitial).c_str(),
+      std::get<5>(ParamInitial).Data(),
       std::get<6>(ParamInitial),
-      std::get<7>(ParamInitial).c_str(),
+      std::get<7>(ParamInitial).Data(),
       int(std::get<8>(ParamInitial)),
       int(std::get<9>(ParamInitial))
   ));
@@ -178,7 +178,7 @@ else if(sTitle == "ContinuityTest_ResistenceHV" || sTitle == "ContinuityTest_Res
   TAxis *x = h[0]->GetXaxis();
   TAxis *y = h[0]->GetYaxis();
 
-  std::tuple<double,double,double,double,double, std::string, double> Param = TestContinuityPSPP1[0]->GetParameters();
+  std::tuple<double,double,double,double,double, TString, double> Param = TestContinuityPSPP1[0]->GetParameters();
   TLatex textPar; textPar.SetTextSize(0.020); textPar.SetTextFont(52);
   textPar.DrawLatexNDC(0.01, 0.02, Form("Parameters : i=%i, Thresh.= %i, T_{rise} = %i s, T_{wait} = %i s, T_{meas} = %i s, AR=%s, V_{lim}= %i", 
         int(std::get<0>(Param)),
@@ -186,7 +186,7 @@ else if(sTitle == "ContinuityTest_ResistenceHV" || sTitle == "ContinuityTest_Res
         int(std::get<2>(Param)), 
         int(std::get<3>(Param)),
         int(std::get<4>(Param)),
-        std::get<5>(Param).c_str(), 
+        std::get<5>(Param).Data(), 
         int(std::get<6>(Param))
   ));
 

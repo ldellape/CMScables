@@ -45,6 +45,7 @@ std::string name[IterationTest];
  for(int j=0; j<IterationTest; j++){
     std::size_t LastDot = TestName[j].find_last_of(".");
     name[j] = TestName[j].substr(0, LastDot);
+    std::cout<<name[j]<<std::endl;
  }
 std::cout<<"*******************************************************************"<<std::endl;
 // *************************************************** //
@@ -58,9 +59,15 @@ for(int i=0; i<int(TestName.size()); i++){
 Python::PSPP1::ChangeTextFile(TestName[i]);
 }
 std::cout<<"Input Tests:"<<std::endl;
+Continuity::Cable *CableContinuity[IterationTest];
+Isolation::Cable *CableIsolation[IterationTest];
+
 for(int i=0; i<IterationTest; ++i){
   std::cout<<Form("%i",1)<<"-"<<TestPath[i]<<std::endl;
-  ReadTestOutput(TestPath, i); // read test and set which type of input
+  CableContinuity[i] = new Continuity::Cable();
+  CableIsolation[i] = new Isolation::Cable();
+  if(ContinuityTest) CableContinuity[i]->ReadTestOutput(TestPath, i); // read test and set which type of input
+  if (InsulationTest) CableIsolation[i]->ReadTestOutput(TestPath, i);
 }
 std::cout<<"done"<<std::endl;
 std::cout<<"****************************************"<<std::endl;
@@ -69,8 +76,8 @@ std::cout<<"****************************************"<<std::endl;
 // ***************************************************** //
 // *** HISTOGRAMS (FILLILING AND PLOTTING) ************* //
 // ***************************************************** //
-if(PSPP1test){
 for(int it = 0; it< IterationTest; it++){
+ if(CableType[it] == "PSPP1"){
   if(ContinuityTest && InsulationTest){
    h_passedCont_tot[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passed_continuity_all_%i", it+1));
    h_passedHV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedHV_continuity_%i", it+1), "HV");
@@ -97,16 +104,15 @@ for(int it = 0; it< IterationTest; it++){
    hIns_ResChannel_LV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_isolation_%i",it+1), "LV");
   }
 }  
-}
-else if(OCTOPUStest){
+else if(CableType[it] == "OCTOPUS"){
   //histograms for octopus cable
 }
-
-else if(PP0test){
+else if(CableType[it] == "PP0"){
   //histograms for PP0 cable
 }
-else if(CHAINtest){
+else if(CableType[it] == "CHAIN"){
   //histograsm for full chain test
+}
 }
 
 

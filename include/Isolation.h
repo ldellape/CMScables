@@ -13,7 +13,10 @@
 namespace Isolation{
  class Cable{
     public:
+        Cable();
         virtual ~Cable(){}
+        void ReadTestOutput(std::vector<TString> &TestNameFile, int j);
+        TString FindCableType(TString TestNameFile);
     };
 
 
@@ -122,7 +125,6 @@ template<typename T> std::vector<T> PSPP1::FilterChannel(::TString option, ::TSt
 
 class OCTOPUS : public Cable{
     private:
-
         TString CableName;
         std::vector<Bool_t> status;
         std::string TestPath;

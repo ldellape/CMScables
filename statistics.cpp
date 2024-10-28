@@ -141,9 +141,10 @@ int main(){
 
  ROOT::EnableImplicitMT();
  std::system("mkdir  stat_root");
+ std::system("mkdir -p stat");
  std::set<std::string> tests;
- const char *pathOutFile = "./docs/statistics.root";
- const char *TestProcessedTXT = "./docs/processedTest.txt";
+ const char *pathOutFile = "./stat/statistics.root";
+ const char *TestProcessedTXT = "./stat/processedTest.txt";
 
 // ******************************************************************** //
 // ************* INPUT FILES AND OUTPUT FILES DEFINITIONS ************* //
