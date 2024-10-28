@@ -94,7 +94,8 @@ bool HV_filter(const std::string& channel) {
     return channel.find("HV") != std::string::npos;
 }
 
-void statistics() {
+int main() {
+    std::system("mkdir -p stat_root");
     ROOT::EnableImplicitMT();
 
     std::vector<std::string> FileNames;
@@ -118,8 +119,7 @@ void statistics() {
 
     ROOT::RDataFrame df_Continuity(inputChain_continuity);
     ROOT::RDataFrame df_Isolation(inputChain_isolation);
-    auto nEntries = df_Continuity.Count().GetValue();  // Get total number of entries
-    auto nEntries2 = df_Isolation.Count().GetValue();  // Get total number of entries
+
   for (const auto& name : df_Continuity.GetColumnNames()) {
     std::cout << "Column in Continuity DataFrame: " << name << std::endl;
 }
@@ -212,9 +212,9 @@ auto h_HV_ResistenceIsolation = df_Isolation.Filter(HV_filter, {"channelIns"}).H
     text6.DrawLatexNDC(0.15, 0.93, "Continuity Test, passed/failed channels, all cables");
     c6->Write();
 
-
-
+    std::system(" rm -r stat_root");
 
     f_StatOut->Close(); 
+    return 0;
     gROOT->ProcessLine(".q");
 }

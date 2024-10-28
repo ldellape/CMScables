@@ -18,6 +18,9 @@
 
 
 
+
+
+
 #ifdef AUTO_TEST // automatic test--> report for the more recently txt file 
 #define AutoTest 
 #elif defined(INTER_TEST) // --> choose test from command line
@@ -41,6 +44,8 @@ std::cout<<"Histograms will be saved in -----> "+ std::string(WORKDIR)+ "/output
 std::cout<<"Plots will be saved in -----> " + std::string(WORKDIR) + "/output/plots/" << std::endl; 
 std::cout<<"Final Report will be saved in -----> " + std::string(WORKDIR)+ "/output/report" << std::endl; 
 std::cout<<"****************************************"<<std::endl;
+
+
 
 
 std::string pathTEST;
