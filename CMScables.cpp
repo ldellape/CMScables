@@ -19,8 +19,10 @@
 #include "./include/plotting.h"
 
 
+
 int main(int argc, char* argv[]){
 if(argc<2)  printlogo();
+
 
 // ************************************* //
 // ************ INPUT TESTS ************ //
@@ -38,6 +40,7 @@ else if(!CommandLine){ // input from command line
    }
 }
 
+
 IterationTest = TestName.size();
 std::cout<<"*******************************************************************"<<std::endl;
 std::cout<<"Test Processati:   "<<std::endl;
@@ -50,6 +53,7 @@ std::string name[IterationTest];
 std::cout<<"*******************************************************************"<<std::endl;
 // *************************************************** //
 // *************************************************** //
+
 
 
 // ********* changing txt files and store Continuity/Isolation class objects **************** //
