@@ -6,6 +6,6 @@ settings.json
 stat_root/
 CMScables
 statistics
-input/
-output/
+./input
+./output
 OTCablesPhaseIItests.log
