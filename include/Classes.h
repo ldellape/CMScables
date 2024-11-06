@@ -1,44 +1,52 @@
-#ifndef CONTINUITY_CLASS_H
-#define CONTINUITY_CLASS_H 
+#ifndef CLASSES_H
+#define CLASSES_H
 
-#include <vector>
 #include "root.h"
 #include "def_variables.h"
 
-namespace Continuity{
- class Cable{
-    public:
-    Cable();
-    virtual ~Cable(){}
-    void ReadTestOutput(std::vector<TString> &TestNameFile, Int_t j);
-    template<typename CableType> CableType* ReadTestOutput(std::vector<TString> &TestNameFile, Int_t j, TString option);
-    TString FindCableType(TString TestNameFile);
-};
- class PSPP1 : public Cable{
+/////////////////////////////////////////////////////
+////////////// PSPP1 CLASS //////////////////////////
+////////////////////////////////////////////////////
+
+  class PSPP1{
   private:
     TString CableName;
+    TString testPath;
     std::vector<Bool_t> status;
     std::vector<::TString> channel;
     std::vector<double> resistence;
-    TString TestPath;
+    std::vector<double> FieldB;
+    TString testType; // isolation or continuity
+    // test parameters //
     std::tuple<double,double,double,double,double, TString, double> Parameters;
+    std::tuple<double,double,double,double,double, TString, double,TString, double, double> InitialParameters;
+    std::vector<double> IsolationParLV;
+    std::vector<double> IsolationParHV;
+    std::vector<double> IsolationParTsensor;
+    // cable parameters //
     const double diamLV = 0.0012;
     const double diamHV = 0.00038;
     Float_t ThreshContLV = 0.65;
     Float_t ThreshContHV = 13;
+    Float_t ThreshIsoLV = 10000;
+    Float_t ThreshIsoHV = 1e+9;
     const double ResistivityLV = 1.724*TMath::Power(10, -8);
     const double ResistivityHV = 1.724*TMath::Power(10,-8);
     std::pair<double,double> FindMaxMinResistence(::TString option);
   public:
     PSPP1();
-    PSPP1(std::vector<std::tuple<Bool_t, TString, double>> &TestOutput, ::TString TestTitle);
+    PSPP1(TString testType, std::vector<std::tuple<Bool_t, TString, double>> &TestOutput, TString TestTitle);
     void SetPath(TString path);
     void SetChannels(std::vector<::TString> &channelNames);
     void SetStatus(std::vector<Bool_t> &statusChannels);
     void SetResistence(std::vector<double> &resistenceChannel);
     void SetName(::TString name);
     void SetParameters(std::tuple<double,double,double,double,double,TString,double> param); 
+    void SetInitialParameters(std::tuple<double,double,double,double,double, TString, double, TString, double, double> param);
+    void SetIsolationPar(::TString option, std::vector<double> &pars);
     void SetThreshold(::TString option, Float_t Thresh);
+    void SetField(std::vector<double> &B);
+    void SetTestType(TString test);
     ::TString GetName();
     std::vector<double> GetResistence(::TString option= "all");
     std::vector<Bool_t> GetStatus(::TString = "all");
@@ -49,115 +57,20 @@ namespace Continuity{
     Double_t GetStdDev(::TString option);
     Double_t GetStdDev(TH1F *h);
     Double_t GetThreshold(::TString option);
+    std::vector<double> GetIsolationPar(TString option);
     TString GetPath();
     std::vector<std::pair<TString, double>> GetOverThreshold(::TString option);
+    std::tuple<double,double,double,double,double, TString, double,TString, double, double> GetInitialParameters();
+    TString GetPathTimeRes();
     double GetParameter(int param);
     std::tuple<double,double,double,double,double, TString, double> GetParameters();
     TH1F* FillResistenceChannelHistogram(::TString title, ::TString option);
     TH1F* FillResistenceHistogram(::TString option= "all");
     TH1I* FillStatusHistogram(::TString title, ::TString option = "all");
-
-    // ************************************************** //
-    // ---> template method
- //   template<typename histo> histo* Add(histo *h, ::TString option, PSPP1 *cable1, Float_t c1);
     template <typename T> std::vector<T> FilterChannel(::TString option, ::TString vector);
+    std::vector<std::pair<std::string, TGraph*>> FillGraphTimeResistence(TString option);
  };
-// ************ template method implementation ************ //
-// ******************************************************** //
-
-//////////////////////////////////////////////////////////////////////
-// sum/difference operation between two cables
-/*
- template<typename histo> histo* PSPP1::Add(histo *h, ::TString option, PSPP1 *cable1, Float_t c1){
-    option.ToUpper();
-    histo *Histo2;
-    if(std::is_same<histo, TH1F>::value){
-     Histo2 = (histo*) cable1->FillResistenceChannelHistogram(option);
-     h->histo::Add(Histo2, c1);
-     return *this;
-    }
-    else if(std::is_same<histo, TH1I>::value){
-     Histo2 = (histo*) cable1->FillStatusHistogram(option);
-      h->histo::Add(Histo2, c1);
-      return *this;
-    }
-    else{
-     Error("Continuity::PSPP1::Add", "histograms are of different type");
-     return h;
-    }
-}
-*/
-
-/////////////////////////////////////////////////////////////////////
-// filter entries based on channel option
-template<typename CableType>
-CableType*  Cable::ReadTestOutput(std::vector<TString> &TestNameFile, Int_t j, TString option) {
-    std::vector<std::tuple<double,double,double,double,double, TString, double>> ParametersContinuity;
-    std::ifstream inputFile(TestNameFile[j].Data()); 
-    TString line;
-    std::vector<std::tuple<bool, TString, double>> continuityData;
-    std::vector<std::tuple<bool, TString, double, double>> insulationData;
-    Bool_t FirstTree = false;
-    Bool_t SecondTree = false;
-    double i, Thresh, Trise, Twait, Tmeas, Vlimit, V, Vramp, Tmeasfact;
-    double r, B;
-    TString AR, str1, str2, TmeasRed;
-    int lineCounter = 0;
-    int secondtree = 0;
-    TString cabletype = FindCableType(TestNameFile[j].Data());
-    
-    Continuity::PSPP1 *pspp1;
-    Continuity::OCTOPUS *octopus;
-
-    while (inputFile.good() && line.ReadLine(inputFile)) {  
-        std::istringstream iss(line.Data()); 
-        
-
-        if (line.Contains("ContinuityTest")) {
-            FirstTree = true;
-            SecondTree = false;
-        } else if (line.Contains("InsulationTest")) {
-            FirstTree = false;
-            SecondTree = true;
-        } else {
-            if (lineCounter < 5) {
-                if (lineCounter == 0 && iss >> i >> Thresh >> Trise >> Twait >> Tmeas >> AR >> Vlimit)
-                ParametersContinuity.push_back(std::make_tuple(i, Thresh, Trise, Twait, Tmeas, AR, Vlimit));
-                lineCounter++;
-            } else {
-                if (FirstTree) {
-                    if (iss >> str1 >> str2 >> r)
-                        continuityData.push_back(std::make_tuple((str1 == "Passed"), str2, r));
-                } else if (SecondTree) {
-                    secondtree++;
-                    if (iss >> str1 >> str2 >> r)
-                        insulationData.push_back(std::make_tuple((str1 == "Passed"), str2, r, B));
-                }
-            }
-        }
-    }  // end while
-
-    // ***** get cable name ******* //
-    TString path = TestNameFile[j];
-    int lastSlash = path.Last('/');
-    TString testTitle = path(lastSlash + 1, path.Length() - lastSlash - 5);
-
-    if (cabletype.CompareTo("PSPP1")) {
-            pspp1 = new Continuity::PSPP1(continuityData, testTitle);
-            pspp1->SetParameters(ParametersContinuity[j]);
-            pspp1->SetPath(TestNameFile[j]);
-        return pspp1;
-    }
-    else if(cabletype.CompareTo("OCTOPUS")){ 
-        return octopus;
-}
-}
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////
+ /////////////////////////////////////////////////////////////////////
 // filter entries based on channel option
 template <typename T> std::vector<T> PSPP1::FilterChannel(TString option, TString vector) {
  std::vector<T> filtered;
@@ -188,7 +101,8 @@ template <typename T> std::vector<T> PSPP1::FilterChannel(TString option, TStrin
  return filtered;
 }
 
-class OCTOPUS : public Cable{
+
+ class OCTOPUS{
     private:
         TString CableName;
         std::vector<Bool_t> status;
@@ -234,8 +148,6 @@ class OCTOPUS : public Cable{
         void SetResistence(std::vector<double> &resistenceChannels);
 
 };
-}
-
 
 
 

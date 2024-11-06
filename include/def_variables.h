@@ -15,15 +15,14 @@
 
 //////////////////////////////////////////////////
 // classes and objects of the classes
-namespace Continuity{ class PSPP1; class OCTOPUS; class PP0;}
-namespace Isolation {  class PSPP1; class OCTOPUS; class PP0;}
-extern std::vector<Continuity::PSPP1*> TestContinuityPSPP1;
-extern std::vector<Isolation::PSPP1*> TestIsolationPSPP1;
-extern std::vector<Continuity::OCTOPUS*> TestContinuityOctopus;
-extern std::vector<Isolation::OCTOPUS*> TestIsolationOctopus;
-extern std::vector<Continuity::PP0*> TestContinuityPP0;
-extern std::vector<Isolation::PP0*> TestIsolationPP0;
-extern std::vector<TString> CableType;
+class PSPP1; class OCTOPUS; class PP0;
+class Cable;
+extern std::vector<PSPP1*> TestContinuityPSPP1;
+extern std::vector<PSPP1*> TestIsolationPSPP1;
+extern std::vector<OCTOPUS*> TestContinuityOctopus;
+extern std::vector<OCTOPUS*> TestIsolationOctopus;
+extern std::vector<PP0*> TestContinuityPP0;
+extern std::vector<PP0*> TestIsolationPP0;
 //////////////////////////////////////////////////
 
 

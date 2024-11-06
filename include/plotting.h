@@ -2,8 +2,7 @@
 #include <vector>
 #include "../include/root.h"
 #include "../include/def_variables.h"
-#include "../include/Continuity.h"
-#include "../include/Isolation.h"
+#include "../include/Classes.h"
 
 
 template <typename T> 

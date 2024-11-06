@@ -1,14 +1,14 @@
+#include "../include/Classes.h"
 #include "../include/def_variables.h"
 
 //////////////////////////////////////////////////
 // vector of objects of the cables classes
-std::vector<Continuity::PSPP1*> TestContinuityPSPP1(100, nullptr);
-std::vector<Isolation::PSPP1*> TestIsolationPSPP1(100, nullptr);
-std::vector<Continuity::OCTOPUS*> TestContinuityOctopus(100, nullptr);
-std::vector<Isolation::OCTOPUS*> TestIsolationOctopus(100, nullptr);
-std::vector<Continuity::PP0*> TestContinuityPP0(100, nullptr);
-std::vector<Isolation::PP0*> TestIsolationPP0(100, nullptr);
-std::vector<TString> CableType(100,nullptr);
+std::vector<PSPP1*> TestContinuityPSPP1;
+std::vector<PSPP1*> TestIsolationPSPP1;
+std::vector<OCTOPUS*> TestContinuityOctopus;
+std::vector<OCTOPUS*> TestIsolationOctopus;
+std::vector<PP0*> TestContinuityPP0;
+std::vector<PP0*> TestIsolationPP0;
 //////////////////////////////////////////////////
 
 

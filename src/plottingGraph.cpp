@@ -7,7 +7,7 @@
 #include <TGraph.h>
 #include <TLatex.h>
 #include "root.h"
-#include "def_variables.h"
+#include "../include/def_variables.h"
 #include "../include/style.h"
 
 void plottingGraph(std::vector<std::pair<std::string, TGraph*>> gr[], std::string Title) {

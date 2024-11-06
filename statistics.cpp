@@ -176,7 +176,7 @@ for (int i = 0; i < 3; i++) {
         if( entry.path().filename().string() != "tmp"){
         fullpath = std::string(WORKDIR) + sInputDir + Form("Cable0%i/", i + 1) + entry.path().filename().string();
         processedText = std::string(WORKDIR) + sInputDir + Form("Cable0%i/",i+1) + "tmp/processed_" + entry.path().filename().string();
-        if(entry.path().filename() != "VALORI" && tests.find(fullpath) == tests.end()){
+        if(entry.path().filename() != "VALORI" && tests.find(fullpath) == tests.end() && fullpath.find(".pdf") == std::string::npos){
             FileNamesProcessed.push_back(processedText);
             FileNames.push_back(fullpath);
         }

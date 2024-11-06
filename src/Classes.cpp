@@ -1,171 +1,73 @@
-#include "../include/def_variables.h"
+#include<sstream>
+#include<fstream>
 #include "../include/root.h"
-#include "../include/Isolation.h"
+#include "../include/def_variables.h"
+#include "../include/Classes.h"
 #include "../include/py_run.h"
 #include "TError.h"
-#include <filesystem>
-#include <sstream>
-#include <fstream>
 
 
-using namespace Isolation;
+// ************************************************************* //
+// **************** PSPP1 Class ******************************** //
+// ************************************************************* //
 
-Cable::Cable(){}
-
-TString Cable::FindCableType(TString TestNameFile){
-    std::ifstream inputFile(TestNameFile.Data());
-    TString line;
-    while(inputFile.good() && line.ReadLine(inputFile)){
-        if (line.Contains("PS-PP1")) return "PSPP1";
-        else if (line.Contains("OCTOPUS")) return "octopus";
-        else if (line.Contains("PP0"))  return "PP0";
-        else if (line.Contains("CHAIN")) return "CHAINtest" ;
-     }
-}
-
-
-void Cable::ReadTestOutput(std::vector<TString> &TestNameFile, Int_t j){
-    std::vector<std::tuple<double,double,double,double,double, std::string, double, std::string, double, double>> ParametersInsulationInitial;
-    std::vector<std::vector<double>> ParametersInsulationHV;  
-    std::vector<std::vector<double>> ParametersInsulationLV;
-    std::vector<std::vector<double>> ParametersInsulationTsensor;
-    std::ifstream inputFile(TestNameFile[j]);
-    std::string line;
-    std::vector<std::tuple<bool, std::string, double>> continuityData;
-    std::vector<std::tuple<bool, std::string, double, double>> insulationData;
-    Bool_t FirstTree = false;
-    Bool_t SecondTree = false;
-    double i, Thresh, Trise, Twait, Tmeas, Vlimit, V, Vramp, Tmeasfact;
-    double r, B;
-    std::string AR, str1, str2, TmeasRed;
-    int lineCounter=0;
-
-    while(std::getline(inputFile, line)){
-      std::istringstream iss(line);
-     if(line.find("ContinuityTest") != std::string::npos){
-        FirstTree = true;
-        SecondTree = false;
-     }
-     else if (line.find("InsulationTest") != std::string::npos){
-        FirstTree = false;
-        SecondTree = true;
-     }
-     else{
-        if(lineCounter<5){
-            if(lineCounter==1 && iss >> V >> Thresh >> Trise >> Twait >> Tmeas >> AR >> i >> TmeasRed >> Tmeasfact >> Vramp){
-            ParametersInsulationInitial.push_back(std::make_tuple(V, Thresh, Trise, Twait, Tmeas,AR, i, TmeasRed, Tmeasfact, Vramp));
-            }
-            else if(lineCounter==2 && iss>> Trise >> Twait >> Tmeas) ParametersInsulationLV.push_back({Trise, Twait, Tmeas});
-            else if(lineCounter == 3 && iss >> V >> Thresh >> Trise >> Tmeas) ParametersInsulationHV.push_back({V,Thresh,Trise,Tmeas});
-            else if(lineCounter == 4 && iss>> V >> Thresh >> Trise >> Tmeas) ParametersInsulationTsensor.push_back({V,Thresh,Trise,Tmeas});            
-          lineCounter++;
-        }
-        else{
-          if(SecondTree){
-          if(iss>>str1>>str2>>r)  insulationData.push_back(std::make_tuple((str1 == "Passed"),str2,r,B));
-          }
-       }
-     }
-    }//while
-
-    // ***** get cable name ******* //
-    TString path(TestNameFile[j].Data());
-    int lastSlash = path.Last('/');
-    TString testTitle = path(lastSlash+1, path.Length()-lastSlash-5);
-    //CableType[j] = FindCableType(TestNameFile[j]);
-    CableType[j] = "PSPP1";
-
-
-    if((CableType[j] == "PSPP1")){
-       TestIsolationPSPP1[j] = new Isolation::PSPP1(insulationData, testTitle);
-       TestIsolationPSPP1[j]->SetInitialParameters(ParametersInsulationInitial[j]);
-       TestIsolationPSPP1[j]->SetIsolationPar("LV", ParametersInsulationLV[j]);
-       TestIsolationPSPP1[j]->SetIsolationPar("HV", ParametersInsulationHV[j]);
-       TestIsolationPSPP1[j]->SetIsolationPar("Tsensor", ParametersInsulationTsensor[j]);
-       TestIsolationPSPP1[j]->SetPath(TestName[j]);
-    }
-   // else if((FindCableType(TestNameFile[j].Data()) == "OCTOPUS")){}
- 
- 
- }
-
- //////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
  // default constructor
- PSPP1::PSPP1(){}
+ PSPP1::PSPP1(){};
 
  //////////////////////////////////////////////////////////////////////
  // constructor of the class
- PSPP1::PSPP1(std::vector<std::tuple<bool, std::string, double, double>> &TestOutput, ::TString TestName){
-    SetName(TestName);
+ PSPP1::PSPP1(TString mode, std::vector<std::tuple<Bool_t, TString, double>> &TestOutput, TString TestName){
+    CableName = TestName;
+    testType = mode;
     for(int i=0; i<int(TestOutput.size()); i++){
-        status.push_back(std::get<0>(TestOutput[i]));
-        channel.push_back(std::get<1>(TestOutput[i]));
-        resistence.push_back(std::get<2>(TestOutput[i]));
-        FieldB.push_back(std::get<3>(TestOutput[i]));
+     status.push_back(std::get<0>(TestOutput[i]));
+     channel.push_back(std::get<1>(TestOutput[i]));
+     resistence.push_back(std::get<2>(TestOutput[i]));
     }
  }
 
  //////////////////////////////////////////////////////////////////////
- // set channel labels 
- void PSPP1::SetChannels(std::vector<::TString> &channelNames){ 
-  channel = channelNames;
+ // 
+ void PSPP1::SetChannels(std::vector<TString> &channelNames){ 
+  channel = channelNames; 
  }
 
- //////////////////////////////////////////////////////////////////////
- // set status (passed/failed)
+//////////////////////////////////////////////////////////////////////
+// 
  void PSPP1::SetStatus(std::vector<Bool_t> &statusChannels){ 
   status = statusChannels;
  }
 
  //////////////////////////////////////////////////////////////////////
- // set measured resistence 
- void PSPP1::SetResistence(std::vector<double> &resistenceChannel){ 
-  resistence = resistenceChannel; 
+ //
+ void PSPP1::SetResistence(std::vector<double> &resistenceChannel){
+  resistence = resistenceChannel;
  }
 
  //////////////////////////////////////////////////////////////////////
- // set name of the test (date and which cable)
- void PSPP1::SetName(::TString name){ 
+ //
+ void PSPP1::SetName(TString name){ 
   CableName=name;
  }
-
  //////////////////////////////////////////////////////////////////////
- // set magnetic field for LV channels 
- void PSPP1::SetField(std::vector<double> &B){
-    B = FieldB;
- }
-
+ //
+void PSPP1::SetParameters(std::tuple<double,double,double,double,double,TString,double> param){ 
+    Parameters = param;
+}
  //////////////////////////////////////////////////////////////////////
- // set initial parameters of the test 
- void PSPP1::SetInitialParameters(std::tuple<double,double,double,double,double, std::string, double, std::string, double, double> param){ 
-    InitialParameters = param;
- }
+ //
+void PSPP1::SetPath(TString path){
+  testPath = path;
+}
+//////////////////////////////////////////////////////////////////////
+ //
+void PSPP1::SetTestType(TString test){
+    test.ToUpper();
+    testType = test;
+}
 
- void PSPP1::SetPath(std::string path){
-   TestPath = path;
- }
 
-
- //////////////////////////////////////////////////////////////////////
- // functions to get class fields 
- TString PSPP1::GetName(){ 
-  return CableName;
- }
-
- std::string PSPP1::GetPath(){
-  return TestPath;
- }
-
-  //////////////////////////////////////////////////////////////////////
- // set threshold values 
- void PSPP1::SetThreshold(Float_t thresh, TString option){
-  option.ToUpper();
-  if(option == "LV") ThreshIsoLV = thresh;
-  else if(option == "HV") ThreshIsoHV = thresh;
-  else{
-    Error("Isolation::PSPP1::SetThreshold", "invalid option");
-  } 
- }
 
  //////////////////////////////////////////////////////////////////////
  // set isolation parameters 
@@ -176,12 +78,39 @@ void Cable::ReadTestOutput(std::vector<TString> &TestNameFile, Int_t j){
   else if(option = "TSENSOR") for(int i=0; i<int(pars.size()); i++){ IsolationParTsensor.push_back(pars[i]);}
  }
 
- 
+
+TString PSPP1::GetName(){ return CableName;}
+
+TString PSPP1::GetPath(){ return testPath; }
+
+
+ //////////////////////////////////////////////////////////////////////
+ // set magnetic field for LV channels 
+ void PSPP1::SetField(std::vector<double> &B){
+    B = FieldB;
+ }
+
+
+//////////////////////////////////////////////////////////////////////
+// 
+void PSPP1::SetThreshold(::TString option, Float_t Thresh){
+option.ToUpper();
+if(option == "LV") ThreshContLV = Thresh;
+else if(option == "HV") ThreshContHV = Thresh;
+}
+
+ //////////////////////////////////////////////////////////////////////
+ // set initial parameters of the test 
+ void PSPP1::SetInitialParameters(std::tuple<double,double,double,double,double,TString, double, TString, double, double> param){ 
+    InitialParameters = param;
+ }
+
 //////////////////////////////////////////////////////////////////////
 // get measured values of resistence based on channel option
- std::vector<double> PSPP1::GetResistence(::TString option){ 
+std::vector<double> PSPP1::GetResistence(TString option){
  std::vector<double> vec;
  option.ToUpper();
+ std::cout<<option<<std::endl;
  if(option == "LV" && !resistence.empty()){
    for(int i=0; i<int(resistence.size()); i++){
     if(channel[i].Contains("LV")|| channel[i].Contains("PH")){
@@ -203,12 +132,40 @@ void Cable::ReadTestOutput(std::vector<TString> &TestNameFile, Int_t j){
   }
   return vec;
  }    
-return resistence; }
+return vec;
+}
 
 //////////////////////////////////////////////////////////////////////
+// get entries over threshold
+std::vector<std::pair<TString, double>> PSPP1::GetOverThreshold(::TString option){
+   option.ToUpper();
+   std::vector<std::pair<TString, double>> vec;
+   if(option == "LV"){
+      for(int i=0; i<int(resistence.size()); i++){
+        if(resistence[i]>ThreshContLV){
+          vec.push_back(std::make_pair(channel[i], resistence[i]));
+        }
+      }
+    return vec;
+   }
+   else if(option == "HV"){
+      for(int i=0; i<int(resistence.size()); i++){
+        if(resistence[i]>ThreshContHV){
+          vec.push_back(std::make_pair(channel[i], resistence[i]));
+        }
+      }
+    return vec;
+   }
+   else{
+     Error("Continuity::PSPP1::GetOverThreshold(::TString option)", "Invalid Option");
+     return vec;
+   }
+}
+
+ //////////////////////////////////////////////////////////////////////
 // get measured status (passed or failed) based on channel option
- std::vector<Bool_t> PSPP1::GetStatus(::TString option){ 
-     std::vector<Bool_t> vec;
+std::vector<Bool_t> PSPP1::GetStatus(TString option){
+    std::vector<Bool_t> vec;
     option.ToUpper();
     if(option == "LV" && !resistence.empty()){
         for(int i=0; i<int(resistence.size()); i++){
@@ -229,29 +186,20 @@ return resistence; }
 return status;
 }
 
-
- std::vector<double> PSPP1::GetFieldB(::TString option){
-  return FieldB;
- }
-
- std::tuple<double,double,double,double,double, std::string, double, std::string, double, double> PSPP1::GetInitialParameters(){
-    return InitialParameters;
- }
-
  //////////////////////////////////////////////////////////////////////
- // get mean values of resistence. option = LV, HV
+ // get mean value of measured resistence
 Double_t PSPP1::GetMean(TString option){
     option.ToUpper();
     if(option != "LV" && option != "HV"){
-        Error("Isolation::PSPP1::GetMean", "invalid option");
+        Error("Continuity::PSPP1::GetMean", "invalid option");
         return 0.0;
     }
-    Double_t sum=0;
-    Double_t count=0;
+    Float_t sum=0;
+    Float_t count=0;
     if(option == "LV"){
     for(int i=0; i<int(resistence.size()); i++){
         if((channel[i].Contains("LV") || channel[i].Contains("PH"))){
-              if(resistence[i] > ThreshIsoLV){
+              if(resistence[i] < ThreshContLV){
                 sum+= resistence[i];
                 count++;
               }
@@ -261,7 +209,7 @@ Double_t PSPP1::GetMean(TString option){
     else if(option == "HV"){
     for(int i=0; i<int(resistence.size()); i++){
      if(channel[i].Contains("HV") || channel[i].Contains("Tsensor")){
-              if(resistence[i] > ThreshIsoHV){
+              if(resistence[i] < ThreshContHV){
                 sum+= resistence[i];
                 count++;
               }
@@ -270,7 +218,6 @@ Double_t PSPP1::GetMean(TString option){
     }
  return sum/count;    
 }
-
 
  //////////////////////////////////////////////////////////////////////
  // get mean values of resistence. option = LV, HV
@@ -299,31 +246,26 @@ Double_t PSPP1::GetStdDev(TH1F* h){
   // get threshold values 
 Double_t PSPP1::GetThreshold(TString option){
   option.ToUpper();
-  if(option == "LV") return ThreshIsoLV;
-  else if(option == "HV") return ThreshIsoHV;
+  if(option == "LV") return ThreshContLV;
+  else if(option == "HV") return ThreshContHV;
   else{
     Error("Isolation::PSPP1::GetThreshold", "invalid option");
   }
 }
 
-//////////////////////////////////////////////////////////////////////
-//
-std::vector<double> PSPP1::GetIsolationPar(TString option){
-  option.ToUpper();
-  if(option == "LV") return IsolationParLV;
-  if(option == "HV") return IsolationParHV;
-  if(option == "TSENSOR") return IsolationParTsensor;
- }
+
 
 //////////////////////////////////////////////////////////////////////
-// get path for LV channel time vs resistence
-TString PSPP1::GetPathTimeRes(){
-  TString path = this->GetPath();
-  TString name = this->GetName();
-  size_t lastDot = path.Last('/');
-  std::string Date = name(18, 18);
-  path.Remove(lastDot);
-  return (path + "/VALORI/" + Date);
+// get the param entry of the parameters vector
+/*
+ PSPP1::GetParameter(int param){ 
+ return std::get<param>(Parameters);
+}
+*/
+//////////////////////////////////////////////////////////////////////
+// get vector of parameters
+std::tuple<double,double,double,double,double, TString, double> PSPP1::GetParameters(){ 
+ return Parameters;
 }
 
 
@@ -337,7 +279,7 @@ TString PSPP1::GetPathTimeRes(){
         // find position //
        for(int j=0; j<int(resistence.size()); j++){
         for(int i=0; i< NumberLVcables; i++ ){
-          if(channel[j].CompareTo(labelLV_iso[i]) == 0){
+          if(channel[j].CompareTo(labelLV_con[i]) == 0){
             h_temp->SetBinContent(i+1, resistence[j]);
             break;
           }
@@ -350,7 +292,7 @@ TString PSPP1::GetPathTimeRes(){
         // find position //
        for(int j=0; j<int(resistence.size()); j++){
         for(int i=0; i< NumberHVcables; i++ ){
-          if(channel[j].CompareTo(labelHV_iso[i]) == 0){
+          if(channel[j].CompareTo(labelHV_con[i]) == 0){
             h_temp->SetBinContent(i+1, resistence[j]);
             break;
           }
@@ -358,6 +300,10 @@ TString PSPP1::GetPathTimeRes(){
        }   
     return h_temp;
     }
+   else{
+    Error("Continuity::PSPP1::FillResistenceChannelHistogram():", "invalid option");
+    return h_temp;
+   } 
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -393,29 +339,6 @@ TH1I* PSPP1::FillStatusHistogram(::TString title, ::TString option){
 }
 
 //////////////////////////////////////////////////////////////////////
-// create histogram of measured resistence based on HV, LV, Tsensor...
-TH1F* PSPP1::FillResistenceHistogram(::TString title, ::TString option){
-    option.ToUpper();
-    TH1F *h_temp;
-    if(option == "LV"){
-     std::pair<double,double> ResMaxMin = FindMaxMinResistence("LV");
-     h_temp = new TH1F("h_Resistence_LV", "h_Resistence_LV", 100, ResMaxMin.first, ResMaxMin.second);
-     std::vector<double> LVresistence = FilterChannel<double>("LV", "resistence");   
-     for(int kk=0; kk< int(LVresistence.size()); kk++){
-        h_temp->Fill(LVresistence[kk]);
-     }
-    }
-    else if(option == "HV"){
-     std::pair<double,double> ResMaxMin = FindMaxMinResistence("HV");
-     h_temp = new TH1F("h_Resistence_HV", "h_Resistence_HV", 100, ResMaxMin.first, ResMaxMin.second);
-     std::vector<double> HVresistence = FilterChannel<double>("HV","resistence");
-     for(int kk=0; kk< int(HVresistence.size()); kk++){
-        h_temp->Fill(HVresistence[kk]);
-     }
-    }
-}
-
-//////////////////////////////////////////////////////////////////////
 // private method: find max and min to set automatically histogram's ranges
 std::pair<double,double> PSPP1::FindMaxMinResistence(::TString Option){
     Option.ToUpper();
@@ -441,13 +364,70 @@ std::pair<double,double> PSPP1::FindMaxMinResistence(::TString Option){
 }
 
 //////////////////////////////////////////////////////////////////////
+// fill resistence histogram based on channel option
+TH1F* PSPP1::FillResistenceHistogram(::TString option){
+    option.ToUpper();
+    TH1F *h_temp;
+    if(option == "LV"){
+     std::pair<double,double> ResMaxMin = FindMaxMinResistence("LV");
+     h_temp = new TH1F("h_Resistence_LV", "h_Resistence_LV", 100, ResMaxMin.first, ResMaxMin.second);
+     std::vector<double> LVresistence = FilterChannel<double>("LV", "resistence");   
+     for(int kk=0; kk< int(LVresistence.size()); kk++){
+        h_temp->Fill(LVresistence[kk]);
+     }
+     return h_temp;
+    }
+    else if(option == "HV"){
+     std::pair<double,double> ResMaxMin = FindMaxMinResistence("HV");
+     h_temp = new TH1F("h_Resistence_HV", "h_Resistence_HV", 100, ResMaxMin.first, ResMaxMin.second);
+     std::vector<double> HVresistence = FilterChannel<double>("HV","resistence");
+     for(int kk=0; kk< int(HVresistence.size()); kk++){
+        h_temp->Fill(HVresistence[kk]);
+     }
+     return h_temp;
+    }
+    else{
+     Error("Continuity::PSPP1::FillResistenceHistogram", "invalid option");
+     return h_temp;
+    }
+}
+
+
+//////////////////////////////////////////////////////////////////////
+// compute cable lenght based on measured resistence
+Double_t PSPP1::GetLenght(TString option){
+ if(option == "LV"){
+    double mean = GetMean("LV");
+    return (mean*TMath::Pi()*TMath::Power(diamLV, 2))/(4*ResistivityLV);
+ }
+ else if(option == "HV"){
+    double mean = GetMean("HV");
+    return (mean*TMath::Pi()*TMath::Power(diamHV, 2))/(4*ResistivityHV);
+}
+else{
+    Error("Continuity::PSPP1::GetLenght", "invalid option");
+    return 0.0;
+}
+}
+Double_t PSPP1::GetLenght(TH1F *h){
+ TString name(h->GetTitle());
+ double mean = this->GetMean(h);
+ if(name.Contains("LV")) return (mean*TMath::Pi()*TMath::Power(diamLV, 2))/(4*ResistivityLV);
+ else if(name.Contains("HV")) return (mean*TMath::Pi()*TMath::Power(diamHV, 2))/(4*ResistivityHV);
+ else{
+   Error("Isolation::PSPP1::GetLenght(TH1F *h, TString option):", "invalid option");
+   return 0;
+ }
+}
+
+//////////////////////////////////////////////////////////////////////
 // get RMS of measured resistence based on channel 
 Double_t PSPP1::GetStdDev(TString option){
  double std = 0;
  if(option == "LV"){
     Double_t mean = this->GetMean("LV");
     for(int j=0; j<int(resistence.size()); j++){
-     if((channel[j].Contains("LV") || channel[j].Contains("PH")) && resistence[j] > ThreshIsoLV){
+     if((channel[j].Contains("LV") || channel[j].Contains("PH")) && resistence[j] < ThreshContLV){
         std+= TMath::Power((resistence[j] - mean),2);
      }
     }
@@ -455,7 +435,7 @@ Double_t PSPP1::GetStdDev(TString option){
  else if(option == "HV"){
     Double_t mean = this->GetMean("HV");
     for(int j=0; j<int(resistence.size()); j++){
-     if((channel[j].Contains("HV") || channel[j].Contains("Tsensor")) && resistence[j] > ThreshIsoLV){
+     if((channel[j].Contains("HV") || channel[j].Contains("Tsensor")) && resistence[j] < ThreshContHV){
         std+= TMath::Power((resistence[j] - mean),2);
      }
     }
@@ -464,6 +444,31 @@ Double_t PSPP1::GetStdDev(TString option){
     Error("Continuity::PSPP1::GetMean", "invalid option");
  }
  return std;
+}
+
+//////////////////////////////////////////////////////////////////////
+//
+std::vector<double> PSPP1::GetIsolationPar(TString option){
+  option.ToUpper();
+  if(option == "LV") return IsolationParLV;
+  if(option == "HV") return IsolationParHV;
+  if(option == "TSENSOR") return IsolationParTsensor;
+ }
+
+
+ std::tuple<double,double,double,double,double, TString, double, TString, double, double> PSPP1::GetInitialParameters(){
+    return InitialParameters;
+ }
+
+//////////////////////////////////////////////////////////////////////
+// get path for LV channel time vs resistence
+TString PSPP1::GetPathTimeRes(){
+  TString path = this->GetPath();
+  TString name = this->GetName();
+  size_t lastDot = path.Last('/');
+  std::string Date = name(18, 18);
+  path.Remove(lastDot);
+  return (path + "/VALORI/" + Date);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -482,8 +487,6 @@ std::vector<std::pair<std::string,TGraph*>> PSPP1::FillGraphTimeResistence(TStri
     return gr_Time;
   }
   else{
-
-
     int number_point=0;
     std::vector<double> ResTime[NumberLVcables];
     std::vector<double> number_value[NumberLVcables];
@@ -515,27 +518,4 @@ std::vector<std::pair<std::string,TGraph*>> PSPP1::FillGraphTimeResistence(TStri
     return gr_Time;
   }
 }
-
-
-//////////////////////////////////////////////////////////////////////
-//  OCTOPUS CLASS
-//////////////////////////////////////////////////////////////////////  
-  OCTOPUS::OCTOPUS(){
-    FillModulesParameter();  
-  }
-
-void OCTOPUS::SetPath(std::string path){
-  path = TestPath;
-}
-void OCTOPUS::SetTemperature(Float_t T){
-  T = Temperature;
-}
-void OCTOPUS::SetHumidity(Float_t H){
-  H = Humidity;
-}
-void OCTOPUS::SetResistence(std::vector<double> & resistenceChannels){
-  resistence = resistenceChannels;
-}
-
-
 

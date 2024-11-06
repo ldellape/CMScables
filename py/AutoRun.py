@@ -27,7 +27,7 @@ def find_new_tests(InputDir, ListTestsFile):
     
 
     for test in current_test:
-        if test[0] in new_tests:
+        if test[0] in new_tests and "tmp" not in f"{test[1]}/{test[2]}":
             NewTests.append(f"{test[1]}/{test[2]}")
             print(f"{test[1]}/{test[2]}")
     
