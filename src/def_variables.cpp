@@ -32,7 +32,7 @@ std::vector<std::string> TestNameTimeAcquisition;
 std::vector<TString> TestPath;
 std::string sPDFTitle;
 std::string currentDate;
-const std::string sInputTestDir = std::string(WORKDIR) + "/input/FULL_TEST_su_cavo_ps_pp1_V3/";
+const std::string sInputTestDir = std::string(WORKDIR) + "/input/";
 const std::string sInputTimeAcquisition = std::string(WORKDIR) + (sInputTestDir + "/VALORI/").c_str();
 const std::string sOutputRoot= std::string(WORKDIR) + "/output/rootFiles/";
 //////////////////////////////////////////////////

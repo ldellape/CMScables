@@ -5,12 +5,13 @@
 #include <sstream>
 
 
-void ReadTestOutput(TString option, Int_t mode, TString path){
+void ReadTestOutput(Int_t mode, TString path, TString option){
     TString TestNameFile = path;
     std::vector<std::tuple<double,double,double,double,double, ::TString, double>> ParametersContinuity;
     std::vector<std::tuple<double,double,double,double,double, TString, double, TString, double, double>> ParametersInsulationInitial;
     std::ifstream inputFile(TestNameFile.Data()); 
     TString line;
+    TString cabletype = option;
     std::vector<std::tuple<bool, TString, double>> continuityData;
     std::vector<std::tuple<bool, TString, double>> insulationData;
     std::vector<std::vector<double>> ParametersInsulationHV;  
@@ -25,8 +26,16 @@ void ReadTestOutput(TString option, Int_t mode, TString path){
     int lineCounter = 0;
     int secondtree = 0;
  
+    // ---------------------------------------------------------------------------------------------------  //
+    // reading output of the test                                                                           //
+    // ---------------------------------------------------------------------------------------------------  //
     while (inputFile.good() && line.ReadLine(inputFile)) {  
         std::istringstream iss(line.Data()); 
+        if(option == "NONE"){
+         //find cable type //
+         if(line.Contains("PSPP1")) cabletype = "PSPP1";
+         else if(line.Contains("OCTOPUS")) cabletype="OCTOPUS";
+        }
         if (line.Contains("ContinuityTest")) {
             FirstTree = true;
             SecondTree = false;
@@ -59,33 +68,63 @@ void ReadTestOutput(TString option, Int_t mode, TString path){
             }
         }
     }  // end while
+    // ---------------------------------------------------------------------------------------------------  //
+    // ---------------------------------------------------------------------------------------------------  //
+    
 
-    // ***** get cable name ******* //
+
+    // ---------------------------------------------------------------------------------------------------  //
+    //  fill class objects. 
+    // ---------------------------------------------------------------------------------------------------  //
     int lastSlash = TestNameFile.Last('/');
     TString testTitle = TestNameFile(lastSlash + 1, TestNameFile.Length() - lastSlash - 5);
-
     if (option == "PSPP1") {
       // continuity //
-      if((mode==0 || mode ==2) && !continuityData.empty()){
+      if(ContinuityTest && !continuityData.empty()){
         TestContinuityPSPP1.push_back(new PSPP1("continuity", continuityData, testTitle));
-        (TestContinuityPSPP1.back())->SetParameters(ParametersContinuity.back());
+        if(!ParametersContinuity.empty()) (TestContinuityPSPP1.back())->SetParameters(ParametersContinuity.back());
         (TestContinuityPSPP1.back())->SetPath(TestNameFile);
         (TestContinuityPSPP1.back())->SetTestType("continuity");
       }
       // isolation //
-      if((mode==1 || mode==2) && !insulationData.empty()){
+      if(InsulationTest && !insulationData.empty()){
+      std::cout<<"isolation"<<std::endl;
         TestIsolationPSPP1.push_back(new PSPP1("isolation", insulationData, testTitle));
-        (TestIsolationPSPP1.back())->SetInitialParameters(ParametersInsulationInitial.back());
-        (TestIsolationPSPP1.back())->SetIsolationPar("LV", ParametersInsulationLV.back());
-        (TestIsolationPSPP1.back())->SetIsolationPar("HV", ParametersInsulationHV.back());
-        (TestIsolationPSPP1.back())->SetIsolationPar("Tsensor", ParametersInsulationTsensor.back());
+        if(!ParametersInsulationInitial.empty()) (TestIsolationPSPP1.back())->SetInitialParameters(ParametersInsulationInitial.back());
+        if(!ParametersInsulationLV.empty()) (TestIsolationPSPP1.back())->SetIsolationPar("LV", ParametersInsulationLV.back());
+        if(!ParametersInsulationHV.empty()) (TestIsolationPSPP1.back())->SetIsolationPar("HV", ParametersInsulationHV.back());
+        if(!ParametersInsulationTsensor.empty()) (TestIsolationPSPP1.back())->SetIsolationPar("Tsensor", ParametersInsulationTsensor.back());
         (TestIsolationPSPP1.back())->SetPath(TestNameFile);
         (TestIsolationPSPP1.back())->SetTestType("isolation");
-        
-    //    (TestIsolationPSPP1.back())->SetField(Bfield);
       }
     }
-    else if(option == "OCTOPUS"){ 
+    else if(option == "OCTOPUS"){
     }
+    // ---------------------------------------------------------------------------------------------------  //
+    // ---------------------------------------------------------------------------------------------------  //
+
+
+    // ---------------------------------------------------------------------------------------------------  //
+    // switch to continuity/isolation only or end the script if test results not matched with input option  //
+    // ---------------------------------------------------------------------------------------------------  //
+    if(ContinuityTest && InsulationTest && insulationData.empty() && !continuityData.empty()){
+     std::cout<<"Isolation Test not present. Switch to continuity only"<<std::endl;
+     InsulationTest = false;
+     Ins_Time = false;
+    }
+    else if(ContinuityTest && InsulationTest && !insulationData.empty() && continuityData.empty()){
+     std::cout<<"Continuity Test not present. Switch to isolation only"<<std::endl;
+     ContinuityTest = false;
+    }
+    else if(InsulationTest && !ContinuityTest && insulationData.empty()){
+     std::cout<<"Isolation Test not present for "<<testTitle<<". Stop."<<std::endl;
+     gROOT->ProcessLine(".q");
+    }
+    else if(ContinuityTest && !InsulationTest && continuityData.empty()){
+     std::cout<<"Continuity Test not present for "<<testTitle<< ". Stop"<<std::endl;
+     gROOT->ProcessLine(".q");
+    }
+    // ---------------------------------------------------------------------------------------------------  //
+    // ---------------------------------------------------------------------------------------------------  //
 }
 

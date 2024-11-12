@@ -9,7 +9,7 @@
 void plottingGraph(std::vector<std::pair<std::string, TGraph*>> gr[], std::string Title);
 //void ReadTestOutput(std::vector<std::string> &TestNameFile, int j);
 TGraph* ReadTestTime(std::string pathFile);
-void ReadTestOutput(TString option, Int_t mode, TString path);
+void ReadTestOutput(Int_t mode, TString path, TString option = "NONE");
 //////////////////////////////////////////////////////////////////////
 
 
@@ -105,19 +105,45 @@ void printlogo(){
 std::vector<std::string> listAndChooseFiles() {
     Int_t number_test = 0;
     Int_t number_test2 = 0;
+    Int_t number_test3 = 0; 
     std::string command, remove_temp;
     TString str;
     std::vector<std::string> TestTemp;
+    std::vector<std::pair<Int_t, std::string>> DirectoryName; 
     std::vector<std::pair<Int_t, std::string>> FileName;
     std::vector<std::pair<Int_t, std::string>> FileName2;
 
     while (number_test != -1) {
-        command = "cd " + sInputTestDir + " && ls > tempFilesName.txt";
-        remove_temp = "rm " + sInputTestDir + "tempFilesName.txt";
+        // Step 1: List all main directories inside sInputTestDir
+        command = "cd " + sInputTestDir + " && ls -d */ > tempDirectoryName.txt";
+        remove_temp = "rm " + sInputTestDir + "tempDirectoryName.txt";
         std::system(command.c_str());
 
-        std::ifstream inputFile((sInputTestDir + "tempFilesName.txt").c_str());
+        std::ifstream inputDirFile((sInputTestDir + "tempDirectoryName.txt").c_str());
         int count = 0;
+        if (inputDirFile.is_open()) {
+            std::string dirName;
+            while (std::getline(inputDirFile, dirName)) {
+                ++count;
+                dirName.pop_back(); 
+                DirectoryName.push_back(std::make_pair(count, dirName));
+            }
+            inputDirFile.close();
+        }
+        std::system(remove_temp.c_str());
+
+        std::cout << "************** Choose directory to use: (enter number) **************" << std::endl;
+        for (size_t i = 0; i < DirectoryName.size(); ++i) {
+            std::cout << "Nr. " << DirectoryName[i].first << "   " << DirectoryName[i].second << std::endl;
+        }
+        std::cout << "*********************************************************************" << std::endl;
+        std::cin >> number_test3;
+
+        command = "cd " + sInputTestDir + DirectoryName[number_test3 - 1].second + " && ls > tempFilesName.txt";
+        std::system(command.c_str());
+
+        std::ifstream inputFile((sInputTestDir + DirectoryName[number_test3 - 1].second + "/tempFilesName.txt").c_str());
+        count = 0;
         if (inputFile.is_open()) {
             std::string fileName;
             while (std::getline(inputFile, fileName)) {
@@ -128,19 +154,19 @@ std::vector<std::string> listAndChooseFiles() {
             }
             inputFile.close();
         }
-        std::system(remove_temp.c_str());
+        std::system(("rm " + sInputTestDir + DirectoryName[number_test3 - 1].second + "/tempFilesName.txt").c_str());
+
         std::cout << "************** Which cable to use? (enter number) *****************" << std::endl;
-        for (int ii = 0; ii < int(FileName.size()); ++ii) {
+        for (size_t ii = 0; ii < FileName.size(); ++ii) {
             std::cout << "Nr. " << FileName[ii].first << "   " << FileName[ii].second << std::endl;
         }
-         std::cout << "*******************************************************************" << std::endl;
-
+        std::cout << "*******************************************************************" << std::endl;
         std::cin >> number_test;
-        command = "cd " + sInputTestDir + FileName[number_test - 1].second + " && ls *.txt > tempFileName2.txt";
 
+        command = "cd " + sInputTestDir + DirectoryName[number_test3 - 1].second + "/" + FileName[number_test - 1].second + " && ls *.txt > tempFileName2.txt";
         std::system(command.c_str());
 
-        std::ifstream inputFile2((sInputTestDir + FileName[number_test - 1].second + "/tempFileName2.txt").c_str());
+        std::ifstream inputFile2((sInputTestDir + DirectoryName[number_test3 - 1].second + "/" + FileName[number_test - 1].second + "/tempFileName2.txt").c_str());
         count = 0;
         if (inputFile2.is_open()) {
             std::string fileName2;
@@ -152,17 +178,18 @@ std::vector<std::string> listAndChooseFiles() {
             }
             inputFile2.close();
         }
-        std::system(("rm " + sInputTestDir + FileName[number_test - 1].second + "/tempFileName2.txt").c_str());
+        std::system(("rm " + sInputTestDir + DirectoryName[number_test3 - 1].second + "/" + FileName[number_test - 1].second + "/tempFileName2.txt").c_str());
 
         std::cout <<"************** Which test to use? (enter number) ******************" << std::endl;
-        for (int i = 0; i < int(FileName2.size()); ++i) {
+        for (size_t i = 0; i < FileName2.size(); ++i) {
             std::cout << "Nr. " << FileName2[i].first << "   " << FileName2[i].second << std::endl;
         }
         std::cout << "*******************************************************************" << std::endl;
         std::cin >> number_test2;
-        TestTemp.push_back(sInputTestDir + FileName[number_test - 1].second + "/" + FileName2[number_test2 - 1].second);
-        TestPath.push_back(sInputTestDir + FileName[number_test - 1].second + "/tmp/processed_" + FileName2[number_test2 - 1].second);
-        number_test = 0;
+
+        TestTemp.push_back(sInputTestDir + DirectoryName[number_test3 - 1].second + "/" + FileName[number_test - 1].second + "/" + FileName2[number_test2 - 1].second);
+        TestPath.push_back(sInputTestDir + DirectoryName[number_test3 - 1].second + "/" + FileName[number_test - 1].second + "/tmp/processed_" + FileName2[number_test2 - 1].second);
+
         std::cout << "************ Use other cables for comparison? (y/n) ***************" << std::endl;
         std::cin >> str;
         if (str == "y") {
@@ -170,13 +197,15 @@ std::vector<std::string> listAndChooseFiles() {
         } else if (str == "n") {
             number_test = -1;
         }
-        std::cout<<"*******************************************************************"<<std::endl;
+        std::cout << "*******************************************************************" << std::endl;
 
         FileName2.clear();
         FileName.clear();
+        DirectoryName.clear();
     }
     return TestTemp;
 }
+
 //////////////////////////////////////////////////////////////////////
 
 
@@ -247,6 +276,11 @@ std::vector<std::string> DirTimeAcquisition(){
 //////////////////////////////////////////////////////////////////////
 // command line inputs 
 void start(int number_arg, char *argument[]){
+     std::system(" mkdir -pv ./output/rootFiles");
+     std::system(" mkdir -pv ./output/plots/SingleCable");
+     std::system(" mkdir -pv ./output/plots/CheckCable");
+     std::system("mkdir -pv ./output/report");
+     std::system("mkdir -pv ./output/plotsTimeResistence" );
     Bool_t ValidOption= false;
     for (int i = 1; i < number_arg; ++i) {
     std::string arg = argument[i];
@@ -282,7 +316,7 @@ void start(int number_arg, char *argument[]){
                 TestPath.push_back((sInputTestDir + cable + "/tmp/processed_" + test).c_str());
                 std::cout<<test<<std::endl;
             }
-    CommandLine = true;
+    CommandLine= true;
     ValidOption=true;
     Ins_Time = false;
     } 

@@ -16,7 +16,6 @@
 //////////////////////////////////////////////////
 // classes and objects of the classes
 class PSPP1; class OCTOPUS; class PP0;
-class Cable;
 extern std::vector<PSPP1*> TestContinuityPSPP1;
 extern std::vector<PSPP1*> TestIsolationPSPP1;
 extern std::vector<OCTOPUS*> TestContinuityOctopus;

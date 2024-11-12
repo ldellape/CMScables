@@ -66,7 +66,7 @@ namespace Python{
 
  }//namespace PSPP1
 
- namespace Octopus{
+ namespace OCTOPUS{
 
  }//namespace Octopus 
 }//namespace python 

@@ -7,6 +7,8 @@
 #include "TError.h"
 
 
+
+
 // ************************************************************* //
 // **************** PSPP1 Class ******************************** //
 // ************************************************************* //
@@ -20,6 +22,9 @@
  PSPP1::PSPP1(TString mode, std::vector<std::tuple<Bool_t, TString, double>> &TestOutput, TString TestName){
     CableName = TestName;
     testType = mode;
+    IsolationParHV.assign(15,0);
+    IsolationParLV.assign(15,0);
+    IsolationParTsensor.assign(15,0);
     for(int i=0; i<int(TestOutput.size()); i++){
      status.push_back(std::get<0>(TestOutput[i]));
      channel.push_back(std::get<1>(TestOutput[i]));
@@ -476,8 +481,8 @@ TString PSPP1::GetPathTimeRes(){
 std::vector<std::pair<std::string,TGraph*>> PSPP1::FillGraphTimeResistence(TString option){  
   TGraph *gr_temp;
   std::vector<std::pair<std::string, TGraph*>> gr_Time;
-
   TString pathVAL = this->GetPathTimeRes();
+  std::cout<<pathVAL<<std::endl;
   if(gSystem->AccessPathName(pathVAL)){ 
     Error("Isolation::PSPP1::FillGraphResistence()", "no measurements available for test " + this->GetName() + ", " + option + " channels." );
     return gr_Time;
@@ -517,5 +522,65 @@ std::vector<std::pair<std::string,TGraph*>> PSPP1::FillGraphTimeResistence(TStri
     std::system(command.Data());
     return gr_Time;
   }
+}
+
+
+// *************************************************************** //
+// **************** OCTOPUS Class ******************************** //
+// *************************************************************** //
+OCTOPUS::OCTOPUS(){}
+
+void OCTOPUS::SetPath(TString path){
+  TestPath = path;
+}
+
+void OCTOPUS::SetName(TString name){
+  CableName = name;
+}
+
+void OCTOPUS::SetTemperature(Float_t T){
+  Temperature=T;
+}
+
+void OCTOPUS::SetResistence(std::vector<double> &resistenceChannels){
+  resistence = resistenceChannels;
+}
+/*
+void FillModulesParameter(){
+std::vector<TString> TsensorChannel = {"PH", "PH_RTN"};
+std::vector<TString> PreHeaterChannel = {"Tsens1", "Tsens2"};
+for(int i=0; i<14; i++){
+  std::vector<TString> BranchChannel = {"HV" + std::to_string(i+1), "", "LV_RTN" + std::to_string(i+1), "LV1" + std::to_string(i+1)};
+  OCTOPUSmodules.emplace_back(std::make_tuple("1", BranchChannel, 1042, 58));
+  OCTOPUSmodules.emplace_back(std::make_tuple("2", BranchChannel, 943, 58));
+  OCTOPUSmodules.emplace_back(std::make_tuple("3", BranchChannel, 820, 58));
+  OCTOPUSmodules.emplace_back(std::make_tuple("4", BranchChannel, 744, 58));
+  OCTOPUSmodules.emplace_back(std::make_tuple("5", BranchChannel, 623, 58));
+  OCTOPUSmodules.emplace_back(std::make_tuple("6", BranchChannel, 546, 58));
+  OCTOPUSmodules.emplace_back(std::make_tuple("7", BranchChannel, 428, 58));
+  OCTOPUSmodules.emplace_back(std::make_tuple("8", BranchChannel, 352, 58));
+  OCTOPUSmodules.emplace_back(std::make_tuple("9", BranchChannel, 234, 58));
+  OCTOPUSmodules.emplace_back(std::make_tuple("10", BranchChannel, 156, 58));
+  OCTOPUSmodules.emplace_back(std::make_tuple("11", BranchChannel, 20, 37));
+  OCTOPUSmodules.emplace_back(std::make_tuple("12", BranchChannel, 32, 152));
+}
+OCTOPUSmodules.emplace_back(std::make_tuple("Tsensor", TsensorChannel, 32, 145));
+OCTOPUSmodules.emplace_back(std::make_tuple("Pre-Heater", PreHeaterChannel, 32, 145));        
+}
+*/
+Float_t OCTOPUS::GetBundleLength(TString module){
+  for(size_t i=0; i<OCTOPUSmodules.size(); i++){
+    if(module == std::get<0>(OCTOPUSmodules[i])) return std::get<2>(OCTOPUSmodules[i]);
+  }
+}
+
+Float_t OCTOPUS::GetBranchLength(TString module){
+  for(size_t j=0; j<OCTOPUSmodules.size(); j++){
+    if(module == std::get<0>(OCTOPUSmodules[j])) return std::get<3>(OCTOPUSmodules[j]);
+ }
+}
+
+void OCTOPUS::SetStatus(std::vector<Bool_t> &statusChannels){
+  status= statusChannels;
 }
 

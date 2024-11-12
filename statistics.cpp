@@ -22,7 +22,6 @@
 
 
 
-// ROOT file to appear on web page, defined in main  //
 TFile *f_StatOut;
 
 void DrawPlot(TString sTitle, ROOT::RDF::RResultPtr<::TH1D> histo, std::string option){
@@ -49,16 +48,16 @@ void DrawPlot(TString sTitle, ROOT::RDF::RResultPtr<::TH1D> histo, std::string o
     }
 }
 
-void ReadOutput(const std::string TestNameFile, Int_t file) {
+void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
     TFile *f_output = new TFile(("stat_root/" + std::to_string(file) + ".root").c_str(), "RECREATE");
-    
     TTree *TestResultContinuity = new TTree("TestResultContinuity", "TestResultContinuity");
     TTree *TestResultIsolation = new TTree("TestResultIsolation", "TestResultIsolation");
-
     Float_t resistenceCon, resistenceIns;
     Bool_t channelLV_Con, channelLV_Ins;
     Bool_t channelHV_Con, channelHV_Ins, channelPHR_Con, channelTsensor_Con;
     Bool_t statusCon, statusIns, channelPHR_Ins, channelTsensor_Ins;
+    Bool_t pspp1_test_con, fullchain_test_con;
+    Bool_t pspp1_test_ins, fullchain_test_ins;
 
     TestResultContinuity->Branch("resistenceCon", &resistenceCon, "resistenceCon/F");
     TestResultContinuity->Branch("channelLV_Con", &channelLV_Con, "channelLV_Con/O");
@@ -66,6 +65,8 @@ void ReadOutput(const std::string TestNameFile, Int_t file) {
     TestResultContinuity->Branch("statusCon", &statusCon, "statusCon/O");
     TestResultContinuity->Branch("channelPHR_Con", &channelPHR_Con, "channelPHR_Con/O");
     TestResultContinuity->Branch("channelTsensor_Con", &channelTsensor_Con, "channelTsensor_Con/O");
+    TestResultContinuity->Branch("pspp1_test_con", &pspp1_test_con, "pspp1_test_con/O");
+    TestResultContinuity->Branch("fullchain_test_con", &fullchain_test_con, "fullchain_test_con/O");
 
     TestResultIsolation->Branch("resistenceIns", &resistenceIns, "resistenceIns/F");
     TestResultIsolation->Branch("channelLV_Ins", &channelLV_Ins, "channelLV_Ins/O");
@@ -73,9 +74,10 @@ void ReadOutput(const std::string TestNameFile, Int_t file) {
     TestResultIsolation->Branch("statusIns", &statusIns, "statusIns/O");
     TestResultIsolation->Branch("channelPHR_Ins", &channelPHR_Ins, "PHR_Ins/O");
     TestResultIsolation->Branch("channelTsensor_Ins", &channelTsensor_Ins, "channelTsensor_Ins/O");
+    TestResultIsolation->Branch("pspp1_test_ins", &pspp1_test_ins, "pspp1_test_ins/O");
+    TestResultIsolation->Branch("fullchain_test_ins", &fullchain_test_ins, "fullchain_test_ins/O");
 
     std::ifstream inputFile(TestNameFile);
-
     std::string line;
     std::vector<std::tuple<std::string, std::string, double>> continuityData;
     std::vector<std::tuple<std::string, std::string, double, double>> insulationData;
@@ -109,11 +111,15 @@ void ReadOutput(const std::string TestNameFile, Int_t file) {
         channelLV_Con = false;
         channelPHR_Con = false;
         channelTsensor_Con = false;
+        pspp1_test_con = false;
+        fullchain_test_con = false;
         if( std::get<1>(it).find("LV") != std::string::npos) channelLV_Con = true;
         else if (std::get<1>(it).find("HV") != std::string::npos) channelHV_Con = true; 
         else if( std::get<1>(it).find("PH") != std::string::npos) channelPHR_Con = true;
         else if( std::get<1>(it).find("Tsensor") != std::string::npos) channelTsensor_Con = true;
         resistenceCon = std::get<2>(it);
+        if(option.CompareTo("PSPP1")==0) pspp1_test_con = true;
+        if(option.CompareTo("FULL_CHAIN")==0) fullchain_test_con = true;
         TestResultContinuity->Fill();
     }
     for (const auto& it : insulationData) {
@@ -122,11 +128,15 @@ void ReadOutput(const std::string TestNameFile, Int_t file) {
         channelLV_Ins = false;
         channelPHR_Ins = false;
         channelTsensor_Ins = false;
+        pspp1_test_ins = false;
+        fullchain_test_ins = false;
         if( std::get<1>(it).find("LV") != std::string::npos) channelLV_Ins = true;
         else if (std::get<1>(it).find("HV") != std::string::npos) channelHV_Ins = true; 
         else if( std::get<1>(it).find("PH") != std::string::npos) channelPHR_Ins = true;
         else if( std::get<1>(it).find("Tsensor") != std::string::npos) channelTsensor_Ins = true;
         resistenceIns = std::get<2>(it);
+        if(option.CompareTo("PSPP1")==0) pspp1_test_ins = true;
+        if(option.CompareTo("FULL_CHAIN")==0) fullchain_test_ins = true;
         TestResultIsolation->Fill();
     }
     TestResultContinuity->Write();
@@ -167,28 +177,36 @@ else{
 std::vector<std::string> FileNames;
 std::vector<std::string> FileNamesProcessed;
 
-std::string sInputDir = "/input/FULL_TEST_su_cavo_ps_pp1_V3/";
-for (int i = 0; i < 3; i++) {
-    std::string dir = std::string(WORKDIR) + sInputDir + Form("Cable0%i", i + 1);
-    for (const auto& entry : std::filesystem::directory_iterator(dir)) {
-        std::string processedText;
-        std::string fullpath;
-        if( entry.path().filename().string() != "tmp"){
-        fullpath = std::string(WORKDIR) + sInputDir + Form("Cable0%i/", i + 1) + entry.path().filename().string();
-        processedText = std::string(WORKDIR) + sInputDir + Form("Cable0%i/",i+1) + "tmp/processed_" + entry.path().filename().string();
-        if(entry.path().filename() != "VALORI" && tests.find(fullpath) == tests.end() && fullpath.find(".pdf") == std::string::npos){
+//PSPP1, FULL_CHAIN
+std::string sInputDir[2]={"/input/FULL_TEST_su_cavo_ps_pp1_V3/", "/input/FULL_CHAIN/"};
+TString cable[2] = {"PSPP1", "FULL_CHAIN"};
+Bool_t controls[2] = {true};
+for(int ii=0; ii<2; ii++){
+ FileNames.clear();
+ FileNamesProcessed.clear();
+ for (const auto& entry : std::filesystem::recursive_directory_iterator(WORKDIR + sInputDir[ii])) {
+        if (!entry.is_regular_file()) continue; 
+        std::string filename = entry.path().filename().string();
+        std::string fullpath = entry.path().string();
+
+        if (filename != "tmp" && fullpath.find("VALORI") == std::string::npos && tests.find(fullpath) == tests.end() && fullpath.find(".pdf") == std::string::npos) {
+            std::string processedText = entry.path().parent_path().string() + "/tmp/processed_" + filename;
             FileNamesProcessed.push_back(processedText);
             FileNames.push_back(fullpath);
         }
-        }
-    }
-}
-if(FileNames.empty()){
-    std::cout << "\033[32mstatistics is already up to date. End. \033[0m " << std::endl;
+ }
+ if(FileNames.empty()) controls[ii] = false;
+ //   std::cout << "\033[32mstatistics is already up to date. End. \033[0m " << std::endl;
+ //   std::system("rm -r stat_root");
+ //   return 0;
+ //}
+std::ofstream UpdateTests(TestProcessedTXT, std::ios::app);
+if(ii==1 && !controls[0] && !controls[1]){
+   std::cout << "\033[32mstatistics is already up to date. End. \033[0m " << std::endl;
     std::system("rm -r stat_root");
     return 0;
-}
-std::ofstream UpdateTests(TestProcessedTXT, std::ios::app);
+ }
+
 
 Int_t file = 0;
 for (int j = 0; j < int(FileNames.size()); j++) {
@@ -199,12 +217,13 @@ for (int j = 0; j < int(FileNames.size()); j++) {
         std::string command = "python3 " + std::string(WORKDIR) + "/py/ManageTXT.py ";
         std::system((command + FileNames[j]).c_str());
     }
-    ReadOutput(FileNamesProcessed[j], file);
+    ReadOutput(FileNamesProcessed[j], file, cable[ii]);
     UpdateTests << FileNames[j] << "\n";
     tests.insert(FileNames[j]);
 }
-
 UpdateTests.close();
+}
+
 // ********************************************************************* //
 // ************** END INPUT FILES AND OUTPUT DEFINITIONS *************** //
 // ********************************************************************* //
@@ -216,27 +235,56 @@ inputChain_isolation.Add("./stat_root/*.root");
 ROOT::RDataFrame df_Continuity(inputChain_continuity);
 ROOT::RDataFrame df_Isolation(inputChain_isolation);
 
+////////////////////////////////////////
+// PS-PP1
+auto pspp1 = df_Continuity.Histo1D({"h","h",2,0,2},"statusCon");
+auto h_PassedFailedContinuity_pspp1 = df_Continuity.Filter("pspp1_test_con == true").Histo1D({"h_PassedFailedContinuity_pspp1", "Continuity Test Passed/Failed PS-PP1", 2, 0, 2},"statusCon");
+auto h_PassedFailedIsolation_pspp1 = df_Isolation.Filter("pspp1_test_ins == true").Histo1D({"h_PassedFailedIsolation_pspp1", "Isolation Test Passed/Failed PS-PP1", 2,0,2}, "statusIns");
+auto h_LV_ResistenceContinuity_pspp1 = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true").Histo1D({"h_LV_ResistenceContinuity_pspp1", "LV PS-PP1 Resistence Continuity", 50, 0.53, 0.60}, "resistenceCon");
+auto h_LV_ResistenceIsolation_pspp1 = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true").Histo1D({"h_LV_ResistenceIsolation_pspp1", "LV PS-PP1 Resistence Isolation", 50, 1e+05, 1e+09}, "resistenceIns");
+auto h_HV_ResistenceContinuity_pspp1 = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con==true").Histo1D({"h_HV_ResistenceContinuity_pspp1", "HV PS-PP1 Resistence Continuity", 50, 10, 13},"resistenceCon");
+auto h_HV_ResistenceIsolation_pspp1 = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins==true").Histo1D({"h_HV_ResistenceIsolation_pspp1", "HV PS-PP1 Resistence Isolation", 25, 1e+06, 1e+10},"resistenceIns");
 
-auto h_PassedFailedContinuity = df_Continuity.Histo1D({"h_PassedFailedContinuity", "Continuity Test Passed/Failed", 2, 0, 2},"statusCon");
-auto h_PassedFailedIsolation = df_Isolation.Histo1D({"h_PassedFailedIsolation", "Isolation Test Passed/Failed", 2,0,2}, "statusIns");
-auto h_LV_ResistenceContinuity = df_Continuity.Filter("channelLV_Con == true || channelPHR_Con == true").Histo1D({"h_LV_ResistenceContinuity", "LV Resistence Continuity", 50, 0.53, 0.60}, "resistenceCon");
-auto h_LV_ResistenceIsolation = df_Isolation.Filter("channelLV_Ins == true || channelPHR_Ins == true").Histo1D({"h_LV_ResistenceIsolation", "LV Resistence Isolation", 50, 1e+05, 1e+09}, "resistenceIns");
-auto h_HV_ResistenceContinuity = df_Continuity.Filter("channelHV_Con == true || channelTsensor_Con == true").Histo1D({"h_HV_ResistenceContinuity", "HV Resistence Continuity", 50, 10, 13},"resistenceCon");
-auto h_HV_ResistenceIsolation = df_Isolation.Filter("channelHV_Ins == true || channelTsensor_Ins == true").Histo1D({"h_HV_ResistenceIsolation", "HV Resistence Isolation", 25, 1e+06, 1e+10},"resistenceIns");
+////////////////////////////////////////
+// OCTOPUS
 
-// *********** //
+////////////////////////////////////////
+// PP0
 
+////////////////////////////////////////
+// FULL-CHAIN
+auto h_PassedFailedContinuity_fullchain = df_Continuity.Filter("fullchain_test_con==true").Histo1D({"h_PassedFailedContinuity:fullchain", "Continuity Test Passed/Failed Full-Chain", 2, 0, 2},"statusCon");
+auto h_PassedFailedIsolation_fullchain = df_Isolation.Filter("fullchain_test_ins == true").Histo1D({"h_PassedFailedIsolation_fullchain", "Isolation Test Passed/Failed Full-Chain", 2,0,2}, "statusIns");
+auto h_LV_ResistenceContinuity_fullchain = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true").Histo1D({"h_LV_ResistenceContinuity_fullchain", "LV Full-Chain Resistence Continuity", 50, 0.53, 0.60}, "resistenceCon");
+auto h_LV_ResistenceIsolation_fullchain = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true").Histo1D({"h_LV_ResistenceIsolation_fullchain", "LV Full-Chain Resistence Isolation", 50, 1e+05, 1e+09}, "resistenceIns");
+auto h_HV_ResistenceContinuity_fullchain = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true").Histo1D({"h_HV_ResistenceContinuity_fullchain", "HV Full-Chain Resistence Continuity",50, 10, 15}, "resistenceCon");
+auto h_HV_ResistenceIsolation_fullchain = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins==true").Histo1D({"h_HV_ResistenceIsolation_fullchain", "HV Full-Chain Resistence Isolation", 25, 1e+06, 1e+10},"resistenceIns");
+
+
+
+////////////////////////////////////////
+// DRAW PLOTS
 f_StatOut->cd();
-DrawPlot("Continuity Test, passed/failed, all cables", h_PassedFailedContinuity, "p");
-DrawPlot("Isolation Test, passed/failed channels, all cables", h_PassedFailedIsolation, "p");
-DrawPlot("Isolation Test HV and Tsensors channels resistence, all cables", h_HV_ResistenceIsolation, "hist");
-DrawPlot("Continuity Test HV and Tsensors channels resistence, all cables", h_HV_ResistenceContinuity, "hist");
-DrawPlot("Isolation Test LV and PH channels resistence, all cables", h_LV_ResistenceIsolation, "hist");
-DrawPlot("Continuity Test LV and PH channels resistence, all cables", h_LV_ResistenceContinuity, "hist");
+
+// PS-PP1
+DrawPlot("Isolation Test, passed/failed channels, PS-PP1", h_PassedFailedIsolation_pspp1, "hist");
+DrawPlot("Isolation Test HV and Tsensors channels resistence, PS-PP1", h_HV_ResistenceIsolation_pspp1, "hist");
+DrawPlot("Continuity Test HV and Tsensors channels resistence, PS-PP1", h_HV_ResistenceContinuity_pspp1, "hist");
+DrawPlot("Isolation Test LV and PH channels resistence, PS-PP1", h_LV_ResistenceIsolation_pspp1, "hist");
+DrawPlot("Continuity Test LV and PH channels resistence, PS-PP1", h_LV_ResistenceContinuity_pspp1, "hist");
+
+// FULL-CHAIN
+DrawPlot("Isolation Test, passed/failed channels, Full-Chain", h_PassedFailedContinuity_fullchain, "hist");
+DrawPlot("Isolation Test HV and Tsensors channels resistence, Full-Chain", h_HV_ResistenceIsolation_fullchain, "hist");
+DrawPlot("Continuity Test HV and Tsensors channels resistence, Full-Chain", h_HV_ResistenceContinuity_fullchain, "hist");
+DrawPlot("Isolation Test LV and PH channels resistence, Full-Chain", h_LV_ResistenceIsolation_fullchain, "hist");
+DrawPlot("Continuity Test LV and PH channels resistence, Full-Chain", h_LV_ResistenceContinuity_fullchain, "hist");
+
 f_StatOut->Close(); 
 std::cout<<"\033[32mdone \033[0m"<<std::endl;
 
-std::system("rm -r stat_root");
+std::system("rm -rf stat_root");
+std::system("rm -rf ./input/*/*/tmp");
 
 return 0;
 gROOT->ProcessLine(".q");

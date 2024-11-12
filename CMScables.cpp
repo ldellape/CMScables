@@ -17,6 +17,10 @@
 #include "./include/Classes.h"
 #include "./include/plotting.h"
 
+// serial number:
+// OT + LIC/MSC/OCT + #pallet + #progressivo
+
+
 
 int main(int argc, char* argv[]){
  if(argc<2)  printlogo();
@@ -24,6 +28,7 @@ int main(int argc, char* argv[]){
   // ************ INPUT TESTS ************ //
   // ************************************* //
  if(argc>1) start(argc, argv); // auto mode
+
  else if(!CommandLine){ // input from command line
    TestName = listAndChooseFiles();
    TestType();
@@ -36,7 +41,6 @@ int main(int argc, char* argv[]){
    }
  }
 
- 
 IterationTest = TestName.size();
 std::cout<<"*******************************************************************"<<std::endl;
 std::cout<<"Test Processati:   "<<std::endl;
@@ -49,13 +53,11 @@ std::string name[IterationTest];
 std::cout<<"*******************************************************************"<<std::endl;
 
 
-// *************************************************** //
-// *************************************************** //
-
 // ********* changing txt files and store Continuity/Isolation class objects **************** //
 // ****************************************************************************************** //
 std::cout<<"preparing text files..." <<std::endl;
 for(int i=0; i<int(TestName.size()); i++){
+std::cout<<"testname: "<<TestName[i]<<std::endl;
 Python::PSPP1::ChangeTextFile(TestName[i]);
 }
 std::cout<<"Input Tests:"<<std::endl;
@@ -63,10 +65,9 @@ std::cout<<"Iterationt test size: "<<IterationTest<<std::endl;
 
 for(int i=0; i<IterationTest; ++i){
   std::cout<<Form("%i",i+1)<<"-"<<TestPath[i]<<std::endl;
-  if(ContinuityTest) ReadTestOutput("PSPP1", 0, TestPath[i]);
-  if(InsulationTest) ReadTestOutput("PSPP1", 1, TestPath[i]);
+  if(ContinuityTest) ReadTestOutput(0, TestPath[i], "PSPP1");
+  if(InsulationTest) ReadTestOutput(1, TestPath[i], "PSPP1");
 }
-std::cout<<TestIsolationPSPP1[0]->GetName()<<std::endl;
 
 std::cout<<"done"<<std::endl;
 std::cout<<"****************************************"<<std::endl;
@@ -116,7 +117,6 @@ else if(CableType[it] == "CHAIN"){
 */
 }
 
-
 gErrorIgnoreLevel = kWarning;
 std::cout<<"\033[32mDRAWING HISTOGRAMS...\033[0m" <<std::endl;
 std::cout<<"Drawn and Saved Histograms: "<<std::endl;
@@ -157,7 +157,7 @@ gErrorIgnoreLevel = kPrint;
 // ***************************************************** //
 gErrorIgnoreLevel = kWarning;
 std::cout<<"****************************************"<<std::endl;
-if (Ins_Time) {
+if (Ins_Time && InsulationTest) {
  std::cout <<"\033[32mPlotting LV cables resistance versus time acquisition...\033[0m"<<std::endl;
  std::vector<std::pair<std::string, TGraph*>> grRes_TimeLV[IterationTest];
  std::vector<std::pair<std::string, TGraph*>> grRes_TimeLVR[IterationTest];
@@ -208,19 +208,28 @@ if(CreateReport == "y") {
 }
 #endif
 
-/*
+
 TFile *f_OutPut = new TFile((sOutputRoot + sPDFTitle + ".root").c_str(), "RECREATE");
 for(int i=0; i<IterationTest; ++i){
  if(ContinuityTest){
-  h_passedLV_Cont[i]->Write(); h_passedHV_Cont[i]->Write(); hCont_ResChannel_HV[i]->Write(); hCont_ResChannel_LV[i]->Write(); 
+   h_passedLV_Cont[i]->Write(); 
+   h_passedHV_Cont[i]->Write(); 
+   hCont_ResChannel_HV[i]->Write(); 
+   hCont_ResChannel_LV[i]->Write(); 
  }
  if(InsulationTest){ 
-  h_passedHV_Ins[i]->Write(); h_passedLV_Ins[i]->Write();  hIns_ResChannel_HV[i]->Write(); hIns_ResChannel_LV[i]->Write();
+  h_passedHV_Ins[i]->Write();
+  h_passedLV_Ins[i]->Write();  
+  hIns_ResChannel_HV[i]->Write(); 
+  hIns_ResChannel_LV[i]->Write();
  }
 }
 f_OutPut->Write();
 f_OutPut->Close();
-*/
+
+std::cout<<"removing temporary files...";
+std::system(("rm -r " + sInputTestDir + "*/tmp").c_str());
+std::system(("rm -r " + sInputTestDir + "*/*/tmp").c_str());
 
 
 std::cout<<"done"<<std::endl;
@@ -228,9 +237,7 @@ std::cout<<"*****************************************"<<std::endl;
 std::cout<<"Updating comulative statistics..."<<std::endl;
 std::system("./statistics");
 std::cout<<"*****************************************"<<std::endl;
-std::cout<<"removing temporary files...";
-std::system(("rm -r " + sInputTestDir + "/*/tmp").c_str());
-std::system(("rm -r " + sInputTestDir + "/tmp").c_str());
+
 std::cout<<"done"<<std::endl;
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"\033[32mTHE END\033[0m" << std::endl;
