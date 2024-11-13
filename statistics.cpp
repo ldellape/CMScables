@@ -13,13 +13,13 @@
 #include "TLatex.h"
 #include "TTree.h"
 #include "TSystem.h"
+#include "TProfile.h"
 #include "ROOT/RDataFrame.hxx"
 
 #ifdef WORKDIR
 #else
 #define WORKDIR "."
 #endif
-
 
 
 TFile *f_StatOut;
@@ -90,10 +90,12 @@ void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
         if (line.find("ContinuityTest") != std::string::npos) {
             FirstTree = true;
             SecondTree = false;
-        } else if (line.find("InsulationTest") != std::string::npos) {
+        } 
+        else if (line.find("InsulationTest") != std::string::npos) {
             FirstTree = false;
             SecondTree = true;
-        } else if (lineCounter > 4) {
+        } 
+        else if (lineCounter > 4) {
             std::string str1, str2;
             double r, B;
             if (FirstTree && (iss >> str1 >> str2 >> r)) {
@@ -196,12 +198,8 @@ for(int ii=0; ii<2; ii++){
         }
  }
  if(FileNames.empty()) controls[ii] = false;
- //   std::cout << "\033[32mstatistics is already up to date. End. \033[0m " << std::endl;
- //   std::system("rm -r stat_root");
- //   return 0;
- //}
-std::ofstream UpdateTests(TestProcessedTXT, std::ios::app);
-if(ii==1 && !controls[0] && !controls[1]){
+ std::ofstream UpdateTests(TestProcessedTXT, std::ios::app);
+ if(ii==1 && !controls[0] && !controls[1]){
    std::cout << "\033[32mstatistics is already up to date. End. \033[0m " << std::endl;
     std::system("rm -r stat_root");
     return 0;
@@ -228,22 +226,36 @@ UpdateTests.close();
 // ************** END INPUT FILES AND OUTPUT DEFINITIONS *************** //
 // ********************************************************************* //
 
+
+
 TChain inputChain_continuity("TestResultContinuity");
 TChain inputChain_isolation("TestResultIsolation");
 inputChain_continuity.Add("./stat_root/*.root");
 inputChain_isolation.Add("./stat_root/*.root");
 ROOT::RDataFrame df_Continuity(inputChain_continuity);
 ROOT::RDataFrame df_Isolation(inputChain_isolation);
-
 ////////////////////////////////////////
 // PS-PP1
 auto pspp1 = df_Continuity.Histo1D({"h","h",2,0,2},"statusCon");
 auto h_PassedFailedContinuity_pspp1 = df_Continuity.Filter("pspp1_test_con == true").Histo1D({"h_PassedFailedContinuity_pspp1", "Continuity Test Passed/Failed PS-PP1", 2, 0, 2},"statusCon");
 auto h_PassedFailedIsolation_pspp1 = df_Isolation.Filter("pspp1_test_ins == true").Histo1D({"h_PassedFailedIsolation_pspp1", "Isolation Test Passed/Failed PS-PP1", 2,0,2}, "statusIns");
-auto h_LV_ResistenceContinuity_pspp1 = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true").Histo1D({"h_LV_ResistenceContinuity_pspp1", "LV PS-PP1 Resistence Continuity", 50, 0.53, 0.60}, "resistenceCon");
-auto h_LV_ResistenceIsolation_pspp1 = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true").Histo1D({"h_LV_ResistenceIsolation_pspp1", "LV PS-PP1 Resistence Isolation", 50, 1e+05, 1e+09}, "resistenceIns");
-auto h_HV_ResistenceContinuity_pspp1 = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con==true").Histo1D({"h_HV_ResistenceContinuity_pspp1", "HV PS-PP1 Resistence Continuity", 50, 10, 13},"resistenceCon");
+auto h_LV_ResistenceContinuity_pspp1 = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true").Histo1D({"h_LV_ResistenceContinuity_pspp1", "LV PS-PP1 Resistence Continuity", 25, 0.53, 0.60}, "resistenceCon");
+auto h_LV_ResistenceIsolation_pspp1 = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true").Histo1D({"h_LV_ResistenceIsolation_pspp1", "LV PS-PP1 Resistence Isolation", 25, 1e+05, 1e+09}, "resistenceIns");
+auto h_HV_ResistenceContinuity_pspp1 = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con==true").Histo1D({"h_HV_ResistenceContinuity_pspp1", "HV PS-PP1 Resistence Continuity", 25, 10, 13},"resistenceCon");
 auto h_HV_ResistenceIsolation_pspp1 = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins==true").Histo1D({"h_HV_ResistenceIsolation_pspp1", "HV PS-PP1 Resistence Isolation", 25, 1e+06, 1e+10},"resistenceIns");
+/* remove comment here for temperature and humidity histos
+auto h_LV_Continuity_Temperature_pspp1 = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true").Profile1D({"h_LV_Continuity_Temperature_pspp1", "LV PS-PP1 Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Temperature");
+auto h_HV_Continuity_Temperature_pspp1 = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con == true").Profile1D({"h_HV_Continuity_Temperature_pspp1", "HV PS-PP1 Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Temperature");
+auto h_LV_Isolation_Temperature_pspp1 = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true").Profile1D({"h_LV_Isolation_Temperature_pspp1", "LV PS-PP1 Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Temperature");
+auto h_HV_Isolation_Temperature_pspp1 = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins == true").Profile1D({"h_LV_Isolation_Temperature_pspp1", "HV PS-PP1 Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Temperature");
+
+auto h_LV_Continuity_Humidity_pspp1 = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true").Profile1D({"h_LV_Continuity_Humidity_pspp1", "LV PS-PP1 Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Humidity");
+auto h_HV_Continuity_Humidity_pspp1 = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con == true").Profile1D({"h_HV_Continuity_Humidity_pspp1", "HV PS-PP1 Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Humidity");
+auto h_LV_Isolation_Humidity_pspp1 = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true").Profile1D({"h_LV_Isolation_Humidity_pspp1", "LV PS-PP1 Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Humidity");
+auto h_HV_Isolation_Humidity_pspp1 = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins == true").Profile1D({"h_LV_Isolation_Humidity_pspp1", "HV PS-PP1 Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Humidity");
+*/
+
+
 
 ////////////////////////////////////////
 // OCTOPUS
@@ -255,10 +267,21 @@ auto h_HV_ResistenceIsolation_pspp1 = df_Isolation.Filter("(channelHV_Ins == tru
 // FULL-CHAIN
 auto h_PassedFailedContinuity_fullchain = df_Continuity.Filter("fullchain_test_con==true").Histo1D({"h_PassedFailedContinuity:fullchain", "Continuity Test Passed/Failed Full-Chain", 2, 0, 2},"statusCon");
 auto h_PassedFailedIsolation_fullchain = df_Isolation.Filter("fullchain_test_ins == true").Histo1D({"h_PassedFailedIsolation_fullchain", "Isolation Test Passed/Failed Full-Chain", 2,0,2}, "statusIns");
-auto h_LV_ResistenceContinuity_fullchain = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true").Histo1D({"h_LV_ResistenceContinuity_fullchain", "LV Full-Chain Resistence Continuity", 50, 0.53, 0.60}, "resistenceCon");
-auto h_LV_ResistenceIsolation_fullchain = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true").Histo1D({"h_LV_ResistenceIsolation_fullchain", "LV Full-Chain Resistence Isolation", 50, 1e+05, 1e+09}, "resistenceIns");
-auto h_HV_ResistenceContinuity_fullchain = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true").Histo1D({"h_HV_ResistenceContinuity_fullchain", "HV Full-Chain Resistence Continuity",50, 10, 15}, "resistenceCon");
+auto h_LV_ResistenceContinuity_fullchain = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true").Histo1D({"h_LV_ResistenceContinuity_fullchain", "LV Full-Chain Resistence Continuity", 25, 0.53, 0.60}, "resistenceCon");
+auto h_LV_ResistenceIsolation_fullchain = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true").Histo1D({"h_LV_ResistenceIsolation_fullchain", "LV Full-Chain Resistence Isolation", 25, 1e+05, 1e+09}, "resistenceIns");
+auto h_HV_ResistenceContinuity_fullchain = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true").Histo1D({"h_HV_ResistenceContinuity_fullchain", "HV Full-Chain Resistence Continuity",25, 10, 15}, "resistenceCon");
 auto h_HV_ResistenceIsolation_fullchain = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins==true").Histo1D({"h_HV_ResistenceIsolation_fullchain", "HV Full-Chain Resistence Isolation", 25, 1e+06, 1e+10},"resistenceIns");
+/* remove comment here for temeprature and humidity histos
+auto h_LV_Continuity_Temperature_fullchain = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true").Profile1D({"h_LV_Continuity_Temperature_fullchain", "LV Full-Chain Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Temperature");
+auto h_HV_Continuity_Temperature_fullchain = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true").Profile1D({"h_HV_Continuity_Temperature_fullchain", "HV Full-Chain Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Temperature");
+auto h_LV_Isolation_Temperature_fullchain = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true").Profile1D({"h_LV_Isolation_Temperature_fullchain", "LV Full-Chain Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Temperature");
+auto h_HV_Isolation_Temperature_fullchain = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins == true").Profile1D({"h_LV_Isolation_Temperature_fullchain", "HV Full-Chain Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Temperature");
+
+auto h_LV_Continuity_Humidity_fullchain = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true").Profile1D({"h_LV_Continuity_Humidity_fullchain", "LV Full-Chain Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Humidity");
+auto h_HV_Continuity_Humidity_fullchain = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true").Profile1D({"h_HV_Continuity_Humidity_fullchain", "HV Full-Chain Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Humidity");
+auto h_LV_Isolation_Humidity_fullchain = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true").Profile1D({"h_LV_Isolation_Humidity_fullchain", "LV Full-Chain Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Humidity");
+auto h_HV_Isolation_Humidity_fullchain = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins == true").Profile1D({"h_LV_Isolation_Humidity_fullchain", "HV Full-Chain Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Humidity");
+*/
 
 
 

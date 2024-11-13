@@ -16,6 +16,8 @@
     std::vector<::TString> channel;
     std::vector<double> resistence;
     std::vector<double> FieldB;
+    Float_t TestTemeperature;
+    Float_t TestHumidity;
     TString testType; // isolation or continuity
     // test parameters //
     std::tuple<double,double,double,double,double, TString, double> Parameters = {0,0,0,0,0,"",0};
@@ -47,7 +49,9 @@
     void SetThreshold(::TString option, Float_t Thresh);
     void SetField(std::vector<double> &B);
     void SetTestType(TString test);
-    ::TString GetName();
+    void SetTemperature(Float_t T);
+    void SetHumidity(Float_t H);
+    TString GetName();
     std::vector<double> GetResistence(::TString option= "all");
     std::vector<Bool_t> GetStatus(::TString = "all");
     Double_t GetMean(::TString option = "all");

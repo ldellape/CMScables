@@ -110,6 +110,21 @@ else if(option == "HV") ThreshContHV = Thresh;
     InitialParameters = param;
  }
 
+ //////////////////////////////////////////////////////////////////////
+ // set temperature
+ void PSPP1::SetTemperature(Float_t T){
+  T = TestTemperature;
+ }
+
+ //////////////////////////////////////////////////////////////////////
+ // set humidity
+ void PSPP1::SetHumidity(Float_t H){
+  H = TestHumidity;
+ }
+
+
+
+
 //////////////////////////////////////////////////////////////////////
 // get measured values of resistence based on channel option
 std::vector<double> PSPP1::GetResistence(TString option){

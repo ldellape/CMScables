@@ -7,15 +7,13 @@
 //////////////////////////////////////////////////////////////////////
 // Functions defined in the src directory 
 void plottingGraph(std::vector<std::pair<std::string, TGraph*>> gr[], std::string Title);
-//void ReadTestOutput(std::vector<std::string> &TestNameFile, int j);
-TGraph* ReadTestTime(std::string pathFile);
-void ReadTestOutput(Int_t mode, TString path, TString option = "NONE");
+void ReadTestOutput( TString path, TString option = "NONE");
 //////////////////////////////////////////////////////////////////////
 
 
 
 //////////////////////////////////////////////////////////////////////
-// Functions used only on the main script, source files not needed 
+// Functions used only on the main script
 void start(int number_arg, char *argument[]);
 void printlogo();
 std::vector<std::string> listAndChooseFiles();

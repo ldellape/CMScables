@@ -1,0 +1,1 @@
+aggiungere al DB lunghezza nominale e misurata

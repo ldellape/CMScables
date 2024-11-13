@@ -5,7 +5,9 @@
 #include <sstream>
 
 
-void ReadTestOutput(Int_t mode, TString path, TString option){
+void ReadTestOutput(TString path, TString option){
+
+
     TString TestNameFile = path;
     std::vector<std::tuple<double,double,double,double,double, ::TString, double>> ParametersContinuity;
     std::vector<std::tuple<double,double,double,double,double, TString, double, TString, double, double>> ParametersInsulationInitial;
@@ -17,9 +19,13 @@ void ReadTestOutput(Int_t mode, TString path, TString option){
     std::vector<std::vector<double>> ParametersInsulationHV;  
     std::vector<std::vector<double>> ParametersInsulationLV;
     std::vector<std::vector<double>> ParametersInsulationTsensor;
+    std::vector<Float_t> Temperature;
+    std::vector<Float_t> Humidity;
     std::vector<double> Bfield;
     Bool_t FirstTree = false;
     Bool_t SecondTree = false;
+    Float_t T;
+    Float_t H;
     double i, Thresh, Trise, Twait, Tmeas, Vlimit, V, Vramp, Tmeasfact;
     double r, B;
     TString AR, str1, str2, TmeasRed;
@@ -43,15 +49,21 @@ void ReadTestOutput(Int_t mode, TString path, TString option){
             FirstTree = false;
             SecondTree = true;
         } else {
-            if(lineCounter<5){
-            if(lineCounter==0 && iss >> i >> Thresh >> Trise >> Twait >> Tmeas >> AR >> Vlimit)
+            if(lineCounter<7){
+            if(lineCounter==0 && iss >> T){
+                Temperature.push_back(T);
+            }
+            if(lineCounter==1 && iss>>H){
+                Humidity.push_back(H);
+            }
+            if(lineCounter==2 && iss >> i >> Thresh >> Trise >> Twait >> Tmeas >> AR >> Vlimit)
             ParametersContinuity.push_back(std::make_tuple(i,Thresh,Trise,Twait,Tmeas,AR,Vlimit));
-             if(lineCounter==1 && iss >> V >> Thresh >> Trise >> Twait >> Tmeas >> AR >> i >> TmeasRed >> Tmeasfact >> Vramp){
+             if(lineCounter==3 && iss >> V >> Thresh >> Trise >> Twait >> Tmeas >> AR >> i >> TmeasRed >> Tmeasfact >> Vramp){
               ParametersInsulationInitial.push_back(std::make_tuple(V, Thresh, Trise, Twait, Tmeas,AR, i, TmeasRed, Tmeasfact, Vramp));
              }
-             else if(lineCounter==2 && iss>> Trise >> Twait >> Tmeas) ParametersInsulationLV.push_back({Trise, Twait, Tmeas});
-             else if(lineCounter == 3 && iss >> V >> Thresh >> Trise >> Tmeas) ParametersInsulationHV.push_back({V,Thresh,Trise,Tmeas});
-             else if(lineCounter == 4 && iss>> V >> Thresh >> Trise >> Tmeas) ParametersInsulationTsensor.push_back({V,Thresh,Trise,Tmeas});            
+             else if(lineCounter==4 && iss>> Trise >> Twait >> Tmeas) ParametersInsulationLV.push_back({Trise, Twait, Tmeas});
+             else if(lineCounter == 5 && iss >> V >> Thresh >> Trise >> Tmeas) ParametersInsulationHV.push_back({V,Thresh,Trise,Tmeas});
+             else if(lineCounter == 6 && iss>> V >> Thresh >> Trise >> Tmeas) ParametersInsulationTsensor.push_back({V,Thresh,Trise,Tmeas});            
                lineCounter++;
             }
             else {
@@ -85,6 +97,8 @@ void ReadTestOutput(Int_t mode, TString path, TString option){
         if(!ParametersContinuity.empty()) (TestContinuityPSPP1.back())->SetParameters(ParametersContinuity.back());
         (TestContinuityPSPP1.back())->SetPath(TestNameFile);
         (TestContinuityPSPP1.back())->SetTestType("continuity");
+        if(!Temperature.empty()) (TestContinuityPSPP1.back())->SetTemperature(Temperature.back());
+        if(!Humidity.empty()) (TestContinuityPSPP1.back())->SetHumidity(Humidity.back());
       }
       // isolation //
       if(InsulationTest && !insulationData.empty()){
@@ -96,6 +110,8 @@ void ReadTestOutput(Int_t mode, TString path, TString option){
         if(!ParametersInsulationTsensor.empty()) (TestIsolationPSPP1.back())->SetIsolationPar("Tsensor", ParametersInsulationTsensor.back());
         (TestIsolationPSPP1.back())->SetPath(TestNameFile);
         (TestIsolationPSPP1.back())->SetTestType("isolation");
+        if(!Temperature.empty()) (TestIsolationPSPP1.back())->SetTemperature(Temperature.back());
+        if(!Humidity.empty()) (TestIsolationPSPP1.back())->SetHumidity(Humidity.back());
       }
     }
     else if(option == "OCTOPUS"){
