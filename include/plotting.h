@@ -20,8 +20,11 @@ void plotting(std::vector<T> &h, std::string title, Int_t number_pad){
   Float_t ThreshLVIso[IterationTest];
   Float_t ThreshHVCon[IterationTest]; 
   Float_t ThreshLVCon[IterationTest];
-   
+
+
+// *************************************************************************** //
 // *****DRAWING HISTOS, PARAMETERS OF THE TEST, SETTING LABELS**************** //
+// *************************************************************************** //
 if(sTitle.Contains("LV") && !sTitle.Contains("Passed")){
   for(int k=0; k<h[0]->GetNbinsX(); k++){
     h[0]->GetXaxis()->SetBinLabel(k+1, labelLV_con[k]);
@@ -50,6 +53,10 @@ for(int i=0; i<IterationTest; i++){
 text.SetTextSize(0.04);
 text.DrawLatexNDC(0.15, 0.92, sTitle);
 // *************************************************************************** //
+// *************************************************************************** //
+
+
+
 
 // *************************************************************************** //
 // ********************** INSULATION PLOTS *********************************** //
@@ -170,6 +177,7 @@ if(sTitle == "InsulationTest_HV_Resistence" || sTitle == "InsulationTest_LV_Resi
 // *************************************************************************** //
 
 
+
 // *************************************************************************** //
 // ***************** CONTINUITY PLOTS **************************************** //
 // *************************************************************************** //
@@ -193,7 +201,7 @@ else if(sTitle == "ContinuityTest_ResistenceHV" || sTitle == "ContinuityTest_Res
 
   if(sTitle == "ContinuityTest_ResistenceHV"){
    ThreshHVCon[0] = TestContinuityPSPP1[0]->GetThreshold("HV");
-   y->SetRangeUser(9,14);
+   y->SetRangeUser(h[0]->GetMinimum() - 1, h[0]->GetMaximum()+1);
    TLine *lineThresh = new TLine(x->GetXmin(), ThreshHVCon[0] , x->GetXmax(), ThreshHVCon[0]);
    lineThresh->SetLineColor(46); lineThresh->SetLineStyle(kDashed);
    lineThresh->Draw("same");
@@ -224,7 +232,7 @@ else if(sTitle == "ContinuityTest_ResistenceHV" || sTitle == "ContinuityTest_Res
    }
   }
   else if(sTitle == "ContinuityTest_ResistenceLV"){
-   y->SetRangeUser(0,1.3);
+   y->SetRangeUser(0,h[0]->GetMaximum() + 0.2);
    ThreshLVCon[0] = TestContinuityPSPP1[0]->GetThreshold("LV");
    TLine *lineThresh = new TLine(x->GetXmin(), ThreshLVCon[0], x->GetXmax(), ThreshLVCon[0]);
    lineThresh->SetLineColor(46); lineThresh->SetLineStyle(kDashed);

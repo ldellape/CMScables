@@ -17,8 +17,14 @@
 #include "./include/Classes.h"
 #include "./include/plotting.h"
 
-// serial number:
-// OT + LIC/MSC/OCT + #pallet + #progressivo
+
+
+// ***************** SERIALE **********************
+// PS-PP1 ---------> OT_LIC_30208X                *
+// PP1-PP0 --------> OT_MSC_30208X_X              *
+// OCTOPUS --------> OT_OCT_XXXXX_X               *  
+// CHAIN -------> OT_CHN_30208X_30208X_X_XXXXX_X  * 
+// ************************************************ 
 
 
 
@@ -27,7 +33,7 @@ int main(int argc, char* argv[]){
  if(argc<2)  printlogo();
 
 // ****************************************************************************************** //
-//// INPUT
+// INPUT                                                                                      //
 // ****************************************************************************************** //
  if(argc>1) start(argc, argv); // mode from command line ./CMScables --input ...
 
@@ -59,7 +65,7 @@ std::cout<<"*******************************************************************"
 
 
 // ****************************************************************************************** //
-//// store Continuity/Isolation class objects                                                 //
+//// STORE CONTINUITY/ISOLATION CLASS OBJECTS                                                 //
 // ****************************************************************************************** //
 std::cout<<"preparing text files..." <<std::endl;
 for(int i=0; i<int(TestName.size()); i++){
@@ -91,30 +97,51 @@ for(int i=0; i<IterationTest; ++i){
 // ***************************************************************************************** //
 std::cout<<IterationTest<<std::endl;
 for(int it = 0; it< IterationTest; it++){
+   TString serial = TestPath[it](TestPath[it].Last('/') + 1, TestPath[it].Length() - TestPath[it].Last('/') - 5);
   if(ContinuityTest && InsulationTest){
-   h_passedCont_tot[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passed_continuity_all_%i", it+1));
-   h_passedHV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedHV_continuity_%i", it+1), "HV");
-   h_passedLV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedLV_continuity_%i", it+1), "LV");
-   hCont_ResChannel_HV[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_continuity_%i", it+1), "HV");
-   hCont_ResChannel_LV[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceHV_continuity_%i", it+1), "LV");
-   h_passedIns_tot[it] = TestIsolationPSPP1[it]->FillStatusHistogram(Form("h_passed_Isolation_all_%i", it +1));
-   h_passedHV_Ins[it] = TestIsolationPSPP1[it]->FillStatusHistogram(Form("h_passedHV_Isolation_%i",it+1), "HV");
-   h_passedLV_Ins[it] = TestIsolationPSPP1[it]->FillStatusHistogram(Form("h_passedLV_Isolation_%i",it+1), "LV");
-   hIns_ResChannel_HV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceHV_isolation_%i",it+1), "HV");
-   hIns_ResChannel_LV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_isolation_%i",it+1), "LV");
+   //if(serial.Contains("LIC")){
+     h_passedCont_tot[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passed_continuity_all_%i", it+1));
+     h_passedHV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedHV_continuity_%i", it+1), "HV");
+     h_passedLV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedLV_continuity_%i", it+1), "LV");
+     hCont_ResChannel_HV[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_continuity_%i", it+1), "HV");
+     hCont_ResChannel_LV[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceHV_continuity_%i", it+1), "LV");
+     h_passedIns_tot[it] = TestIsolationPSPP1[it]->FillStatusHistogram(Form("h_passed_Isolation_all_%i", it +1));
+     h_passedHV_Ins[it] = TestIsolationPSPP1[it]->FillStatusHistogram(Form("h_passedHV_Isolation_%i",it+1), "HV");
+     h_passedLV_Ins[it] = TestIsolationPSPP1[it]->FillStatusHistogram(Form("h_passedLV_Isolation_%i",it+1), "LV");
+     hIns_ResChannel_HV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceHV_isolation_%i",it+1), "HV");
+     hIns_ResChannel_LV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_isolation_%i",it+1), "LV");
+   //}
+    if(serial.Contains("OCT") || serial.Contains("CHN")){
+     hIns_Difference_LV[it] = TestIsolationOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceLV_isolation_%i", it +1), "LV");
+     hIns_Difference_HV[it] = TestIsolationOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceHV_isolation_%i", it +1), "HV");
+     hCon_Difference_LV[it] = TestContinuityOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceLV_continuity_%i", it +1), "LV");
+     hCon_Difference_HV[it] = TestContinuityOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceHV_continuity_%i", it +1), "HV");
+    }
   }
   else if(ContinuityTest && !InsulationTest){
-   h_passedHV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedHV_continuity_%i", it+1), "HV");
-   h_passedLV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedLV_continuity_%i", it+1), "LV");
-   hCont_ResChannel_HV[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_continuity_%i", it+1), "HV");
-   hCont_ResChannel_LV[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceHV_continuity_%i", it+1), "LV");
+  // if(serial.Contains("LIC")){
+    h_passedHV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedHV_continuity_%i", it+1), "HV");
+    h_passedLV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedLV_continuity_%i", it+1), "LV");
+    hCont_ResChannel_HV[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_continuity_%i", it+1), "HV");
+    hCont_ResChannel_LV[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceHV_continuity_%i", it+1), "LV");
+   // }
+   if(serial.Contains("OCT") || serial.Contains("CHN")){
+     hCon_Difference_LV[it] = TestContinuityOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceLV_continuity_%i", it +1), "LV");
+     hCon_Difference_HV[it] = TestContinuityOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceHV_continuity_%i", it +1), "HV");
+    }
   }
   else if(InsulationTest && !ContinuityTest){
-   h_passedIns_tot[it] = TestIsolationPSPP1[it]->FillStatusHistogram(Form("h_passed_Isolation_all_%i", it +1));
-   h_passedHV_Ins[it] = TestIsolationPSPP1[it]->FillStatusHistogram(Form("h_passedHV_Isolation_%i",it+1), "HV");
-   h_passedLV_Ins[it] = TestIsolationPSPP1[it]->FillStatusHistogram(Form("h_passedLV_Isolation_%i",it+1), "LV");
-   hIns_ResChannel_HV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceHV_isolation_%i",it+1), "HV");
-   hIns_ResChannel_LV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_isolation_%i",it+1), "LV");
+  // if(serial.Contains("LIC")){
+    h_passedIns_tot[it] = TestIsolationPSPP1[it]->FillStatusHistogram(Form("h_passed_Isolation_all_%i", it +1));
+    h_passedHV_Ins[it] = TestIsolationPSPP1[it]->FillStatusHistogram(Form("h_passedHV_Isolation_%i",it+1), "HV");
+    h_passedLV_Ins[it] = TestIsolationPSPP1[it]->FillStatusHistogram(Form("h_passedLV_Isolation_%i",it+1), "LV");
+    hIns_ResChannel_HV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceHV_isolation_%i",it+1), "HV");
+    hIns_ResChannel_LV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_isolation_%i",it+1), "LV");
+   //}
+   if(serial.Contains("OCT") || serial.Contains("CHN")){
+     hCon_Difference_LV[it] = TestContinuityOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceLV_continuity_%i", it +1), "LV");
+     hCon_Difference_HV[it] = TestContinuityOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceHV_continuity_%i", it +1), "HV");
+    }
   }
 }
 gErrorIgnoreLevel = kWarning;
@@ -226,7 +253,14 @@ std::cout<<"done"<<std::endl;
 // ***************************************************************************************** //
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"Updating comulative statistics..."<<std::endl;
-std::system("./statistics");
+if(!CommandLine) std::system("./statistics");
+else if(CommandLine){
+    // update the corresponding histograms //
+    TString serial = TestPath[0](TestPath[0].Last('/') + 1, TestPath[0].Length() - TestPath[0].Last('/') - 5);
+    if(serial.Contains("CHN")) std::system("./statistics FULL_CHAIN");
+    else if(serial.Contains("LIC")) std::system("./statistics PSPP1");
+    else std::system("./statistics");
+}
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"done"<<std::endl;
 std::cout<<"*****************************************"<<std::endl;

@@ -6,8 +6,6 @@
 
 
 void ReadTestOutput(TString path, TString option){
-
-
     TString TestNameFile = path;
     std::vector<std::tuple<double,double,double,double,double, ::TString, double>> ParametersContinuity;
     std::vector<std::tuple<double,double,double,double,double, TString, double, TString, double, double>> ParametersInsulationInitial;
@@ -37,11 +35,6 @@ void ReadTestOutput(TString path, TString option){
     // ---------------------------------------------------------------------------------------------------  //
     while (inputFile.good() && line.ReadLine(inputFile)) {  
         std::istringstream iss(line.Data()); 
-        if(option == "NONE"){
-         //find cable type //
-         if(line.Contains("PSPP1")) cabletype = "PSPP1";
-         else if(line.Contains("OCTOPUS")) cabletype="OCTOPUS";
-        }
         if (line.Contains("ContinuityTest")) {
             FirstTree = true;
             SecondTree = false;
@@ -49,21 +42,23 @@ void ReadTestOutput(TString path, TString option){
             FirstTree = false;
             SecondTree = true;
         } else {
-            if(lineCounter<7){
+            if(lineCounter<5){
+            /*
             if(lineCounter==0 && iss >> T){
                 Temperature.push_back(T);
             }
             if(lineCounter==1 && iss>>H){
                 Humidity.push_back(H);
             }
-            if(lineCounter==2 && iss >> i >> Thresh >> Trise >> Twait >> Tmeas >> AR >> Vlimit)
+            */
+            if(lineCounter==0 && iss >> i >> Thresh >> Trise >> Twait >> Tmeas >> AR >> Vlimit)
             ParametersContinuity.push_back(std::make_tuple(i,Thresh,Trise,Twait,Tmeas,AR,Vlimit));
-             if(lineCounter==3 && iss >> V >> Thresh >> Trise >> Twait >> Tmeas >> AR >> i >> TmeasRed >> Tmeasfact >> Vramp){
+             if(lineCounter==1 && iss >> V >> Thresh >> Trise >> Twait >> Tmeas >> AR >> i >> TmeasRed >> Tmeasfact >> Vramp){
               ParametersInsulationInitial.push_back(std::make_tuple(V, Thresh, Trise, Twait, Tmeas,AR, i, TmeasRed, Tmeasfact, Vramp));
              }
-             else if(lineCounter==4 && iss>> Trise >> Twait >> Tmeas) ParametersInsulationLV.push_back({Trise, Twait, Tmeas});
-             else if(lineCounter == 5 && iss >> V >> Thresh >> Trise >> Tmeas) ParametersInsulationHV.push_back({V,Thresh,Trise,Tmeas});
-             else if(lineCounter == 6 && iss>> V >> Thresh >> Trise >> Tmeas) ParametersInsulationTsensor.push_back({V,Thresh,Trise,Tmeas});            
+             else if(lineCounter==2 && iss>> Trise >> Twait >> Tmeas) ParametersInsulationLV.push_back({Trise, Twait, Tmeas});
+             else if(lineCounter == 3 && iss >> V >> Thresh >> Trise >> Tmeas) ParametersInsulationHV.push_back({V,Thresh,Trise,Tmeas});
+             else if(lineCounter == 4 && iss>> V >> Thresh >> Trise >> Tmeas) ParametersInsulationTsensor.push_back({V,Thresh,Trise,Tmeas});            
                lineCounter++;
             }
             else {

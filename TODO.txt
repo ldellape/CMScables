@@ -1,1 +1,11 @@
 aggiungere al DB lunghezza nominale e misurata
+
+
+--------------------------------------
+SERIALE 
+
+PS-PP1 ---------> OT_LIC_30208X
+PP1-PP0 --------> OT_MSC_30208X_X
+OCTOPUS --------> OT_OCT_XXXXX_X   
+
+CHAIN -------> OT_CHN_30208X_30208X_X_XXXXX_X

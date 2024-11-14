@@ -10,13 +10,13 @@
 
   class PSPP1{
   private:
-    TString CableName;
+    TString seriale;
     TString testPath;
     std::vector<Bool_t> status;
     std::vector<::TString> channel;
     std::vector<double> resistence;
     std::vector<double> FieldB;
-    Float_t TestTemeperature;
+    Float_t TestTemperature;
     Float_t TestHumidity;
     TString testType; // isolation or continuity
     // test parameters //
@@ -108,22 +108,23 @@ template <typename T> std::vector<T> PSPP1::FilterChannel(TString option, TStrin
 
  class OCTOPUS{
     private:
-        TString CableName;
+        TString seriale;
         std::vector<Bool_t> status;
         TString TestPath;
         Float_t Temperature;
         Float_t Humidity;
+        Float_t octopus_resistivity;
         std::vector<double> resistence;
         std::vector<TString> channel;
+        std::vector<std::tuple<TString, std::vector<TString>, Float_t, Float_t>> OCTOPUSmodules; 
         std::vector<std::pair<TString, double>> LenghtChannelTotal;
         std::vector<std::pair<TString, double>> LenghtChannelBundle;
         std::vector<std::pair<TString, double>> LenghtChannelBranch;
-        std::vector<std::tuple<TString, std::vector<TString>, Float_t, Float_t>> OCTOPUSmodules; 
         std::pair<double, double> FindMaxMinResistence(::TString option);
         const double MainLenghts = 1000;
     public: 
         OCTOPUS(); 
-        OCTOPUS(std::vector<std::tuple<Bool_t, std::string, double>> &TestOutput, ::TString TestTitle);
+        OCTOPUS(std::vector<std::tuple<Bool_t, TString, double>> &TestOutput, TString TestTitle);
         void SetPath(TString path);
         void SetName(TString name);
         void SetTemperature(Float_t T);
@@ -133,8 +134,7 @@ template <typename T> std::vector<T> PSPP1::FilterChannel(TString option, TStrin
         void FillModulesParameter();
         Float_t GetBundleLength(TString module);
         Float_t GetBranchLength(TString module);
-
-
+        TH1F* FillResistenceLengthDifference(TString title, TString option); // histograms that comupute measu
 };
 
 

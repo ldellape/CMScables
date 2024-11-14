@@ -83,6 +83,11 @@ extern std::vector<TH1F*> hIns_ResLV;
 extern std::vector<TH1F*> hIns_ResTot;
 extern std::vector<TH1F*> hIns_ResChannel_LV;
 extern std::vector<TH1F*> hIns_ResChannel_HV;
+extern std::vector<TH1F*> hCon_Difference_LV;
+extern std::vector<TH1F*> hCon_Difference_HV;
+extern std::vector<TH1F*> hIns_Difference_LV;
+extern std::vector<TH1F*> hIns_Difference_HV;
+
 //////////////////////////////////////////////////
 
 

@@ -70,6 +70,10 @@ std::vector<TH1F*> hIns_ResLV(MaxCables, nullptr);
 std::vector<TH1F*> hIns_ResTot(MaxCables, nullptr);
 std::vector<TH1F*> hIns_ResChannel_LV(MaxCables, nullptr);
 std::vector<TH1F*> hIns_ResChannel_HV(MaxCables, nullptr);
+std::vector<TH1F*> hCon_Difference_LV(MaxCables, nullptr);
+std::vector<TH1F*> hCon_Difference_HV(MaxCables, nullptr);
+std::vector<TH1F*> hIns_Difference_LV(MaxCables, nullptr);
+std::vector<TH1F*> hIns_Difference_HV(MaxCables, nullptr);
 //////////////////////////////////////////////////
 
 

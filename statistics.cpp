@@ -149,7 +149,17 @@ void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
 
 
 
-int main(){
+int main(int argc, char* argv[]){
+
+ Bool_t PS_PP1_statistics = false;
+ Bool_t OCTOPUS_statistics = false;
+ Bool_t FULLCHAIN_statistics = false;
+ if(argc == 2){
+    std::string type = argv[1];
+    if(type == "PSPP1") PS_PP1_statistics = true;
+    else if(type == "OCTOPUS") OCTOPUS_statistics = true;
+    else if(type == "FULL_CHAIN") FULLCHAIN_statistics = true;
+ }
 
  ROOT::EnableImplicitMT();
  std::system("mkdir  stat_root");
@@ -178,12 +188,28 @@ else{
 
 std::vector<std::string> FileNames;
 std::vector<std::string> FileNamesProcessed;
+std::vector<std::string> sInputDir;
+std::vector<TString> cable;
+std::vector<Bool_t> controls;
+
+if(PS_PP1_statistics){
+     sInputDir.push_back("/input/FULL_TEST_su_cavo_ps_pp1_V3/");
+     cable.push_back("PSPP1");
+     controls.push_back(true);
+}
+else if(FULLCHAIN_statistics){ 
+    sInputDir.push_back("/input/FULL_CHAIN/");
+    cable.push_back("FULL_CHAIN");
+    controls.push_back(true);
+}
+else{
+     sInputDir = {"/input/FULL_TEST_su_cavo_ps_pp1_V3/", "/input/FULL_CHAIN/"};
+     cable = {"PSPP1", "FULL_CHAIN"};
+     controls = {true,true};
+}
 
 //PSPP1, FULL_CHAIN
-std::string sInputDir[2]={"/input/FULL_TEST_su_cavo_ps_pp1_V3/", "/input/FULL_CHAIN/"};
-TString cable[2] = {"PSPP1", "FULL_CHAIN"};
-Bool_t controls[2] = {true};
-for(int ii=0; ii<2; ii++){
+for(int ii=0; ii < int(cable.size()); ii++){
  FileNames.clear();
  FileNamesProcessed.clear();
  for (const auto& entry : std::filesystem::recursive_directory_iterator(WORKDIR + sInputDir[ii])) {
@@ -199,7 +225,8 @@ for(int ii=0; ii<2; ii++){
  }
  if(FileNames.empty()) controls[ii] = false;
  std::ofstream UpdateTests(TestProcessedTXT, std::ios::app);
- if(ii==1 && !controls[0] && !controls[1]){
+
+ if(std::all_of(controls.begin(), controls.end(), [](bool value){ return !value; }) && ii==int(cable.size()) - 1){
    std::cout << "\033[32mstatistics is already up to date. End. \033[0m " << std::endl;
     std::system("rm -r stat_root");
     return 0;
@@ -237,12 +264,12 @@ ROOT::RDataFrame df_Isolation(inputChain_isolation);
 ////////////////////////////////////////
 // PS-PP1
 auto pspp1 = df_Continuity.Histo1D({"h","h",2,0,2},"statusCon");
-auto h_PassedFailedContinuity_pspp1 = df_Continuity.Filter("pspp1_test_con == true").Histo1D({"h_PassedFailedContinuity_pspp1", "Continuity Test Passed/Failed PS-PP1", 2, 0, 2},"statusCon");
-auto h_PassedFailedIsolation_pspp1 = df_Isolation.Filter("pspp1_test_ins == true").Histo1D({"h_PassedFailedIsolation_pspp1", "Isolation Test Passed/Failed PS-PP1", 2,0,2}, "statusIns");
-auto h_LV_ResistenceContinuity_pspp1 = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true").Histo1D({"h_LV_ResistenceContinuity_pspp1", "LV PS-PP1 Resistence Continuity", 25, 0.53, 0.60}, "resistenceCon");
-auto h_LV_ResistenceIsolation_pspp1 = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true").Histo1D({"h_LV_ResistenceIsolation_pspp1", "LV PS-PP1 Resistence Isolation", 25, 1e+05, 1e+09}, "resistenceIns");
-auto h_HV_ResistenceContinuity_pspp1 = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con==true").Histo1D({"h_HV_ResistenceContinuity_pspp1", "HV PS-PP1 Resistence Continuity", 25, 10, 13},"resistenceCon");
-auto h_HV_ResistenceIsolation_pspp1 = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins==true").Histo1D({"h_HV_ResistenceIsolation_pspp1", "HV PS-PP1 Resistence Isolation", 25, 1e+06, 1e+10},"resistenceIns");
+auto h_PassedFailedContinuity_pspp1 = df_Continuity.Filter("pspp1_test_con == true").Histo1D({"h_PassedFailedContinuity_pspp1", "PS-PP1 Continuity Test Passed/Failed ", 2, 0, 2},"statusCon");
+auto h_PassedFailedIsolation_pspp1 = df_Isolation.Filter("pspp1_test_ins == true").Histo1D({"h_PassedFailedIsolation_pspp1", "PS-PP1 Isolation Test Passed/Failed ", 2,0,2}, "statusIns");
+auto h_LV_ResistenceContinuity_pspp1 = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true").Histo1D({"h_LV_ResistenceContinuity_pspp1", " PS-PP1 Resistence Continuity", 75, 0.53, 0.60}, "resistenceCon");
+auto h_LV_ResistenceIsolation_pspp1 = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true").Histo1D({"h_LV_ResistenceIsolation_pspp1", "LV PS-PP1 Resistence Isolation", 75, 1e+05, 1e+09}, "resistenceIns");
+auto h_HV_ResistenceContinuity_pspp1 = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con==true").Histo1D({"h_HV_ResistenceContinuity_pspp1", "HV PS-PP1 Resistence Continuity", 75, 10, 13},"resistenceCon");
+auto h_HV_ResistenceIsolation_pspp1 = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins==true").Histo1D({"h_HV_ResistenceIsolation_pspp1", "HV PS-PP1 Resistence Isolation", 75, 1e+06, 1e+10},"resistenceIns");
 /* remove comment here for temperature and humidity histos
 auto h_LV_Continuity_Temperature_pspp1 = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true").Profile1D({"h_LV_Continuity_Temperature_pspp1", "LV PS-PP1 Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Temperature");
 auto h_HV_Continuity_Temperature_pspp1 = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con == true").Profile1D({"h_HV_Continuity_Temperature_pspp1", "HV PS-PP1 Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Temperature");
@@ -265,7 +292,7 @@ auto h_HV_Isolation_Humidity_pspp1 = df_Isolation.Filter("(channelHV_Ins == true
 
 ////////////////////////////////////////
 // FULL-CHAIN
-auto h_PassedFailedContinuity_fullchain = df_Continuity.Filter("fullchain_test_con==true").Histo1D({"h_PassedFailedContinuity:fullchain", "Continuity Test Passed/Failed Full-Chain", 2, 0, 2},"statusCon");
+auto h_PassedFailedContinuity_fullchain = df_Continuity.Filter("fullchain_test_con==true").Histo1D({"h_PassedFailedContinuity:fullchain", "Continuity Test Passed/Failed Full-Chain", 2, 0, 2}, "statusCon");
 auto h_PassedFailedIsolation_fullchain = df_Isolation.Filter("fullchain_test_ins == true").Histo1D({"h_PassedFailedIsolation_fullchain", "Isolation Test Passed/Failed Full-Chain", 2,0,2}, "statusIns");
 auto h_LV_ResistenceContinuity_fullchain = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true").Histo1D({"h_LV_ResistenceContinuity_fullchain", "LV Full-Chain Resistence Continuity", 25, 0.53, 0.60}, "resistenceCon");
 auto h_LV_ResistenceIsolation_fullchain = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true").Histo1D({"h_LV_ResistenceIsolation_fullchain", "LV Full-Chain Resistence Isolation", 25, 1e+05, 1e+09}, "resistenceIns");
@@ -290,18 +317,20 @@ auto h_HV_Isolation_Humidity_fullchain = df_Isolation.Filter("(channelHV_Ins == 
 f_StatOut->cd();
 
 // PS-PP1
-DrawPlot("Isolation Test, passed/failed channels, PS-PP1", h_PassedFailedIsolation_pspp1, "hist");
-DrawPlot("Isolation Test HV and Tsensors channels resistence, PS-PP1", h_HV_ResistenceIsolation_pspp1, "hist");
-DrawPlot("Continuity Test HV and Tsensors channels resistence, PS-PP1", h_HV_ResistenceContinuity_pspp1, "hist");
-DrawPlot("Isolation Test LV and PH channels resistence, PS-PP1", h_LV_ResistenceIsolation_pspp1, "hist");
-DrawPlot("Continuity Test LV and PH channels resistence, PS-PP1", h_LV_ResistenceContinuity_pspp1, "hist");
+DrawPlot("PS-PP1 Isolation Test, passed/failed channels", h_PassedFailedIsolation_pspp1, "hist");
+DrawPlot("PS-PP1 Continuity Test, passed/failed channels", h_PassedFailedContinuity_pspp1, "hist");
+DrawPlot("PS-PP1 Isolation Test HV and Tsensors channels resistence", h_HV_ResistenceIsolation_pspp1, "hist");
+DrawPlot("PS-PP1 Continuity Test HV and Tsensors channels resistence ", h_HV_ResistenceContinuity_pspp1, "hist");
+DrawPlot("PS-PP1 Isolation Test LV and PH channels resistence", h_LV_ResistenceIsolation_pspp1, "hist");
+DrawPlot("PS-PP1 Continuity Test LV and PH channels resistence", h_LV_ResistenceContinuity_pspp1, "hist");
 
 // FULL-CHAIN
-DrawPlot("Isolation Test, passed/failed channels, Full-Chain", h_PassedFailedContinuity_fullchain, "hist");
-DrawPlot("Isolation Test HV and Tsensors channels resistence, Full-Chain", h_HV_ResistenceIsolation_fullchain, "hist");
-DrawPlot("Continuity Test HV and Tsensors channels resistence, Full-Chain", h_HV_ResistenceContinuity_fullchain, "hist");
-DrawPlot("Isolation Test LV and PH channels resistence, Full-Chain", h_LV_ResistenceIsolation_fullchain, "hist");
-DrawPlot("Continuity Test LV and PH channels resistence, Full-Chain", h_LV_ResistenceContinuity_fullchain, "hist");
+DrawPlot("Full-Chain Continuity Test, passed/failed channels", h_PassedFailedContinuity_fullchain, "hist");
+DrawPlot("Full-Chain Isolation Test, passed/failed channels", h_PassedFailedIsolation_fullchain, "hist");
+DrawPlot("Full-Chain Isolation Test HV and Tsensors channels resistence", h_HV_ResistenceIsolation_fullchain, "hist");
+DrawPlot("Full-Chain Continuity Test HV and Tsensors channels resistence", h_HV_ResistenceContinuity_fullchain, "hist");
+DrawPlot("Full-Chain Isolation Test LV and PH channels resistence", h_LV_ResistenceIsolation_fullchain, "hist");
+DrawPlot("Full-Chain Continuity Test LV and PH channels resistence", h_LV_ResistenceContinuity_fullchain, "hist");
 
 f_StatOut->Close(); 
 std::cout<<"\033[32mdone \033[0m"<<std::endl;
