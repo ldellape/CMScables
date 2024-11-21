@@ -5,7 +5,8 @@
 #include <sstream>
 
 
-void ReadTestOutput(TString path, TString option){
+void ReadTestOutput(TString path, TString NameTest, TString option){
+
     TString TestNameFile = path;
     std::vector<std::tuple<double,double,double,double,double, ::TString, double>> ParametersContinuity;
     std::vector<std::tuple<double,double,double,double,double, TString, double, TString, double, double>> ParametersInsulationInitial;
@@ -81,30 +82,25 @@ void ReadTestOutput(TString path, TString option){
 
 
     // ---------------------------------------------------------------------------------------------------  //
-    //  fill class objects. 
+    //  fill class objects.                                                                                 //
     // ---------------------------------------------------------------------------------------------------  //
-    int lastSlash = TestNameFile.Last('/');
-    TString testTitle = TestNameFile(lastSlash + 1, TestNameFile.Length() - lastSlash - 5);
     if (option == "PSPP1") {
       // continuity //
       if(ContinuityTest && !continuityData.empty()){
-        TestContinuityPSPP1.push_back(new PSPP1("continuity", continuityData, testTitle));
+        TestContinuityPSPP1.push_back(new PSPP1("continuity", continuityData, NameTest));
         if(!ParametersContinuity.empty()) (TestContinuityPSPP1.back())->SetParameters(ParametersContinuity.back());
         (TestContinuityPSPP1.back())->SetPath(TestNameFile);
-        (TestContinuityPSPP1.back())->SetTestType("continuity");
         if(!Temperature.empty()) (TestContinuityPSPP1.back())->SetTemperature(Temperature.back());
         if(!Humidity.empty()) (TestContinuityPSPP1.back())->SetHumidity(Humidity.back());
       }
       // isolation //
       if(InsulationTest && !insulationData.empty()){
-      std::cout<<"isolation"<<std::endl;
-        TestIsolationPSPP1.push_back(new PSPP1("isolation", insulationData, testTitle));
+        TestIsolationPSPP1.push_back(new PSPP1("isolation", insulationData, NameTest));
         if(!ParametersInsulationInitial.empty()) (TestIsolationPSPP1.back())->SetInitialParameters(ParametersInsulationInitial.back());
         if(!ParametersInsulationLV.empty()) (TestIsolationPSPP1.back())->SetIsolationPar("LV", ParametersInsulationLV.back());
         if(!ParametersInsulationHV.empty()) (TestIsolationPSPP1.back())->SetIsolationPar("HV", ParametersInsulationHV.back());
         if(!ParametersInsulationTsensor.empty()) (TestIsolationPSPP1.back())->SetIsolationPar("Tsensor", ParametersInsulationTsensor.back());
         (TestIsolationPSPP1.back())->SetPath(TestNameFile);
-        (TestIsolationPSPP1.back())->SetTestType("isolation");
         if(!Temperature.empty()) (TestIsolationPSPP1.back())->SetTemperature(Temperature.back());
         if(!Humidity.empty()) (TestIsolationPSPP1.back())->SetHumidity(Humidity.back());
       }
@@ -116,7 +112,7 @@ void ReadTestOutput(TString path, TString option){
 
 
     // ---------------------------------------------------------------------------------------------------  //
-    // switch to continuity/isolation only or end the script if test results not matched with input option  //
+    // switch to continuity/isolation only or end the script if test results not match with input option    //
     // ---------------------------------------------------------------------------------------------------  //
     if(ContinuityTest && InsulationTest && insulationData.empty() && !continuityData.empty()){
      std::cout<<"Isolation Test not present. Switch to continuity only"<<std::endl;
@@ -128,11 +124,11 @@ void ReadTestOutput(TString path, TString option){
      ContinuityTest = false;
     }
     else if(InsulationTest && !ContinuityTest && insulationData.empty()){
-     std::cout<<"Isolation Test not present for "<<testTitle<<". Stop."<<std::endl;
+     std::cout<<"Isolation Test not present for "<<NameTest<<". Stop."<<std::endl;
      gROOT->ProcessLine(".q");
     }
     else if(ContinuityTest && !InsulationTest && continuityData.empty()){
-     std::cout<<"Continuity Test not present for "<<testTitle<< ". Stop"<<std::endl;
+     std::cout<<"Continuity Test not present for "<<NameTest<< ". Stop"<<std::endl;
      gROOT->ProcessLine(".q");
     }
     // ---------------------------------------------------------------------------------------------------  //

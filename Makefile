@@ -7,20 +7,16 @@ WORKDIR = $(PWD)
 TARGET = $(PREFIX)/CMScables
 TARGET_STAT = $(PREFIX)/statistics
 
-
-
 CXX = g++
-CXXFLAGS = -Wall -I include -I src $(shell root-config --cflags) -DPREFIX='"$(PREFIX)"' -DWORKDIR='"$(PWD)"'
-CXXFLAGS_STAT = -Wall $(shell root-config --cflags)  -DWORKDIR='"$(PWD)"'
+CXXFLAGS = -Wall -I include -I src $(shell root-config --cflags) -DPREFIX='"$(PREFIX)"' -DWORKDIR='"$(PWD)"' $(if $(filter DB,$(OPTION)),-DDB)
+CXXFLAGS_STAT = -Wall $(shell root-config --cflags) -DWORKDIR='"$(PWD)"' $(if $(filter DB,$(OPTION)),-DDB)
 
 SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SOURCES))
 DEPS = $(patsubst $(SRCDIR)/%.cpp,$(DEPDIR)/%.d,$(SOURCES))
 
-
 OPTION ?= NONE
 TIME ?= NONE
-
 
 all: $(TARGET) $(TARGET_STAT)
 
@@ -53,5 +49,4 @@ $(DEPDIR)/%.d: $(SRCDIR)/%.cpp
 clean: 
 	rm -rf $(TARGET) $(TARGET_STAT) .deps $(OBJDIR)
 
-.PHONY: all clean 
-
+.PHONY: all clean

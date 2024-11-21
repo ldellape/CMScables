@@ -29,12 +29,22 @@ Bool_t CHAINtest = false;
 // input-output paths
 std::vector<std::string> TestName;
 std::vector<std::string> TestNameTimeAcquisition;
+std::vector<TString> serials;
 std::vector<TString> TestPath;
 std::string sPDFTitle;
 std::string currentDate;
-const std::string sInputTestDir = std::string(WORKDIR) + "/input/";
-const std::string sInputTimeAcquisition = std::string(WORKDIR) + (sInputTestDir + "/VALORI/").c_str();
-const std::string sOutputRoot= std::string(WORKDIR) + "/output/rootFiles/";
+std::string sOutputReport;
+
+#ifdef DB
+ std::string Name;
+ const std::string sInputTestDir = "/home/ldellape/cableDB/static/data/";
+ std::string sOutputROOT;
+ const std::string sOutputRootLocal = std::string(WORKDIR) + "/output/rootFiles/";
+#else 
+ const std::string sInputTestDir = std::string(WORKDIR) + "/input/";
+ const std::string sInputTimeAcquisition = std::string(WORKDIR) + (sInputTestDir + "/VALORI/").c_str();
+ const std::string sOutputRoot= std::string(WORKDIR) + "/output/rootFiles/";
+#endif
 //////////////////////////////////////////////////
 
 

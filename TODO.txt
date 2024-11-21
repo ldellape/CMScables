@@ -1,4 +1,10 @@
-aggiungere al DB lunghezza nominale e misurata
+-aggiungere al DB lunghezza nominale e misurata, tabella full-chain (??)
+-plots contro temperature e umidità 
+
+
+
+
+
 
 
 --------------------------------------
@@ -9,3 +15,5 @@ PP1-PP0 --------> OT_MSC_30208X_X
 OCTOPUS --------> OT_OCT_XXXXX_X   
 
 CHAIN -------> OT_CHN_30208X_30208X_X_XXXXX_X
+senza connettore ---> fine con 0005
+con connettore -----> fine con 0085

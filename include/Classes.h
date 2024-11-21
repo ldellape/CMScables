@@ -51,6 +51,7 @@
     void SetTestType(TString test);
     void SetTemperature(Float_t T);
     void SetHumidity(Float_t H);
+    void CheckOverThreshold(TString option);
     TString GetName();
     std::vector<double> GetResistence(::TString option= "all");
     std::vector<Bool_t> GetStatus(::TString = "all");
@@ -61,6 +62,7 @@
     Double_t GetStdDev(::TString option);
     Double_t GetStdDev(TH1F *h);
     Double_t GetThreshold(::TString option);
+    TString GetTestType();
     std::vector<double> GetIsolationPar(TString option);
     TString GetPath();
     std::vector<std::pair<TString, double>> GetOverThreshold(::TString option);

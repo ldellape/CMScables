@@ -62,8 +62,10 @@ void plottingGraph(std::vector<std::pair<std::string, TGraph*>> gr[], std::strin
                     graph->SetTitle("");
                     graph->SetMarkerStyle(kk + 3);
                     graph->SetMarkerSize(3);
-                    graph->SetMarkerColor(kk + 3);
-                    graph->SetLineColor(kk + 3);
+
+                    graph->SetMarkerColor(kBlue);
+                    graph->SetLineColor(kBlue);
+                    
                     graph->SetLineWidth(1);
                     graph->Draw("ACP");
                     graph->GetXaxis()->SetTitle("t");
@@ -78,12 +80,15 @@ void plottingGraph(std::vector<std::pair<std::string, TGraph*>> gr[], std::strin
                   TLatex legend;
               
                   legend.SetTextSize(0.05);
-                  legend.SetTextColor(kk + 3);
+
+                  legend.SetTextColor(kBlue);
+                  
                   legend.DrawLatexNDC(0.10, 0.10, name[kk]);
+                  
                   }   
                     }
                 }
             }
-        if(int(gr[kk].size())>0) c[kk]->SaveAs((std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistence" + Title + "_" + currentDate + "_Cable" + std::to_string(kk) + ".pdf").c_str());
+        if(int(gr[kk].size())>0) c[kk]->SaveAs((std::string(WORKDIR) + "/output/plotsTimeResistence/graph_TimeResistence" + Title  + "_Cable" + std::to_string(kk) + ".pdf").c_str());
     }
 }

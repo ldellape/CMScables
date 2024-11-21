@@ -10,7 +10,6 @@ filename = sys.argv[1]
 base, ext = os.path.splitext(filename)
 output_filename = f"processed_{os.path.basename(base)}{ext}"
 output_dir = f"{os.path.dirname(filename)}/tmp/"
-print(output_dir)
 
 if not os.path.exists(output_dir) and output_dir:
     os.makedirs(output_dir, exist_ok=True)

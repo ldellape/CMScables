@@ -45,9 +45,17 @@ extern const std::string sInputTimeAcquisition;
 extern const std::string sOutputRoot; 
 extern std::vector<std::string> TestName; // path to original txt file from CEETIS 
 extern std::vector<TString> TestPath; // path to temporaly txt file from CEETIS
+extern std::vector<TString> serials;
 extern std::vector<std::string> TestNameTimeAcquisition; // paths to .INI files from CEETIS 
 extern std::string currentDate; // date of execution
 extern std::string sPDFTitle; // final pdf name (name of the test + currentDaate)
+extern std::string Name;
+extern std::string sOutputReport;
+
+#ifdef DB
+extern std::string sOutputROOT;
+extern const std::string sOutputRootLocal;
+#endif
 //////////////////////////////////////////////////
 
 

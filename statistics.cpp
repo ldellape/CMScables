@@ -22,28 +22,45 @@
 #endif
 
 
+//#define TemperaturePlot
+
 TFile *f_StatOut;
 
-void DrawPlot(TString sTitle, ROOT::RDF::RResultPtr<::TH1D> histo, std::string option){
-    TCanvas *c = new TCanvas(sTitle, sTitle, 2000, 1500);
-    f_StatOut->cd();
-    if(sTitle.Contains("passed")){
-        histo->GetXaxis()->SetBinLabel(1, "Failed");
-        histo->GetXaxis()->SetBinLabel(2, "Passed");
-        histo->Draw(option.c_str());
+
+
+void UpdateHisto(ROOT::RDataFrame df, std::string_view column, std::string sTitle, std::string_view cut, Bool_t update, Int_t Nbins){
+    ROOT::RDF::RResultPtr<::TH1D> *h;
+    if(!update){
+     h = new ROOT::RDF::RResultPtr<::TH1D>(df.Filter(cut).Histo1D({sTitle.c_str(), sTitle.c_str(), Nbins, df.Min(column).GetValue(), df.Max(column).GetValue()}, column));
+    }
+    else if(update){
+     h = (ROOT::RDF::RResultPtr<::TH1D>*) f_StatOut->Get(sTitle.c_str());  
+     if(h){ 
+      auto h_temp = df.Filter(cut).Histo1D({sTitle.c_str(), sTitle.c_str(), Nbins, df.Min(column).GetValue(), df.Max(column).GetValue()}, column);
+      (h->GetPtr())->Add(h_temp.GetPtr());  
+     } 
+     else{
+      std::cerr << "Histogram " << sTitle << " not found!" << std::endl;
+    }
+    }
+    TCanvas *c = new TCanvas(sTitle.c_str(), sTitle.c_str(), 2000, 1500);
+    if(sTitle.find("passed") != std::string::npos){
+        h->GetPtr()->GetXaxis()->SetBinLabel(1, "Failed");
+        h->GetPtr()->GetXaxis()->SetBinLabel(2, "Passed");
+        h->GetPtr()->Draw("p");
         TLatex textTitle;
         textTitle.SetTextSize(0.03);
-        textTitle.DrawLatexNDC(0.02, 0.92, sTitle);
+        textTitle.DrawLatexNDC(0.02, 0.92, sTitle.c_str());
         c->Write();
     }
     else{
-        histo->Draw();
-        histo->GetXaxis()->SetTitle("R [#Omega]");
-        histo->GetYaxis()->SetTitle("Entries");
-        histo->SetTitle("");
+        h->GetPtr()->Draw();
+        h->GetPtr()->GetXaxis()->SetTitle("R [#Omega]");
+        h->GetPtr()->GetYaxis()->SetTitle("Entries");
+        h->GetPtr()->SetTitle("");
         TLatex textTitle;
         textTitle.SetTextSize(0.03);
-        textTitle.DrawLatexNDC(0.02, 0.92, sTitle);
+        textTitle.DrawLatexNDC(0.02, 0.92, sTitle.c_str());
         c->Write();
     }
 }
@@ -137,7 +154,7 @@ void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
         else if( std::get<1>(it).find("PH") != std::string::npos) channelPHR_Ins = true;
         else if( std::get<1>(it).find("Tsensor") != std::string::npos) channelTsensor_Ins = true;
         resistenceIns = std::get<2>(it);
-        if(option.CompareTo("PSPP1")==0) pspp1_test_ins = true;
+        if(option.CompareTo("PSPP1")==0 || option.CompareTo("LIC")) pspp1_test_ins = true;
         if(option.CompareTo("FULL_CHAIN")==0) fullchain_test_ins = true;
         TestResultIsolation->Fill();
     }
@@ -150,10 +167,12 @@ void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
 
 
 int main(int argc, char* argv[]){
-
+ 
+ Bool_t UpdateStat=false;
  Bool_t PS_PP1_statistics = false;
  Bool_t OCTOPUS_statistics = false;
  Bool_t FULLCHAIN_statistics = false;
+
  if(argc == 2){
     std::string type = argv[1];
     if(type == "PSPP1") PS_PP1_statistics = true;
@@ -165,8 +184,40 @@ int main(int argc, char* argv[]){
  std::system("mkdir  stat_root");
  std::system("mkdir -p stat");
  std::set<std::string> tests;
- const char *pathOutFile = "./stat/statistics.root";
- const char *TestProcessedTXT = "./stat/processedTest.txt";
+
+ std::vector<std::string> FileNames;
+ std::vector<std::string> FileNamesProcessed;
+ std::vector<std::string> sInputDir;
+ std::vector<TString> cable;
+ std::vector<Bool_t> controls;
+
+ #ifndef DB
+    const char *TestProcessedTXT = "./stat/processedTest.txt";
+    const char *pathOutFile = "./stat/statistics.root";
+    sInputDir.push_back("/home/ldellape/cableDB/static/data/");
+    if(PS_PP1_statistics){
+     sInputDir.push_back("/input/FULL_TEST_su_cavo_ps_pp1_V3/");
+     cable.push_back("PSPP1");
+     controls.push_back(true);
+    }
+    else if(FULLCHAIN_statistics){ 
+     sInputDir.push_back("/input/FULL_CHAIN/");
+     cable.push_back("FULL_CHAIN");
+     controls.push_back(true);
+    }
+    else{
+     sInputDir = {"/input/FULL_TEST_su_cavo_ps_pp1_V3/", "/input/FULL_CHAIN/"};
+     cable = {"PSPP1", "FULL_CHAIN"};
+     controls = {true,true};
+    }
+
+ #else 
+    const char *TestProcessedTXT = "./stat/processedTestDB.txt";
+    const char *pathOutFile = "./stat/statistics_DB.root";
+    sInputDir.push_back("/home/ldellape/cableDB/static/data/");
+
+
+ #endif
 
 // ******************************************************************** //
 // ************* INPUT FILES AND OUTPUT FILES DEFINITIONS ************* //
@@ -180,163 +231,213 @@ if(!gSystem->AccessPathName(pathOutFile)){
         tests.insert(str);
     }
     TestProcessed.close();
+   UpdateStat=true;
 }
 else{
     std::cout << "creating statistics.root ..." << std::endl;
     f_StatOut = new TFile(pathOutFile, "RECREATE");
 }
 
-std::vector<std::string> FileNames;
-std::vector<std::string> FileNamesProcessed;
-std::vector<std::string> sInputDir;
-std::vector<TString> cable;
-std::vector<Bool_t> controls;
 
-if(PS_PP1_statistics){
-     sInputDir.push_back("/input/FULL_TEST_su_cavo_ps_pp1_V3/");
-     cable.push_back("PSPP1");
-     controls.push_back(true);
-}
-else if(FULLCHAIN_statistics){ 
-    sInputDir.push_back("/input/FULL_CHAIN/");
-    cable.push_back("FULL_CHAIN");
-    controls.push_back(true);
-}
-else{
-     sInputDir = {"/input/FULL_TEST_su_cavo_ps_pp1_V3/", "/input/FULL_CHAIN/"};
-     cable = {"PSPP1", "FULL_CHAIN"};
-     controls = {true,true};
-}
+
 
 //PSPP1, FULL_CHAIN
-for(int ii=0; ii < int(cable.size()); ii++){
- FileNames.clear();
- FileNamesProcessed.clear();
- for (const auto& entry : std::filesystem::recursive_directory_iterator(WORKDIR + sInputDir[ii])) {
-        if (!entry.is_regular_file()) continue; 
-        std::string filename = entry.path().filename().string();
-        std::string fullpath = entry.path().string();
+#ifndef DB
+        for(int ii=0; ii < int(cable.size()); ii++){
+        FileNames.clear();
+        FileNamesProcessed.clear();
+        for (const auto& entry : std::filesystem::recursive_directory_iterator(WORKDIR + sInputDir[ii])) {
+                if (!entry.is_regular_file()) continue; 
+                std::string filename = entry.path().filename().string();
+                std::string fullpath = entry.path().string();
 
-        if (filename != "tmp" && fullpath.find("VALORI") == std::string::npos && tests.find(fullpath) == tests.end() && fullpath.find(".pdf") == std::string::npos) {
-            std::string processedText = entry.path().parent_path().string() + "/tmp/processed_" + filename;
-            FileNamesProcessed.push_back(processedText);
-            FileNames.push_back(fullpath);
+                if (filename != "tmp" && fullpath.find("VALORI") == std::string::npos && tests.find(fullpath) == tests.end() && fullpath.find(".pdf") == std::string::npos) {
+                    std::string processedText = entry.path().parent_path().string() + "/tmp/processed_" + filename;
+                    FileNamesProcessed.push_back(processedText);
+                    FileNames.push_back(fullpath);
+                }
         }
- }
- if(FileNames.empty()) controls[ii] = false;
- std::ofstream UpdateTests(TestProcessedTXT, std::ios::app);
+        if(FileNames.empty()) controls[ii] = false;
+        std::ofstream UpdateTests(TestProcessedTXT, std::ios::app);
 
- if(std::all_of(controls.begin(), controls.end(), [](bool value){ return !value; }) && ii==int(cable.size()) - 1){
-   std::cout << "\033[32mstatistics is already up to date. End. \033[0m " << std::endl;
-    std::system("rm -r stat_root");
-    return 0;
- }
+        if(std::all_of(controls.begin(), controls.end(), [](bool value){ return !value; }) && ii==int(cable.size()) - 1){
+        std::cout << "\033[32mstatistics is already up to date. End. \033[0m " << std::endl;
+            std::system("rm -r stat_root");
+            return 0;
+        }
+        Int_t file = 0;
+        for (int j = 0; j < int(FileNames.size()); j++) {
+            std::cout<<"\033[32mnew test will be added: \033[0m "<<std::endl;
+            std::cout<<FileNamesProcessed[j]<<std::endl;
+            if(!std::filesystem::exists(FileNamesProcessed[j].c_str())){
+                std::string command = "python3 " + std::string(WORKDIR) + "/py/ManageTXT.py ";
+                std::system((command + FileNames[j]).c_str());
+            }
+            if(!gSystem->AccessPathName(FileNamesProcessed[j].c_str())){  ++file; std::cout<<"ok"<<std::endl; ReadOutput(FileNamesProcessed[j], file, cable[j]);}
+            UpdateTests << FileNames[j] << "\n";
+            tests.insert(FileNames[j]);
+        }
+        std::cout<<file<<std::endl;
+        UpdateTests.close();
+        if(file == 0){ std::cout<<"No file "<<std::endl; return 0;}
+        }
+#else
+        for ( const auto& entry : std::filesystem::recursive_directory_iterator(sInputDir[0])){
+            if ( ! entry.is_regular_file()) continue;
+            std::string filename = entry.path().filename().string();
+            std::string fullpath = entry.path().string();
+            if( filename != "tmp" && fullpath.find("VALORI") == std::string::npos && tests.find(fullpath) == tests.end() && fullpath.find(".pdf") == std::string::npos && fullpath.find(".root") == std::string::npos){
+                std::string processedText = entry.path().parent_path().string() + "/tmp/processed_" + filename;
+                std::cout<<processedText<<std::endl;
+                FileNamesProcessed.push_back(processedText);
+                FileNames.push_back(fullpath);
+            }
+        }
+        std::ofstream UpdateTests(TestProcessedTXT, std::ios::app);
+        if(FileNames.empty()){
+            std::cout << "\033[32mstatistics is already up to date. End. \033[0m " << std::endl;
+            std::system("rm -r stat_root");
+            return 0;
+        }
 
-
-Int_t file = 0;
-for (int j = 0; j < int(FileNames.size()); j++) {
-    std::cout<<"\033[32mnew test will be added: \033[0m "<<std::endl;
-    std::cout<<FileNamesProcessed[j]<<std::endl;
-    ++file;
-    if(!std::filesystem::exists(FileNamesProcessed[j].c_str())){
-        std::string command = "python3 " + std::string(WORKDIR) + "/py/ManageTXT.py ";
-        std::system((command + FileNames[j]).c_str());
-    }
-    ReadOutput(FileNamesProcessed[j], file, cable[ii]);
-    UpdateTests << FileNames[j] << "\n";
-    tests.insert(FileNames[j]);
-}
-UpdateTests.close();
-}
+        Int_t file = 0;
+        for (int j = 0; j < int(FileNames.size()); j++) {
+            std::cout<<"\033[32mnew test will be added: \033[0m "<<std::endl;
+            std::cout<<FileNamesProcessed[j]<<std::endl;
+            if(!std::filesystem::exists(FileNamesProcessed[j].c_str())){
+                std::string command = "python3 " + std::string(WORKDIR) + "/py/ManageTXT.py ";
+                std::system((command + FileNames[j]).c_str());
+            }
+            if(!gSystem->AccessPathName(FileNamesProcessed[j].c_str())){  ++file; std::cout<<"ok"<<std::endl; ReadOutput(FileNamesProcessed[j], file, "PSPP1");}
+            UpdateTests << FileNames[j] << "\n";
+            tests.insert(FileNames[j]);
+        }
+        if(file==0 ) { std::cout<<"\033[31mError occurred with test\033[0m "<<std::endl; return 0;}
+        UpdateTests.close();
+#endif
 
 // ********************************************************************* //
 // ************** END INPUT FILES AND OUTPUT DEFINITIONS *************** //
 // ********************************************************************* //
-
-
-
 TChain inputChain_continuity("TestResultContinuity");
 TChain inputChain_isolation("TestResultIsolation");
 inputChain_continuity.Add("./stat_root/*.root");
 inputChain_isolation.Add("./stat_root/*.root");
 ROOT::RDataFrame df_Continuity(inputChain_continuity);
 ROOT::RDataFrame df_Isolation(inputChain_isolation);
-////////////////////////////////////////
-// PS-PP1
-auto pspp1 = df_Continuity.Histo1D({"h","h",2,0,2},"statusCon");
-auto h_PassedFailedContinuity_pspp1 = df_Continuity.Filter("pspp1_test_con == true").Histo1D({"h_PassedFailedContinuity_pspp1", "PS-PP1 Continuity Test Passed/Failed ", 2, 0, 2},"statusCon");
-auto h_PassedFailedIsolation_pspp1 = df_Isolation.Filter("pspp1_test_ins == true").Histo1D({"h_PassedFailedIsolation_pspp1", "PS-PP1 Isolation Test Passed/Failed ", 2,0,2}, "statusIns");
-auto h_LV_ResistenceContinuity_pspp1 = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true").Histo1D({"h_LV_ResistenceContinuity_pspp1", " PS-PP1 Resistence Continuity", 75, 0.53, 0.60}, "resistenceCon");
-auto h_LV_ResistenceIsolation_pspp1 = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true").Histo1D({"h_LV_ResistenceIsolation_pspp1", "LV PS-PP1 Resistence Isolation", 75, 1e+05, 1e+09}, "resistenceIns");
-auto h_HV_ResistenceContinuity_pspp1 = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con==true").Histo1D({"h_HV_ResistenceContinuity_pspp1", "HV PS-PP1 Resistence Continuity", 75, 10, 13},"resistenceCon");
-auto h_HV_ResistenceIsolation_pspp1 = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins==true").Histo1D({"h_HV_ResistenceIsolation_pspp1", "HV PS-PP1 Resistence Isolation", 75, 1e+06, 1e+10},"resistenceIns");
-/* remove comment here for temperature and humidity histos
-auto h_LV_Continuity_Temperature_pspp1 = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true").Profile1D({"h_LV_Continuity_Temperature_pspp1", "LV PS-PP1 Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Temperature");
-auto h_HV_Continuity_Temperature_pspp1 = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con == true").Profile1D({"h_HV_Continuity_Temperature_pspp1", "HV PS-PP1 Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Temperature");
-auto h_LV_Isolation_Temperature_pspp1 = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true").Profile1D({"h_LV_Isolation_Temperature_pspp1", "LV PS-PP1 Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Temperature");
-auto h_HV_Isolation_Temperature_pspp1 = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins == true").Profile1D({"h_LV_Isolation_Temperature_pspp1", "HV PS-PP1 Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Temperature");
+f_StatOut->cd();
 
-auto h_LV_Continuity_Humidity_pspp1 = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true").Profile1D({"h_LV_Continuity_Humidity_pspp1", "LV PS-PP1 Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Humidity");
-auto h_HV_Continuity_Humidity_pspp1 = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con == true").Profile1D({"h_HV_Continuity_Humidity_pspp1", "HV PS-PP1 Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Humidity");
-auto h_LV_Isolation_Humidity_pspp1 = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true").Profile1D({"h_LV_Isolation_Humidity_pspp1", "LV PS-PP1 Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Humidity");
-auto h_HV_Isolation_Humidity_pspp1 = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins == true").Profile1D({"h_LV_Isolation_Humidity_pspp1", "HV PS-PP1 Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Humidity");
-*/
+
+// PSPP1 plots
+
+UpdateHisto(df_Continuity, "statusCon", "h_PassedFailedContinuity_pspp1", "pspp1_test_con == true", UpdateStat, 2);
+UpdateHisto(df_Isolation, "statusIns", "h_PassedFailedIsolation_pspp1", "pspp1_test_ins == true", UpdateStat, 2);
+UpdateHisto(df_Continuity, "resistenceCon", "h_LV_ResistenceContinuity_pspp1", "(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true", UpdateStat, 75);
+UpdateHisto(df_Isolation, "resistenceIns", "h_LV_ResistenceIsolation_pspp1", "(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true", UpdateStat, 75);
+UpdateHisto(df_Continuity, "resistenceCon", "h_HV_ResistenceContinuity_pspp1", "(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con == true", UpdateStat, 75);
+UpdateHisto(df_Isolation, "resistenceIns", "h_HV_ResistenceIsolation_pspp1", "(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins == true", UpdateStat, 75);
+UpdateHisto(df_Isolation, "resistenceIns", "h_Tsensor_ResistenceIsolation_pspp1", "(channelTsensor_Ins == true && pspp1_test_ins == true)", UpdateStat, 25);
+UpdateHisto(df_Continuity, "resistenceCon", "h_Tsensor_ResistenceContinuity_pspp1", "(channelTsensor_Con == true && pspp1_test_con == true)", UpdateStat, 25);
+UpdateHisto(df_Isolation, "resistenceIns", "h_PH_ResistenceIsolation_pspp1", "(channelPHR_Ins == true && pspp1_test_ins == true)", UpdateStat, 25);
+UpdateHisto(df_Continuity, "resistenceCon", "h_PH_ResistenceContinuity_pspp1", "(channelPHR_Con == true && pspp1_test_con == true)", UpdateStat, 25);
+#ifdef TemperaturePlot
+UpdateHisto(df_Continuity, "resistenceCon", "h_LV_Continuity_Temperature_pspp1", "(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_HV_Continuity_Temperature_pspp1", "(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_LV_Isolation_Temperature_pspp1", "(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Temperature_pspp1", "(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_LV_Continuity_Humidity_pspp1", "(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_HV_Continuity_Humidity_pspp1", "(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_LV_Isolation_Humidity_pspp1", "(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Humidity_pspp1", "(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins == true", UpdateStat, 50);
+#endif
 
 
 
 ////////////////////////////////////////
 // OCTOPUS
 
+
 ////////////////////////////////////////
 // PP0
 
 ////////////////////////////////////////
 // FULL-CHAIN
-auto h_PassedFailedContinuity_fullchain = df_Continuity.Filter("fullchain_test_con==true").Histo1D({"h_PassedFailedContinuity:fullchain", "Continuity Test Passed/Failed Full-Chain", 2, 0, 2}, "statusCon");
-auto h_PassedFailedIsolation_fullchain = df_Isolation.Filter("fullchain_test_ins == true").Histo1D({"h_PassedFailedIsolation_fullchain", "Isolation Test Passed/Failed Full-Chain", 2,0,2}, "statusIns");
-auto h_LV_ResistenceContinuity_fullchain = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true").Histo1D({"h_LV_ResistenceContinuity_fullchain", "LV Full-Chain Resistence Continuity", 25, 0.53, 0.60}, "resistenceCon");
-auto h_LV_ResistenceIsolation_fullchain = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true").Histo1D({"h_LV_ResistenceIsolation_fullchain", "LV Full-Chain Resistence Isolation", 25, 1e+05, 1e+09}, "resistenceIns");
-auto h_HV_ResistenceContinuity_fullchain = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true").Histo1D({"h_HV_ResistenceContinuity_fullchain", "HV Full-Chain Resistence Continuity",25, 10, 15}, "resistenceCon");
-auto h_HV_ResistenceIsolation_fullchain = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins==true").Histo1D({"h_HV_ResistenceIsolation_fullchain", "HV Full-Chain Resistence Isolation", 25, 1e+06, 1e+10},"resistenceIns");
-/* remove comment here for temeprature and humidity histos
-auto h_LV_Continuity_Temperature_fullchain = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true").Profile1D({"h_LV_Continuity_Temperature_fullchain", "LV Full-Chain Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Temperature");
-auto h_HV_Continuity_Temperature_fullchain = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true").Profile1D({"h_HV_Continuity_Temperature_fullchain", "HV Full-Chain Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Temperature");
-auto h_LV_Isolation_Temperature_fullchain = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true").Profile1D({"h_LV_Isolation_Temperature_fullchain", "LV Full-Chain Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Temperature");
-auto h_HV_Isolation_Temperature_fullchain = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins == true").Profile1D({"h_LV_Isolation_Temperature_fullchain", "HV Full-Chain Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Temperature");
+UpdateHisto(df_Continuity, "statusCon", "h_PassedFailedContinuity_fullchain", "fullchain_test_con == true", UpdateStat, 2);
+UpdateHisto(df_Isolation, "statusIns", "h_PassedFailedIsolation_fullchain", "fullchain_test_ins == true", UpdateStat, 2);
+UpdateHisto(df_Continuity, "resistenceCon", "h_LV_ResistenceContinuity_fullchain", "(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true", UpdateStat, 25);
+UpdateHisto(df_Isolation, "resistenceIns", "h_LV_ResistenceIsolation_fullchain", "(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true", UpdateStat, 25);
+UpdateHisto(df_Continuity, "resistenceCon", "h_HV_ResistenceContinuity_fullchain", "(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true", UpdateStat, 25);
+UpdateHisto(df_Isolation, "resistenceIns", "h_HV_ResistenceIsolation_fullchain", "(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins == true", UpdateStat, 25);
+UpdateHisto(df_Isolation, "resistenceIns", "h_Tsensor_ResistenceIsolation_fullchain", "(channelTsensor_Ins == true && fullchain_test_ins == true)", UpdateStat, 25);
+UpdateHisto(df_Continuity, "resistenceCon", "h_Tsensor_ResistenceContinuity_fullchain", "(channelTsensor_Con == true && fullchain_test_con == true)", UpdateStat, 25);
+UpdateHisto(df_Isolation, "resistenceIns", "h_PH_ResistenceIsolation_fullchain", "(channelPHR_Ins == true && fullchain_test_ins == true)", UpdateStat, 25);
+UpdateHisto(df_Continuity, "resistenceCon", "h_PH_ResistenceContinuity_fullchain", "(channelPHR_Con == true && fullchain_test_con == true)", UpdateStat, 25);
+#ifdef TemperaturePlot
+UpdateHisto(df_Continuity, "resistenceCon", "h_LV_Continuity_Temperature_fullchain", "(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_HV_Continuity_Temperature_fullchain", "(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_LV_Isolation_Temperature_fullchain", "(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Temperature_fullchain", "(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_LV_Continuity_Humidity_fullchain", "(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_HV_Continuity_Humidity_fullchain", "(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_LV_Isolation_Humidity_fullchain", "(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Humidity_fullchain", "(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins == true", UpdateStat, 50);
 
-auto h_LV_Continuity_Humidity_fullchain = df_Continuity.Filter("(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true").Profile1D({"h_LV_Continuity_Humidity_fullchain", "LV Full-Chain Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Humidity");
-auto h_HV_Continuity_Humidity_fullchain = df_Continuity.Filter("(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true").Profile1D({"h_HV_Continuity_Humidity_fullchain", "HV Full-Chain Profile Resistence Continuity", 50, 10, 30}, "resistenceCon", "Humidity");
-auto h_LV_Isolation_Humidity_fullchain = df_Isolation.Filter("(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true").Profile1D({"h_LV_Isolation_Humidity_fullchain", "LV Full-Chain Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Humidity");
-auto h_HV_Isolation_Humidity_fullchain = df_Isolation.Filter("(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins == true").Profile1D({"h_LV_Isolation_Humidity_fullchain", "HV Full-Chain Profile Resistence Isolation", 50, 10, 30}, "resistenceIns", "Humidity");
-*/
+DrawPlot<::TProfile>("Full-Chain Continuity LV and PH profile temperature plot", h_LV_Continuity_Temperature_fullchain, "hist");
+DrawPlot<::TProfile>("Full-Chain Continuity HV and Tsensor profile temperature plot", h_HV_Continuity_Temperature_fullchain, "hist");
+DrawPlot<::TProfile>("Full-Chain Isolation HV and Tsensor profile temperature plot", h_HV_Isolation_Temperature_fullchain, "hist");
+DrawPlot<::TProfile>("Full-Chain Isolation LV and PH profile temperature plot", h_LV_Isolation_Temperature_fullchain, "hist");
 
+DrawPlot<::TProfile>("Full-Chain Continuity LV and PH profile humidity plot", h_LV_Continuity_humidity_fullchain, "hist");
+DrawPlot<::TProfile>("Full-Chain Continuity HV and Tsensor profile humidity plot", h_HV_Continuity_humidity_fullchain, "hist");
+DrawPlot<::TProfile>("Full-Chain Isolation HV and Tsensor profile humidity plot", h_HV_Isolation_humidity_fullchain, "hist");
+DrawPlot<::TProfile>("Full-Chain Isolation LV and PH profile humidity plot", h_LV_Isolation_humidity_fullchain, "hist");
+
+
+#endif
 
 
 ////////////////////////////////////////
 // DRAW PLOTS
-f_StatOut->cd();
 
-// PS-PP1
-DrawPlot("PS-PP1 Isolation Test, passed/failed channels", h_PassedFailedIsolation_pspp1, "hist");
-DrawPlot("PS-PP1 Continuity Test, passed/failed channels", h_PassedFailedContinuity_pspp1, "hist");
-DrawPlot("PS-PP1 Isolation Test HV and Tsensors channels resistence", h_HV_ResistenceIsolation_pspp1, "hist");
-DrawPlot("PS-PP1 Continuity Test HV and Tsensors channels resistence ", h_HV_ResistenceContinuity_pspp1, "hist");
-DrawPlot("PS-PP1 Isolation Test LV and PH channels resistence", h_LV_ResistenceIsolation_pspp1, "hist");
-DrawPlot("PS-PP1 Continuity Test LV and PH channels resistence", h_LV_ResistenceContinuity_pspp1, "hist");
 
-// FULL-CHAIN
-DrawPlot("Full-Chain Continuity Test, passed/failed channels", h_PassedFailedContinuity_fullchain, "hist");
-DrawPlot("Full-Chain Isolation Test, passed/failed channels", h_PassedFailedIsolation_fullchain, "hist");
-DrawPlot("Full-Chain Isolation Test HV and Tsensors channels resistence", h_HV_ResistenceIsolation_fullchain, "hist");
-DrawPlot("Full-Chain Continuity Test HV and Tsensors channels resistence", h_HV_ResistenceContinuity_fullchain, "hist");
-DrawPlot("Full-Chain Isolation Test LV and PH channels resistence", h_LV_ResistenceIsolation_fullchain, "hist");
-DrawPlot("Full-Chain Continuity Test LV and PH channels resistence", h_LV_ResistenceContinuity_fullchain, "hist");
 
+/*
+/////////////////////////////////////////
+// PS-PP1 PLOTS
+DrawPlot<::TH1D>("PS-PP1 Isolation Test, passed/failed channels", h_PassedFailedIsolation_pspp1, "hist");
+DrawPlot<::TH1D>("PS-PP1 Continuity Test, passed/failed channels", h_PassedFailedContinuity_pspp1, "hist");
+DrawPlot<::TH1D>("PS-PP1 Isolation Test HV and Tsensors channels resistence", h_HV_ResistenceIsolation_pspp1, "hist");
+DrawPlot<::TH1D>("PS-PP1 Continuity Test HV and Tsensors channels resistence ", h_HV_ResistenceContinuity_pspp1, "hist");
+DrawPlot<::TH1D>("PS-PP1 Isolation Test LV and PH channels resistence", h_LV_ResistenceIsolation_pspp1, "hist");
+DrawPlot<::TH1D>("PS-PP1 Continuity Test LV and PH channels resistence", h_LV_ResistenceContinuity_pspp1, "hist");
+DrawPlot<::TH1D>("PS-PP1 Continuity Test Tsensor channels resistence", h_Tsensor_ResistenceContinuity_pspp1, "hist");
+DrawPlot<::TH1D>("PS-PP1 Isolation Test Tsensor channels resistence", h_Tsensor_ResistenceIsolation_pspp1, "hist");
+DrawPlot<::TH1D>("PS-PP1 Continuity Test PH channels resistence", h_PH_ResistenceContinuity_pspp1, "hist");
+DrawPlot<::TH1D>("PS-PP1 Isolation Test PH channels resistence", h_PH_ResistenceIsolation_pspp1, "hist");
+
+/////////////////////////////////////////
+// FULL-CHAIN PLOTS
+DrawPlot<::TH1D>("Full-Chain Continuity Test, passed/failed channels", h_PassedFailedContinuity_fullchain, "hist");
+DrawPlot<::TH1D>("Full-Chain Isolation Test, passed/failed channels", h_PassedFailedIsolation_fullchain, "hist");
+DrawPlot<::TH1D>("Full-Chain Isolation Test HV and Tsensors channels resistence", h_HV_ResistenceIsolation_fullchain, "hist");
+DrawPlot<::TH1D>("Full-Chain Continuity Test HV and Tsensors channels resistence", h_HV_ResistenceContinuity_fullchain, "hist");
+DrawPlot<::TH1D>("Full-Chain Isolation Test LV and PH channels resistence", h_LV_ResistenceIsolation_fullchain, "hist");
+DrawPlot<::TH1D>("Full-Chain Continuity Test LV and PH channels resistence", h_LV_ResistenceContinuity_fullchain, "hist");
+DrawPlot<::TH1D>("Full-Chain Continuity Test Tsensor channels resistence", h_Tsensor_ResistenceContinuity_fullchain, "hist");
+DrawPlot<::TH1D>("Full-Chain Isolation Test Tsensor channels resistence", h_Tsensor_ResistenceIsolation_fullchain, "hist");
+DrawPlot<::TH1D>("Full-Chain Continuity Test PH channels ressitence", h_PH_ResistenceContinuity_fullchain, "hist");
+DrawPlot<::TH1D>("Full-Chain Isolation Test PH channels resistence", h_PH_ResistenceIsolation_fullchain, "hist");
+*/
 f_StatOut->Close(); 
 std::cout<<"\033[32mdone \033[0m"<<std::endl;
-
 std::system("rm -rf stat_root");
+
+#ifndef DB
 std::system("rm -rf ./input/*/*/tmp");
+#else 
+std::system("rm -rf /home/ldellape/cableDB/static/data/tmp");
+std::system("rm -rf /home/ldellape/cableDB/static/data/*/*/tmp");
+#endif
 
 return 0;
 gROOT->ProcessLine(".q");

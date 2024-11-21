@@ -21,6 +21,7 @@
  // constructor of the class
  PSPP1::PSPP1(TString mode, std::vector<std::tuple<Bool_t, TString, double>> &TestOutput, TString TestName){
     seriale = TestName;
+    mode.ToUpper();
     testType = mode;
     IsolationParHV.assign(15,0);
     IsolationParLV.assign(15,0);
@@ -29,6 +30,10 @@
      status.push_back(std::get<0>(TestOutput[i]));
      channel.push_back(std::get<1>(TestOutput[i]));
      resistence.push_back(std::get<2>(TestOutput[i]));
+    }
+    if(!resistence.empty() && !channel.empty() && (this->GetTestType() == "CONTINUITY" || this->GetTestType() == "ISOLATION")){
+      this->CheckOverThreshold("LV");
+      this->CheckOverThreshold("HV");
     }
  }
 
@@ -46,7 +51,7 @@
 
  //////////////////////////////////////////////////////////////////////
  //
- void PSPP1::SetResistence(std::vector<double> &resistenceChannel){
+void PSPP1::SetResistence(std::vector<double> &resistenceChannel){
   resistence = resistenceChannel;
  }
 
@@ -55,18 +60,21 @@
  void PSPP1::SetName(TString name){ 
   seriale=name;
  }
- //////////////////////////////////////////////////////////////////////
- //
+
+//////////////////////////////////////////////////////////////////////
+//
 void PSPP1::SetParameters(std::tuple<double,double,double,double,double,TString,double> param){ 
     Parameters = param;
 }
- //////////////////////////////////////////////////////////////////////
- //
+
+//////////////////////////////////////////////////////////////////////
+//
 void PSPP1::SetPath(TString path){
   testPath = path;
 }
+
 //////////////////////////////////////////////////////////////////////
- //
+//
 void PSPP1::SetTestType(TString test){
     test.ToUpper();
     testType = test;
@@ -120,6 +128,10 @@ else if(option == "HV") ThreshContHV = Thresh;
  // set humidity
  void PSPP1::SetHumidity(Float_t H){
   H = TestHumidity;
+ }
+
+ TString PSPP1::GetTestType(){
+    return testType;
  }
 
 
@@ -177,9 +189,39 @@ std::vector<std::pair<TString, double>> PSPP1::GetOverThreshold(::TString option
     return vec;
    }
    else{
-     Error("Continuity::PSPP1::GetOverThreshold(::TString option)", "Invalid Option");
+     Error("PSPP1::GetOverThreshold(::TString option)", "Invalid Option");
      return vec;
    }
+}
+
+//////////////////////////////////////////////////////////////////////
+// check for entries over threshold
+void PSPP1::CheckOverThreshold(::TString option){
+   option.ToUpper();
+   if(option == "LV"){
+      for(int i=0; i<int(resistence.size()); i++){
+        if(resistence[i]>ThreshContLV && this->GetTestType() == "CONTINUITY"){
+          std::cout<<"\033[31mAlert in "<<this->GetName()<<" channel "<<channel[i]<<": value over threshold"<<std::endl;
+        }
+        else if(resistence[i]>ThreshIsoLV && this->GetTestType() == "ISOLATION"){
+          std::cout<<"\033[31mAlert in "<<this->GetName()<<" channel "<<channel[i]<<": value below threshold"<<std::endl;
+        }
+      }
+   }
+   else if(option == "HV"){
+      for(int i=0; i<int(resistence.size()); i++){
+        if(resistence[i]>ThreshContHV && this->GetTestType() == "CONTINUITY"){
+          std::cout<<"\033[31mAlert in "<<this->GetName()<<" channel "<<channel[i]<<": value over threshold"<<std::endl;
+        }
+        else if(resistence[i]<ThreshIsoHV && this->GetTestType() == "ISOLATION"){
+          std::cout<<"\033[31mAlert in "<<this->GetName()<<" channel "<<channel[i]<<": value below threshold"<<std::endl;
+        }
+      }
+   }
+   else{
+     Error("PSPP1::GetOverThreshold(::TString option)", "Invalid Option");
+   }
+  return;
 }
 
  //////////////////////////////////////////////////////////////////////
@@ -211,7 +253,7 @@ return status;
 Double_t PSPP1::GetMean(TString option){
     option.ToUpper();
     if(option != "LV" && option != "HV"){
-        Error("Continuity::PSPP1::GetMean", "invalid option");
+        Error("PSPP1::GetMean", "invalid option");
         return 0.0;
     }
     Float_t sum=0;
@@ -219,7 +261,11 @@ Double_t PSPP1::GetMean(TString option){
     if(option == "LV"){
     for(int i=0; i<int(resistence.size()); i++){
         if((channel[i].Contains("LV") || channel[i].Contains("PH"))){
-              if(resistence[i] < ThreshContLV){
+              if(resistence[i] < ThreshContLV && (this->GetTestType() == "CONTINUITY")){
+                sum+= resistence[i];
+                count++;
+              }
+              else if(resistence[i] > ThreshIsoLV && (this->GetTestType() == "ISOLATION")){
                 sum+= resistence[i];
                 count++;
               }
@@ -229,14 +275,18 @@ Double_t PSPP1::GetMean(TString option){
     else if(option == "HV"){
     for(int i=0; i<int(resistence.size()); i++){
      if(channel[i].Contains("HV") || channel[i].Contains("Tsensor")){
-              if(resistence[i] < ThreshContHV){
+              if(resistence[i] < ThreshContHV && (this->GetTestType() == "CONTINUITY")){
+                sum+= resistence[i];
+                count++;
+              }
+              else if(resistence[i] > ThreshIsoHV && (this->GetTestType() == "ISOLATION")){
                 sum+= resistence[i];
                 count++;
               }
         }
     }
     }
- return sum/count;    
+ return sum/count;
 }
 
  //////////////////////////////////////////////////////////////////////
@@ -269,7 +319,7 @@ Double_t PSPP1::GetThreshold(TString option){
   if(option == "LV") return ThreshContLV;
   else if(option == "HV") return ThreshContHV;
   else{
-    Error("Isolation::PSPP1::GetThreshold", "invalid option");
+    Error("PSPP1::GetThreshold", "invalid option");
   }
 }
 
@@ -321,7 +371,7 @@ std::tuple<double,double,double,double,double, TString, double> PSPP1::GetParame
     return h_temp;
     }
    else{
-    Error("Continuity::PSPP1::FillResistenceChannelHistogram():", "invalid option");
+    Error("PSPP1::FillResistenceChannelHistogram():", "invalid option");
     return h_temp;
    } 
 }
@@ -407,7 +457,7 @@ TH1F* PSPP1::FillResistenceHistogram(::TString option){
      return h_temp;
     }
     else{
-     Error("Continuity::PSPP1::FillResistenceHistogram", "invalid option");
+     Error("PSPP1::FillResistenceHistogram", "invalid option");
      return h_temp;
     }
 }
@@ -425,7 +475,7 @@ Double_t PSPP1::GetLenght(TString option){
     return (mean*TMath::Pi()*TMath::Power(diamHV, 2))/(4*ResistivityHV);
 }
 else{
-    Error("Continuity::PSPP1::GetLenght", "invalid option");
+    Error("PSPP1::GetLenght", "invalid option");
     return 0.0;
 }
 }
@@ -435,7 +485,7 @@ Double_t PSPP1::GetLenght(TH1F *h){
  if(name.Contains("LV")) return (mean*TMath::Pi()*TMath::Power(diamLV, 2))/(4*ResistivityLV);
  else if(name.Contains("HV")) return (mean*TMath::Pi()*TMath::Power(diamHV, 2))/(4*ResistivityHV);
  else{
-   Error("Isolation::PSPP1::GetLenght(TH1F *h, TString option):", "invalid option");
+   Error("PSPP1::GetLenght(TH1F *h, TString option):", "invalid option");
    return 0;
  }
 }
@@ -461,7 +511,7 @@ Double_t PSPP1::GetStdDev(TString option){
     }
  }
  else {
-    Error("Continuity::PSPP1::GetMean", "invalid option");
+    Error("PSPP1::GetMean", "invalid option");
  }
  return std;
 }
@@ -483,12 +533,12 @@ std::vector<double> PSPP1::GetIsolationPar(TString option){
 //////////////////////////////////////////////////////////////////////
 // get path for LV channel time vs resistence
 TString PSPP1::GetPathTimeRes(){
-  TString path = this->GetPath();
-  TString name = this->GetName();
-  size_t lastDot = path.Last('/');
-  std::string Date = name(18, 18);
-  path.Remove(lastDot);
-  return (path + "/VALORI/" + Date);
+   TString inputPath = this->GetPath();
+    size_t rawPos = inputPath.Index("/RAW/") + 5; // "/RAW/" is 5 characters long
+ TString timestamp = inputPath(inputPath.Last('.') - 19, 19);  
+    TString basePath = inputPath(0, rawPos);
+
+    return   basePath + "VALORI/" + timestamp;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -497,16 +547,16 @@ std::vector<std::pair<std::string,TGraph*>> PSPP1::FillGraphTimeResistence(TStri
   TGraph *gr_temp;
   std::vector<std::pair<std::string, TGraph*>> gr_Time;
   TString pathVAL = this->GetPathTimeRes();
-  std::cout<<pathVAL<<std::endl;
-  if(gSystem->AccessPathName(pathVAL)){ 
-    Error("Isolation::PSPP1::FillGraphResistence()", "no measurements available for test " + this->GetName() + ", " + option + " channels." );
+  if(!gSystem->AccessPathName(pathVAL)){ 
+    Error("PSPP1::FillGraphResistence()", "no measurements available for test " + this->GetName() + ", " + option + " channels." );
     return gr_Time;
   }
   else if(!option.Contains("LV") && !option.Contains("LVR")){
-    Error("Isolation::PSPP1::FillGraphResistence()", "incorrect option for test " + this->GetName() + ", " + option + " channels.");
+    Error("PSPP1::FillGraphResistence()", "incorrect option for test " + this->GetName() + ", " + option + " channels.");
     return gr_Time;
   }
-  else{
+  
+ // else{
     int number_point=0;
     std::vector<double> ResTime[NumberLVcables];
     std::vector<double> number_value[NumberLVcables];
@@ -536,7 +586,7 @@ std::vector<std::pair<std::string,TGraph*>> PSPP1::FillGraphTimeResistence(TStri
     TString command = "rm " + pathINItmp + " 2>/dev/null";
     std::system(command.Data());
     return gr_Time;
-  }
+ // }
 }
 
 

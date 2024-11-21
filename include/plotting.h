@@ -40,11 +40,11 @@ if(sTitle.Contains("LV") && !sTitle.Contains("Passed")){
  }
 
 for(int i=0; i<IterationTest; i++){
- if(i==0){
+ if(i==0 ){
   h[i]->SetStats(0);
   if(!sTitle.Contains("Passed")) h[i]->Draw("  p");
   else h[i]->Draw("hist ");
-   h[i]->SetTitle(""); h[i]->SetMarkerColor(i+3); h[i]->SetLineColor(i+3); h[i]->SetMarkerStyle(3); h[i]->SetMarkerSize(2);
+   h[i]->SetTitle(""); h[i]->SetMarkerColor(kBlue); h[i]->SetLineColor(i+3); h[i]->SetMarkerStyle(3); h[i]->SetMarkerSize(2);
  }
  else{
    h[i]->Draw("same p"); h[i]->SetMarkerColor(i+3); h[i]->SetMarkerStyle(22); h[i]->SetMarkerSize(1.5);
@@ -120,19 +120,24 @@ if(sTitle == "InsulationTest_HV_Resistence" || sTitle == "InsulationTest_LV_Resi
     
     TArrow *arrow = new TArrow(x->GetXmax()-0.4, ThreshHVIso[0]+0.9*1e+09, x->GetXmax()-0.4, ThreshHVIso[0]-0.9*1e+09, 0.005, "<" );
     arrow->SetLineColor(kRed); arrow->SetFillColor(kRed); arrow->SetLineWidth(1);
-    arrow->Draw();
+    //arrow->Draw();
    
     TArrow *arrow2 = new TArrow(4*x->GetBinWidth(2)-0.2, 1e+06-0.5*1e+06, 4*x->GetBinWidth(2)-0.2, 1e+06+0.8*1e+06, 0.005, ">");
     arrow2->SetLineColor(kRed); arrow2->SetFillColor(kRed); arrow2->SetLineWidth(1);
-    arrow2->Draw();
+    //arrow2->Draw();
 
     //draw mean, RMS.
     for(int jj=0; jj<IterationTest; jj++){
       double mean = TestIsolationPSPP1[jj]->GetMean("HV");
       double StdDev = TestIsolationPSPP1[jj]->GetMean("HV");
-
+      if(IterationTest != 1){
       textMean[jj].SetTextSize(0.02); textMean[jj].SetTextColor(jj+3); 
       textStdDev[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
+      }
+      else{
+      textMean[jj].SetTextSize(0.02); textMean[jj].SetTextColor(kBlue); 
+      textStdDev[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(kBlue);
+      }
 
       textMean[jj].DrawLatex(2.95*(jj+1)*x->GetBinWidth(2) + x->GetBinWidth(2) , 1e+03, Form("#mu_{%i} = %.2e", jj+1,mean));
       textStdDev[jj].DrawLatex(2.95*(jj+1)*x->GetBinWidth(2) + x->GetBinWidth(2), 1e+03 - 0.5*1e+03, Form("#sigma_{%i} = %.2e", jj+1, StdDev));
@@ -155,14 +160,20 @@ if(sTitle == "InsulationTest_HV_Resistence" || sTitle == "InsulationTest_LV_Resi
     arrow->SetLineColor(kRed);
     arrow->SetFillColor(kRed);
     arrow->SetLineWidth(1);
-    arrow->Draw();
+    //arrow->Draw();
     
     for(int j=0; j<IterationTest; j++){
      double mean = TestIsolationPSPP1[j]->GetMean("LV");
      double StdDev = TestIsolationPSPP1[j]->GetMean("LV");
 
-     textMean[j].SetTextSize(0.02); textMean[j].SetTextColor(j+3); 
-     textStdDev[j].SetTextSize(0.02); textStdDev[j].SetTextColor(j+3);
+      if(IterationTest != 1){
+      textMean[j].SetTextSize(0.02); textMean[j].SetTextColor(j+3); 
+      textStdDev[j].SetTextSize(0.02); textStdDev[j].SetTextColor(j+3);
+      }
+      else{
+      textMean[j].SetTextSize(0.02); textMean[j].SetTextColor(kBlue); 
+      textStdDev[j].SetTextSize(0.02); textStdDev[j].SetTextColor(kBlue);
+      }
 
      textMean[j].DrawLatex(2.95*(j+1)*x->GetBinWidth(2) + x->GetBinWidth(2) , 1e+03, Form("#mu_{%i} = %.2e", j+1,mean));
      textStdDev[j].DrawLatex(2.95*(j+1)*x->GetBinWidth(2) + x->GetBinWidth(2), 1e+03 - 0.5*1e+03, Form("#sigma_{%i} = %.2e", j+1, StdDev));
@@ -211,17 +222,23 @@ else if(sTitle == "ContinuityTest_ResistenceHV" || sTitle == "ContinuityTest_Res
 
    TArrow *arrow = new TArrow(x->GetXmax()-0.4, ThreshHVCon[0], x->GetXmax()-0.4, ThreshHVCon[0]-0.5, 0.005, ">" );
    arrow->SetLineColor(kRed); arrow->SetFillColor(kRed); arrow->SetLineWidth(1);
-   arrow->Draw();
+   //arrow->Draw();
 
    // draw mean, RMS, lenght //
    for(int jj =0; jj<IterationTest; jj++){
      double mean = TestContinuityPSPP1[jj]->GetMean("HV");
      double StdDev = TestContinuityPSPP1[jj]->GetStdDev("HV");
      double lenght = TestContinuityPSPP1[jj]->GetLenght("HV");
-
-     textMean[jj].SetTextSize(0.02); textMean[jj].SetTextColor(jj+3); 
-     textStdDev[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
-     textLenght[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
+     if(IterationTest != 1){
+      textMean[jj].SetTextSize(0.02); textMean[jj].SetTextColor(jj+3); 
+      textStdDev[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
+      textLenght[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
+     }
+      else{
+      textMean[jj].SetTextSize(0.02); textMean[jj].SetTextColor(kBlue); 
+      textStdDev[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(kBlue);
+      textLenght[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(kBlue);
+      }
      
      textStdDev[jj].DrawLatex(2*(jj+1)*x->GetBinWidth(2), 9.95, Form("#sigma_{%i} = %.3f", jj+1,mean));
      textMean[jj].DrawLatex(2*(jj+1)*x->GetBinWidth(2), 9.8, Form("#mu_{%i} = %.3f" ,jj+1, StdDev));
@@ -243,16 +260,23 @@ else if(sTitle == "ContinuityTest_ResistenceHV" || sTitle == "ContinuityTest_Res
 
    TArrow *arrow = new TArrow(x->GetXmax()-0.4, ThreshLVCon[0] + 0.05, x->GetXmax()-0.4, ThreshLVCon[0] -0.05, 0.005, ">" );
    arrow->SetLineColor(kRed); arrow->SetFillColor(kRed); arrow->SetLineWidth(1);
-   arrow->Draw();
+   //arrow->Draw();
 
    for(int jj =0; jj<IterationTest; jj++){
      double mean = TestContinuityPSPP1[jj]->GetMean("LV");
      double StdDev = TestContinuityPSPP1[jj]->GetStdDev("LV");
      double lenght = TestContinuityPSPP1[jj]->GetLenght("LV");
 
-     textMean[jj].SetTextSize(0.02); textMean[jj].SetTextColor(jj+3); 
-     textStdDev[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
-     textLenght[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
+   if(IterationTest != 1){
+      textMean[jj].SetTextSize(0.02); textMean[jj].SetTextColor(jj+3); 
+      textStdDev[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
+      textLenght[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(jj+3);
+     }
+      else{
+      textMean[jj].SetTextSize(0.02); textMean[jj].SetTextColor(kBlue); 
+      textStdDev[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(kBlue);
+      textLenght[jj].SetTextSize(0.02); textStdDev[jj].SetTextColor(kBlue);
+      }
      textStdDev[jj].DrawLatex(2.5*(jj+1)*x->GetBinWidth(2), 0.23, Form("#sigma_{%i} = %.3f", jj+1, StdDev));
      textMean[jj].DrawLatex(2.5*(jj+1)*x->GetBinWidth(2), 0.20, Form("#mu_{%i} = %.3f" ,jj+1, mean));
      textLenght[jj].DrawLatex(2.5*(jj+1)*x->GetBinWidth(2), 0.17, Form("L_{%i} = %.3f" , jj+1, lenght));

@@ -9,4 +9,4 @@ statistics
 input
 output/
 OTCablesPhaseIItests.log
-./stat
+stat/

@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////////////
 // Functions defined in the src directory 
 void plottingGraph(std::vector<std::pair<std::string, TGraph*>> gr[], std::string Title);
-void ReadTestOutput( TString path, TString option = "NONE");
+void ReadTestOutput( TString path, TString NameTest, TString option = "NONE");
 //////////////////////////////////////////////////////////////////////
 
 
@@ -82,7 +82,7 @@ void printlogo(){
     "**********************************************************************************\n"
 
     <<reset;
-    
+#ifdef DB
  std::system(" mkdir -pv ./output/rootFiles");
  std::system(" mkdir -pv ./output/plots/SingleCable");
  std::system(" mkdir -pv ./output/plots/CheckCable");
@@ -95,6 +95,7 @@ void printlogo(){
  std::cout<<"Plots will be saved in -----> " + std::string(WORKDIR) + "/output/plots/" << std::endl; 
  std::cout<<"Final Report will be saved in -----> " + std::string(WORKDIR)+ "/output/report" << std::endl; 
  std::cout<<"*******************************************************************"<<std::endl;
+ #endif
 }
 
 
@@ -274,11 +275,15 @@ std::vector<std::string> DirTimeAcquisition(){
 //////////////////////////////////////////////////////////////////////
 // command line inputs 
 void start(int number_arg, char *argument[]){
+    #ifndef DB
      std::system(" mkdir -pv ./output/rootFiles");
      std::system(" mkdir -pv ./output/plots/SingleCable");
      std::system(" mkdir -pv ./output/plots/CheckCable");
      std::system("mkdir -pv ./output/report");
      std::system("mkdir -pv ./output/plotsTimeResistence" );
+    #else 
+    #endif
+    
     Bool_t ValidOption= false;
     for (int i = 1; i < number_arg; ++i) {
     std::string arg = argument[i];
@@ -305,14 +310,23 @@ void start(int number_arg, char *argument[]){
     }
     else if(arg == "--input" || arg=="-I") {
      while (i + 1 < number_arg && argument[i + 1][0] != '-') {
-                inputPath = argument[++i];
-                std::cout<<inputPath<<std::endl;
+                inputPath = argument[++i]; // from DB must be of type CableXX/RAW/.txt
+                std::cout<<"*******************************************************************"<<std::endl;
                 TestName.push_back((sInputTestDir + inputPath).c_str());
                 std::size_t LastSlash = inputPath.find_last_of("/");
                 std::string cable = inputPath.substr(0, LastSlash);
+                std::string Name = cable.substr(0, cable.find_first_of("/"));
+                std::cout<<"SERIAL : "<<Name<<std::endl;
                 std::string test = inputPath.substr(LastSlash+1);
                 TestPath.push_back((sInputTestDir + cable + "/tmp/processed_" + test).c_str());
-                std::cout<<test<<std::endl;
+                std::cout<<"testPath "<<TestPath.back()<<std::endl;
+                #ifdef DB
+                std::system(("mkdir -pv " + sInputTestDir + Name + "/ROOT").c_str());
+                std::system(("mkdir -pv " + sInputTestDir + Name + "/Report").c_str());
+                sOutputROOT = sInputTestDir + Name + "/ROOT/";
+                sOutputReport = sInputTestDir + Name + "/Report/";
+                #else
+                #endif
             }
     CommandLine= true;
     ValidOption=true;
@@ -321,6 +335,7 @@ void start(int number_arg, char *argument[]){
     else if((arg == "--mode" || arg=="-M") && CommandLine==true){
         int test_type = std::stoi(argument[++i]);
         if(test_type==0){
+        std::cout<<"*******************************************************************"<<std::endl;
          std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST\033[0m" << std::endl<<std::endl;
          ContinuityTest=true;
          InsulationTest=false;
@@ -328,13 +343,15 @@ void start(int number_arg, char *argument[]){
         else if(test_type==1){
          InsulationTest=true;
          ContinuityTest=false;
+        std::cout<<"*******************************************************************"<<std::endl; 
          std::cout << "Plotting Histograms for ----> \033[32mISOLATION TEST\033[0m" << std::endl<<std::endl;
         }
         else if(test_type ==2){
          ContinuityTest=true;
          InsulationTest=true;
          Ins_Time = true;
-         std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST && ISOLATION TEST\033[0m" << std::endl;
+        std::cout<<"*******************************************************************"<<std::endl;
+        std::cout << "Plotting Histograms for ----> \033[32mCONTINUITY TEST && ISOLATION TEST\033[0m" << std::endl;
         }
         else if(test_type != 0 && test_type != 1 && test_type != 2){
         std::cout<<"Mode not found! "<<std::endl;

@@ -17,8 +17,6 @@
 #include "./include/Classes.h"
 #include "./include/plotting.h"
 
-
-
 // ***************** SERIALE **********************
 // PS-PP1 ---------> OT_LIC_30208X                *
 // PP1-PP0 --------> OT_MSC_30208X_X              *
@@ -26,16 +24,16 @@
 // CHAIN -------> OT_CHN_30208X_30208X_X_XXXXX_X  * 
 // ************************************************ 
 
-
-
 int main(int argc, char* argv[]){
 
- if(argc<2)  printlogo();
+if(argc<2) printlogo();
+
 
 // ****************************************************************************************** //
 // INPUT                                                                                      //
 // ****************************************************************************************** //
  if(argc>1) start(argc, argv); // mode from command line ./CMScables --input ...
+
 
  else if(!CommandLine){ // choose manually type and number of test
    TestName = listAndChooseFiles();
@@ -47,15 +45,14 @@ int main(int argc, char* argv[]){
       TestNameTimeAcquisition = DirTimeAcquisition();
     }
    }
+   sOutputROOT = "./output/root/";
  }
 IterationTest = TestName.size();
 std::cout<<"*******************************************************************"<<std::endl;
-std::cout<<"Tests:   "<<std::endl;
 std::string name[IterationTest];
  for(int j=0; j<IterationTest; j++){
     std::size_t LastDot = TestName[j].find_last_of(".");
     name[j] = TestName[j].substr(0, LastDot);
-    std::cout<<name[j]<<std::endl;
  }
 std::cout<<"*******************************************************************"<<std::endl;
 // ****************************************************************************************** //
@@ -69,21 +66,20 @@ std::cout<<"*******************************************************************"
 // ****************************************************************************************** //
 std::cout<<"preparing text files..." <<std::endl;
 for(int i=0; i<int(TestName.size()); i++){
-std::cout<<"testname: "<<TestName[i]<<std::endl;
 Python::PSPP1::ChangeTextFile(TestName[i]);
 }
-std::cout<<"Input Tests:"<<std::endl;
 std::cout<<"Iterationt test size: "<<IterationTest<<std::endl;
+
 
 for(int i=0; i<IterationTest; ++i){
   std::cout<<Form("%i",i+1)<<"-"<<TestPath[i]<<std::endl;
-  TString serial = TestPath[i](TestPath[i].Last('/') + 1, TestPath[i].Length() - TestPath[i].Last('/') - 5);
-  if(serial.Contains("LIC")) ReadTestOutput(TestPath[i], "PSPP1");
-  else if(serial.Contains("OCT")) ReadTestOutput(TestPath[i], "OCTOPUS");
-  else if(serial.Contains("CHN")) ReadTestOutput(TestPath[i], "FULL CHAIN");
-  else if(serial.Contains("MSC")) ReadTestOutput(TestPath[i], "PP0");
-  else ReadTestOutput(TestPath[i], "PSPP1");
-  std::cout<<"done"<<std::endl;
+  // get serial //
+  serials.push_back(TestPath[i](TestPath[i].Last('/') + 11, TestPath[i].Last('.') - (TestPath[i].Last('/') + 11)));
+  if((serials.back()).Contains("LIC")) ReadTestOutput(TestPath[i], serials[i], "PSPP1");
+  else if((serials.back()).Contains("OCT")) ReadTestOutput(TestPath[i], serials[i], "OCTOPUS");
+  else if((serials.back()).Contains("CHN")) ReadTestOutput(TestPath[i], serials[i], "FULL CHAIN");
+  else if((serials.back()).Contains("MSC")) ReadTestOutput(TestPath[i], serials[i], "PP0");
+  else ReadTestOutput(TestPath[i], serials[i], "PSPP1"); //default 
   std::cout<<"****************************************"<<std::endl;
 }
 // ***************************************************************************************** //
@@ -97,9 +93,8 @@ for(int i=0; i<IterationTest; ++i){
 // ***************************************************************************************** //
 std::cout<<IterationTest<<std::endl;
 for(int it = 0; it< IterationTest; it++){
-   TString serial = TestPath[it](TestPath[it].Last('/') + 1, TestPath[it].Length() - TestPath[it].Last('/') - 5);
   if(ContinuityTest && InsulationTest){
-   //if(serial.Contains("LIC")){
+   //if(serials[it].Contains("LIC")){
      h_passedCont_tot[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passed_continuity_all_%i", it+1));
      h_passedHV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedHV_continuity_%i", it+1), "HV");
      h_passedLV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedLV_continuity_%i", it+1), "LV");
@@ -111,7 +106,7 @@ for(int it = 0; it< IterationTest; it++){
      hIns_ResChannel_HV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceHV_isolation_%i",it+1), "HV");
      hIns_ResChannel_LV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_isolation_%i",it+1), "LV");
    //}
-    if(serial.Contains("OCT") || serial.Contains("CHN")){
+    if(serials[it].Contains("OCT") || serials[it].Contains("CHN")){
      hIns_Difference_LV[it] = TestIsolationOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceLV_isolation_%i", it +1), "LV");
      hIns_Difference_HV[it] = TestIsolationOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceHV_isolation_%i", it +1), "HV");
      hCon_Difference_LV[it] = TestContinuityOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceLV_continuity_%i", it +1), "LV");
@@ -119,13 +114,13 @@ for(int it = 0; it< IterationTest; it++){
     }
   }
   else if(ContinuityTest && !InsulationTest){
-  // if(serial.Contains("LIC")){
+  // if(serials[it].Contains("LIC")){
     h_passedHV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedHV_continuity_%i", it+1), "HV");
     h_passedLV_Cont[it] = TestContinuityPSPP1[it]->FillStatusHistogram(Form("h_passedLV_continuity_%i", it+1), "LV");
     hCont_ResChannel_HV[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_continuity_%i", it+1), "HV");
     hCont_ResChannel_LV[it] = TestContinuityPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceHV_continuity_%i", it+1), "LV");
    // }
-   if(serial.Contains("OCT") || serial.Contains("CHN")){
+   if(serials[it].Contains("OCT") || serials[it].Contains("CHN")){
      hCon_Difference_LV[it] = TestContinuityOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceLV_continuity_%i", it +1), "LV");
      hCon_Difference_HV[it] = TestContinuityOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceHV_continuity_%i", it +1), "HV");
     }
@@ -138,12 +133,13 @@ for(int it = 0; it< IterationTest; it++){
     hIns_ResChannel_HV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceHV_isolation_%i",it+1), "HV");
     hIns_ResChannel_LV[it] = TestIsolationPSPP1[it]->FillResistenceChannelHistogram(Form("h_resistenceLV_isolation_%i",it+1), "LV");
    //}
-   if(serial.Contains("OCT") || serial.Contains("CHN")){
+   if(serials[it].Contains("OCT") || serials[it].Contains("CHN")){
      hCon_Difference_LV[it] = TestContinuityOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceLV_continuity_%i", it +1), "LV");
      hCon_Difference_HV[it] = TestContinuityOctopus[it]->FillResistenceLengthDifference(Form("h_DeltaResistenceHV_continuity_%i", it +1), "HV");
     }
   }
 }
+
 gErrorIgnoreLevel = kWarning;
 std::cout<<"\033[32mDRAWING HISTOGRAMS...\033[0m" <<std::endl;
 std::cout<<"Drawn and Saved Histograms: "<<std::endl;
@@ -178,8 +174,6 @@ gErrorIgnoreLevel = kPrint;
 // ***************************************************************************************** //
 
 
-
-
 // ***************************************************************************************** //
 // RESISTENCE VERSUS TIME ACQUISITION HISTOGRAMS                                             //
 // ***************************************************************************************** //
@@ -204,40 +198,53 @@ std::cout<<"*******************************************"<<std::endl;
 
 
 
-// ***************************************************************************************** //
-// SAVE THE OUTPUTS (ROOT + REPORT)
-// ***************************************************************************************** //
-std::cout<<"Output: "<<std::endl;
-std::cout<<"\033[32mroot histograms have been saved in "<< sOutputRoot << sPDFTitle <<".root\033[0m"<<std::endl;
-if(IterationTest==1){
-  std::cout<<"\033[32mplots has been saved as " + std::string(WORKDIR) +"/output/plots/SingleCable/"<< sPDFTitle<<".pdf\033[0m"<<std::endl;
-}
-else{
-  std::cout<<"\033[32mplot pdf has been saved as" + std::string(WORKDIR) +"/output/plots/CheckCable/"<< sPDFTitle <<".pdf\033[0m"<<std::endl;
-}
-std::cout<<"*****************************************"<<std::endl;
 
 
-TString CreateReport;
-if(!CommandLine){
-  std::cout<<"Do you want to create the final report? (y/n)" <<std::endl;
-  std::cin>>CreateReport;
-  if(CreateReport == "y")  Python::PSPP1::WriteFinalReport(sPDFTitle, name[0]);
-}
-else if(CommandLine){
-  CreateReport = "y";
-   Python::PSPP1::WriteFinalReport(sPDFTitle, name[0]);
-}
-TFile *f_OutPut = new TFile((sOutputRoot + sPDFTitle + ".root").c_str(), "RECREATE");
+// ***************************************************************************************** //
+// SAVE THE OUTPUTS (ROOT + REPORT)                                                          //
+// ***************************************************************************************** //
+
+// root 
+#ifdef DB
+  TFile *f_OutPut;
+  if(CommandLine) f_OutPut = new TFile((sOutputROOT + sPDFTitle + ".root").c_str(), "RECREATE");
+  else f_OutPut = new TFile((sOutputRootLocal + sPDFTitle + ".root").c_str(), "RECREATE");
+#else 
+  TFile *f_OutPut = new TFile((sOutputRoot + "/" + sPDFTitle + ".root").c_str(), "RECREATE");
+#endif
+
+
 for(int i=0; i<IterationTest; ++i){
  if(ContinuityTest){
-   h_passedLV_Cont[i]->Write(); h_passedHV_Cont[i]->Write(); hCont_ResChannel_HV[i]->Write(); hCont_ResChannel_LV[i]->Write(); 
+   h_passedLV_Cont[i]->Write(); 
+   h_passedHV_Cont[i]->Write(); 
+   hCont_ResChannel_HV[i]->Write(); 
+   hCont_ResChannel_LV[i]->Write(); 
  }
- if(InsulationTest){ h_passedHV_Ins[i]->Write(); h_passedLV_Ins[i]->Write();  hIns_ResChannel_HV[i]->Write(); hIns_ResChannel_LV[i]->Write();
+ if(InsulationTest){ 
+  h_passedHV_Ins[i]->Write();
+  h_passedLV_Ins[i]->Write();  
+  hIns_ResChannel_HV[i]->Write(); 
+  hIns_ResChannel_LV[i]->Write();
  }
 }
 f_OutPut->Write();
 f_OutPut->Close();
+
+std::cout<<"Output: "<<std::endl;
+//std::cout<<"\033[32mroot histograms have been saved in "<< sOutputRoot << sPDFTitle <<".root\033[0m"<<std::endl;
+if(IterationTest==1){
+  std::cout<<"plots have been saved as " + std::string(WORKDIR) +"/output/plots/SingleCable/"<< sPDFTitle<<".pdf"<<std::endl;
+}
+else{
+  std::cout<<"plot pdf has been saved as" + std::string(WORKDIR) +"/output/plots/CheckCable/"<< sPDFTitle <<".pdf"<<std::endl;
+}
+std::cout<<"root file has been saved in " + sOutputROOT + sPDFTitle + ".root"<<std::endl;
+TString CreateReport;
+if(!CommandLine){ std::cout<<"Do you want to create the final report? (y/n)" <<std::endl; std::cin>>CreateReport;
+  if(CreateReport == "y")  Python::PSPP1::WriteFinalReport(sPDFTitle, name[0]);
+}
+else if(CommandLine) Python::PSPP1::WriteFinalReport(sPDFTitle, name[0]);
 std::cout<<"removing temporary files...";
 std::system(("rm -r " + sInputTestDir + "*/tmp").c_str());
 std::system(("rm -r " + sInputTestDir + "*/*/tmp").c_str());
@@ -254,24 +261,23 @@ std::cout<<"done"<<std::endl;
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"Updating comulative statistics..."<<std::endl;
 if(!CommandLine) std::system("./statistics");
+#ifndef DB
 else if(CommandLine){
-    // update the corresponding histograms //
-    TString serial = TestPath[0](TestPath[0].Last('/') + 1, TestPath[0].Length() - TestPath[0].Last('/') - 5);
-    if(serial.Contains("CHN")) std::system("./statistics FULL_CHAIN");
-    else if(serial.Contains("LIC")) std::system("./statistics PSPP1");
-    else std::system("./statistics");
+    // update the corresponding cumulative cable histograms //
+    if(serials[0].Contains("CHN")) std::system("./statistics FULL_CHAIN");
+    else if(serials[0].Contains("LIC")) std::system("./statistics PSPP1");
+    else std::system("./statistics ");
 }
-std::cout<<"*****************************************"<<std::endl;
-std::cout<<"done"<<std::endl;
+#endif
+std::cout<<"\033[32mdone\033[0m"<<std::endl;
 std::cout<<"*****************************************"<<std::endl;
 std::cout<<"\033[32mTHE END\033[0m" << std::endl;
 // ***************************************************************************************** //
 // ***************************************************************************************** //
 
-
-
 return 0;
 gROOT->ProcessLine(".q");
+
 
 }
 
