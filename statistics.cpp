@@ -73,8 +73,8 @@ void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
     Bool_t channelLV_Con, channelLV_Ins;
     Bool_t channelHV_Con, channelHV_Ins, channelPHR_Con, channelTsensor_Con;
     Bool_t statusCon, statusIns, channelPHR_Ins, channelTsensor_Ins;
-    Bool_t pspp1_test_con, fullchain_test_con;
-    Bool_t pspp1_test_ins, fullchain_test_ins;
+    Bool_t pspp1_test_Con, fullchain_test_Con;
+    Bool_t pspp1_test_Ins, fullchain_test_Ins;
 
     TestResultContinuity->Branch("resistenceCon", &resistenceCon, "resistenceCon/F");
     TestResultContinuity->Branch("channelLV_Con", &channelLV_Con, "channelLV_Con/O");
@@ -82,8 +82,8 @@ void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
     TestResultContinuity->Branch("statusCon", &statusCon, "statusCon/O");
     TestResultContinuity->Branch("channelPHR_Con", &channelPHR_Con, "channelPHR_Con/O");
     TestResultContinuity->Branch("channelTsensor_Con", &channelTsensor_Con, "channelTsensor_Con/O");
-    TestResultContinuity->Branch("pspp1_test_con", &pspp1_test_con, "pspp1_test_con/O");
-    TestResultContinuity->Branch("fullchain_test_con", &fullchain_test_con, "fullchain_test_con/O");
+    TestResultContinuity->Branch("pspp1_test_Con", &pspp1_test_Con, "pspp1_test_Con/O");
+    TestResultContinuity->Branch("fullchain_test_Con", &fullchain_test_Con, "fullchain_test_Con/O");
 
     TestResultIsolation->Branch("resistenceIns", &resistenceIns, "resistenceIns/F");
     TestResultIsolation->Branch("channelLV_Ins", &channelLV_Ins, "channelLV_Ins/O");
@@ -91,8 +91,8 @@ void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
     TestResultIsolation->Branch("statusIns", &statusIns, "statusIns/O");
     TestResultIsolation->Branch("channelPHR_Ins", &channelPHR_Ins, "PHR_Ins/O");
     TestResultIsolation->Branch("channelTsensor_Ins", &channelTsensor_Ins, "channelTsensor_Ins/O");
-    TestResultIsolation->Branch("pspp1_test_ins", &pspp1_test_ins, "pspp1_test_ins/O");
-    TestResultIsolation->Branch("fullchain_test_ins", &fullchain_test_ins, "fullchain_test_ins/O");
+    TestResultIsolation->Branch("pspp1_test_Ins", &pspp1_test_Ins, "pspp1_test_Ins/O");
+    TestResultIsolation->Branch("fullchain_test_Ins", &fullchain_test_Ins, "fullchain_test_Ins/O");
 
     std::ifstream inputFile(TestNameFile);
     std::string line;
@@ -130,15 +130,15 @@ void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
         channelLV_Con = false;
         channelPHR_Con = false;
         channelTsensor_Con = false;
-        pspp1_test_con = false;
-        fullchain_test_con = false;
+        pspp1_test_Con = false;
+        fullchain_test_Con = false;
         if( std::get<1>(it).find("LV") != std::string::npos) channelLV_Con = true;
         else if (std::get<1>(it).find("HV") != std::string::npos) channelHV_Con = true; 
         else if( std::get<1>(it).find("PH") != std::string::npos) channelPHR_Con = true;
         else if( std::get<1>(it).find("Tsensor") != std::string::npos) channelTsensor_Con = true;
         resistenceCon = std::get<2>(it);
-        if(option.CompareTo("PSPP1")==0) pspp1_test_con = true;
-        if(option.CompareTo("FULL_CHAIN")==0) fullchain_test_con = true;
+        if(option.CompareTo("PSPP1")==0) pspp1_test_Con = true;
+        if(option.CompareTo("FULL_CHAIN")==0) fullchain_test_Con = true;
         TestResultContinuity->Fill();
     }
     for (const auto& it : insulationData) {
@@ -147,15 +147,15 @@ void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
         channelLV_Ins = false;
         channelPHR_Ins = false;
         channelTsensor_Ins = false;
-        pspp1_test_ins = false;
-        fullchain_test_ins = false;
+        pspp1_test_Ins = false;
+        fullchain_test_Ins = false;
         if( std::get<1>(it).find("LV") != std::string::npos) channelLV_Ins = true;
         else if (std::get<1>(it).find("HV") != std::string::npos) channelHV_Ins = true; 
         else if( std::get<1>(it).find("PH") != std::string::npos) channelPHR_Ins = true;
         else if( std::get<1>(it).find("Tsensor") != std::string::npos) channelTsensor_Ins = true;
         resistenceIns = std::get<2>(it);
-        if(option.CompareTo("PSPP1")==0 || option.CompareTo("LIC")) pspp1_test_ins = true;
-        if(option.CompareTo("FULL_CHAIN")==0) fullchain_test_ins = true;
+        if(option.CompareTo("PSPP1")==0 || option.CompareTo("LIC")) pspp1_test_Ins = true;
+        if(option.CompareTo("FULL_CHAIN")==0) fullchain_test_Ins = true;
         TestResultIsolation->Fill();
     }
     TestResultContinuity->Write();
@@ -273,7 +273,7 @@ else{
                 std::string command = "python3 " + std::string(WORKDIR) + "/py/ManageTXT.py ";
                 std::system((command + FileNames[j]).c_str());
             }
-            if(!gSystem->AccessPathName(FileNamesProcessed[j].c_str())){  ++file; std::cout<<"ok"<<std::endl; ReadOutput(FileNamesProcessed[j], file, cable[j]);}
+            if(!gSystem->AccessPathName(FileNamesProcessed[j].c_str())){  ++file;  ReadOutput(FileNamesProcessed[j], file, cable[j]);}
             UpdateTests << FileNames[j] << "\n";
             tests.insert(FileNames[j]);
         }
@@ -312,7 +312,7 @@ else{
             UpdateTests << FileNames[j] << "\n";
             tests.insert(FileNames[j]);
         }
-        if(file==0 ) { std::cout<<"\033[31mError occurred with test\033[0m "<<std::endl; return 0;}
+        if(file==0 ) { std::system("rm -rf stat_root"); std::cout<<"\033[31mError occurred with test\033[0m "<<std::endl; return 0;}
         UpdateTests.close();
 #endif
 
@@ -330,25 +330,25 @@ f_StatOut->cd();
 
 // PSPP1 plots
 
-UpdateHisto(df_Continuity, "statusCon", "h_PassedFailedContinuity_pspp1", "pspp1_test_con == true", UpdateStat, 2);
-UpdateHisto(df_Isolation, "statusIns", "h_PassedFailedIsolation_pspp1", "pspp1_test_ins == true", UpdateStat, 2);
-UpdateHisto(df_Continuity, "resistenceCon", "h_LV_ResistenceContinuity_pspp1", "(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true", UpdateStat, 75);
-UpdateHisto(df_Isolation, "resistenceIns", "h_LV_ResistenceIsolation_pspp1", "(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true", UpdateStat, 75);
-UpdateHisto(df_Continuity, "resistenceCon", "h_HV_ResistenceContinuity_pspp1", "(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con == true", UpdateStat, 75);
-UpdateHisto(df_Isolation, "resistenceIns", "h_HV_ResistenceIsolation_pspp1", "(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins == true", UpdateStat, 75);
-UpdateHisto(df_Isolation, "resistenceIns", "h_Tsensor_ResistenceIsolation_pspp1", "(channelTsensor_Ins == true && pspp1_test_ins == true)", UpdateStat, 25);
-UpdateHisto(df_Continuity, "resistenceCon", "h_Tsensor_ResistenceContinuity_pspp1", "(channelTsensor_Con == true && pspp1_test_con == true)", UpdateStat, 25);
-UpdateHisto(df_Isolation, "resistenceIns", "h_PH_ResistenceIsolation_pspp1", "(channelPHR_Ins == true && pspp1_test_ins == true)", UpdateStat, 25);
-UpdateHisto(df_Continuity, "resistenceCon", "h_PH_ResistenceContinuity_pspp1", "(channelPHR_Con == true && pspp1_test_con == true)", UpdateStat, 25);
+UpdateHisto(df_Continuity, "statusCon", "h_PassedFailedContinuity_pspp1", "pspp1_test_Con == true", UpdateStat, 2);
+UpdateHisto(df_Isolation, "statusIns", "h_PassedFailedIsolation_pspp1", "pspp1_test_Ins == true", UpdateStat, 2);
+UpdateHisto(df_Continuity, "resistenceCon", "h_LV_ResistenceContinuity_pspp1", "(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_Con == true", UpdateStat, 75);
+UpdateHisto(df_Isolation, "resistenceIns", "h_LV_ResistenceIsolation_pspp1", "(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_Ins == true", UpdateStat, 75);
+UpdateHisto(df_Continuity, "resistenceCon", "h_HV_ResistenceContinuity_pspp1", "(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_Con == true", UpdateStat, 75);
+UpdateHisto(df_Isolation, "resistenceIns", "h_HV_ResistenceIsolation_pspp1", "(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_Ins == true", UpdateStat, 75);
+UpdateHisto(df_Isolation, "resistenceIns", "h_Tsensor_ResistenceIsolation_pspp1", "(channelTsensor_Ins == true && pspp1_test_Ins == true)", UpdateStat, 25);
+UpdateHisto(df_Continuity, "resistenceCon", "h_Tsensor_ResistenceContinuity_pspp1", "(channelTsensor_Con == true && pspp1_test_Con == true)", UpdateStat, 25);
+UpdateHisto(df_Isolation, "resistenceIns", "h_PH_ResistenceIsolation_pspp1", "(channelPHR_Ins == true && pspp1_test_Ins == true)", UpdateStat, 25);
+UpdateHisto(df_Continuity, "resistenceCon", "h_PH_ResistenceContinuity_pspp1", "(channelPHR_Con == true && pspp1_test_Con == true)", UpdateStat, 25);
 #ifdef TemperaturePlot
-UpdateHisto(df_Continuity, "resistenceCon", "h_LV_Continuity_Temperature_pspp1", "(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true", UpdateStat, 50);
-UpdateHisto(df_Continuity, "resistenceCon", "h_HV_Continuity_Temperature_pspp1", "(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con == true", UpdateStat, 50);
-UpdateHisto(df_Isolation, "resistenceIns", "h_LV_Isolation_Temperature_pspp1", "(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true", UpdateStat, 50);
-UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Temperature_pspp1", "(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins == true", UpdateStat, 50);
-UpdateHisto(df_Continuity, "resistenceCon", "h_LV_Continuity_Humidity_pspp1", "(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_con == true", UpdateStat, 50);
-UpdateHisto(df_Continuity, "resistenceCon", "h_HV_Continuity_Humidity_pspp1", "(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_con == true", UpdateStat, 50);
-UpdateHisto(df_Isolation, "resistenceIns", "h_LV_Isolation_Humidity_pspp1", "(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_ins == true", UpdateStat, 50);
-UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Humidity_pspp1", "(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_ins == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_LV_Continuity_Temperature_pspp1", "(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_Con == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_HV_Continuity_Temperature_pspp1", "(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_Con == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_LV_Isolation_Temperature_pspp1", "(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_Ins == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Temperature_pspp1", "(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_Ins == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_LV_Continuity_Humidity_pspp1", "(channelLV_Con == true || channelPHR_Con == true) && pspp1_test_Con == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_HV_Continuity_Humidity_pspp1", "(channelHV_Con == true || channelTsensor_Con == true) && pspp1_test_Con == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_LV_Isolation_Humidity_pspp1", "(channelLV_Ins == true || channelPHR_Ins == true) && pspp1_test_Ins == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Humidity_pspp1", "(channelHV_Ins == true || channelTsensor_Ins == true) && pspp1_test_Ins == true", UpdateStat, 50);
 #endif
 
 
@@ -362,25 +362,25 @@ UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Humidity_pspp1", "(ch
 
 ////////////////////////////////////////
 // FULL-CHAIN
-UpdateHisto(df_Continuity, "statusCon", "h_PassedFailedContinuity_fullchain", "fullchain_test_con == true", UpdateStat, 2);
-UpdateHisto(df_Isolation, "statusIns", "h_PassedFailedIsolation_fullchain", "fullchain_test_ins == true", UpdateStat, 2);
-UpdateHisto(df_Continuity, "resistenceCon", "h_LV_ResistenceContinuity_fullchain", "(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true", UpdateStat, 25);
-UpdateHisto(df_Isolation, "resistenceIns", "h_LV_ResistenceIsolation_fullchain", "(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true", UpdateStat, 25);
-UpdateHisto(df_Continuity, "resistenceCon", "h_HV_ResistenceContinuity_fullchain", "(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true", UpdateStat, 25);
-UpdateHisto(df_Isolation, "resistenceIns", "h_HV_ResistenceIsolation_fullchain", "(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins == true", UpdateStat, 25);
-UpdateHisto(df_Isolation, "resistenceIns", "h_Tsensor_ResistenceIsolation_fullchain", "(channelTsensor_Ins == true && fullchain_test_ins == true)", UpdateStat, 25);
-UpdateHisto(df_Continuity, "resistenceCon", "h_Tsensor_ResistenceContinuity_fullchain", "(channelTsensor_Con == true && fullchain_test_con == true)", UpdateStat, 25);
-UpdateHisto(df_Isolation, "resistenceIns", "h_PH_ResistenceIsolation_fullchain", "(channelPHR_Ins == true && fullchain_test_ins == true)", UpdateStat, 25);
-UpdateHisto(df_Continuity, "resistenceCon", "h_PH_ResistenceContinuity_fullchain", "(channelPHR_Con == true && fullchain_test_con == true)", UpdateStat, 25);
+UpdateHisto(df_Continuity, "statusCon", "h_PassedFailedContinuity_fullchain", "fullchain_test_Con == true", UpdateStat, 2);
+UpdateHisto(df_Isolation, "statusIns", "h_PassedFailedIsolation_fullchain", "fullchain_test_Ins == true", UpdateStat, 2);
+UpdateHisto(df_Continuity, "resistenceCon", "h_LV_ResistenceContinuity_fullchain", "(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_Con == true", UpdateStat, 25);
+UpdateHisto(df_Isolation, "resistenceIns", "h_LV_ResistenceIsolation_fullchain", "(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_Ins == true", UpdateStat, 25);
+UpdateHisto(df_Continuity, "resistenceCon", "h_HV_ResistenceContinuity_fullchain", "(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_Con == true", UpdateStat, 25);
+UpdateHisto(df_Isolation, "resistenceIns", "h_HV_ResistenceIsolation_fullchain", "(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_Ins == true", UpdateStat, 25);
+UpdateHisto(df_Isolation, "resistenceIns", "h_Tsensor_ResistenceIsolation_fullchain", "(channelTsensor_Ins == true && fullchain_test_Ins == true)", UpdateStat, 25);
+UpdateHisto(df_Continuity, "resistenceCon", "h_Tsensor_ResistenceContinuity_fullchain", "(channelTsensor_Con == true && fullchain_test_Con == true)", UpdateStat, 25);
+UpdateHisto(df_Isolation, "resistenceIns", "h_PH_ResistenceIsolation_fullchain", "(channelPHR_Ins == true && fullchain_test_Ins == true)", UpdateStat, 25);
+UpdateHisto(df_Continuity, "resistenceCon", "h_PH_ResistenceContinuity_fullchain", "(channelPHR_Con == true && fullchain_test_Con == true)", UpdateStat, 25);
 #ifdef TemperaturePlot
-UpdateHisto(df_Continuity, "resistenceCon", "h_LV_Continuity_Temperature_fullchain", "(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true", UpdateStat, 50);
-UpdateHisto(df_Continuity, "resistenceCon", "h_HV_Continuity_Temperature_fullchain", "(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true", UpdateStat, 50);
-UpdateHisto(df_Isolation, "resistenceIns", "h_LV_Isolation_Temperature_fullchain", "(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true", UpdateStat, 50);
-UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Temperature_fullchain", "(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins == true", UpdateStat, 50);
-UpdateHisto(df_Continuity, "resistenceCon", "h_LV_Continuity_Humidity_fullchain", "(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_con == true", UpdateStat, 50);
-UpdateHisto(df_Continuity, "resistenceCon", "h_HV_Continuity_Humidity_fullchain", "(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_con == true", UpdateStat, 50);
-UpdateHisto(df_Isolation, "resistenceIns", "h_LV_Isolation_Humidity_fullchain", "(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_ins == true", UpdateStat, 50);
-UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Humidity_fullchain", "(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_ins == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_LV_Continuity_Temperature_fullchain", "(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_Con == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_HV_Continuity_Temperature_fullchain", "(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_Con == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_LV_Isolation_Temperature_fullchain", "(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_Ins == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Temperature_fullchain", "(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_Ins == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_LV_Continuity_Humidity_fullchain", "(channelLV_Con == true || channelPHR_Con == true) && fullchain_test_Con == true", UpdateStat, 50);
+UpdateHisto(df_Continuity, "resistenceCon", "h_HV_Continuity_Humidity_fullchain", "(channelHV_Con == true || channelTsensor_Con == true) && fullchain_test_Con == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_LV_Isolation_Humidity_fullchain", "(channelLV_Ins == true || channelPHR_Ins == true) && fullchain_test_Ins == true", UpdateStat, 50);
+UpdateHisto(df_Isolation, "resistenceIns", "h_HV_Isolation_Humidity_fullchain", "(channelHV_Ins == true || channelTsensor_Ins == true) && fullchain_test_Ins == true", UpdateStat, 50);
 
 DrawPlot<::TProfile>("Full-Chain Continuity LV and PH profile temperature plot", h_LV_Continuity_Temperature_fullchain, "hist");
 DrawPlot<::TProfile>("Full-Chain Continuity HV and Tsensor profile temperature plot", h_HV_Continuity_Temperature_fullchain, "hist");
@@ -428,6 +428,12 @@ DrawPlot<::TH1D>("Full-Chain Isolation Test Tsensor channels resistence", h_Tsen
 DrawPlot<::TH1D>("Full-Chain Continuity Test PH channels ressitence", h_PH_ResistenceContinuity_fullchain, "hist");
 DrawPlot<::TH1D>("Full-Chain Isolation Test PH channels resistence", h_PH_ResistenceIsolation_fullchain, "hist");
 */
+std::string continuityRoot = "./stat/continuity_rdf.root";
+std::string isolationRoot = "./stat/isolation_rdf.root";
+df_Isolation.Snapshot("df_Isolation", isolationRoot);
+df_Continuity.Snapshot("df_Continuity", continuityRoot);
+
+
 f_StatOut->Close(); 
 std::cout<<"\033[32mdone \033[0m"<<std::endl;
 std::system("rm -rf stat_root");
