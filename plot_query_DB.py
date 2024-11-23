@@ -44,7 +44,8 @@ def BuiltCondition(query):
 
     cable = split_query[0].split(":")[1] 
     type = split_query[1].split(":")[1]  
-    condition = split_query[2].split(":")[1].replace("_AND_", " && ")  
+    condition = split_query[2].split(":")[1].replace("_AND_", " && ")
+      
 
     filter_conditions = [f"{cable}_test_{type} == true"]
 
