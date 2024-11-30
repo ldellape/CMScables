@@ -1,5 +1,11 @@
 -aggiungere al DB lunghezza nominale e misurata, tabella full-chain (??)
--plots contro temperature e umidità 
+-plots contro temperature e umidità (ok)
+
+----- ROWS DA AGGIUNGERE ----------------------
+- nuovo campo seriale "ufficiale" da edms (ID)
+- up to date test + history test ( vecchi test per stesso cavo)
+- tabella test propria + tabella dall'azienda
+
 
 
 

@@ -134,9 +134,6 @@ else if(option == "HV") ThreshContHV = Thresh;
     return testType;
  }
 
-
-
-
 //////////////////////////////////////////////////////////////////////
 // get measured values of resistence based on channel option
 std::vector<double> PSPP1::GetResistence(TString option){
@@ -590,6 +587,7 @@ std::vector<std::pair<std::string,TGraph*>> PSPP1::FillGraphTimeResistence(TStri
 }
 
 
+
 // *************************************************************** //
 // **************** OCTOPUS Class ******************************** //
 // *************************************************************** //
@@ -625,6 +623,12 @@ void OCTOPUS::SetName(TString name){
 //
 void OCTOPUS::SetTemperature(Float_t T){
   Temperature=T;
+}
+
+//////////////////////////////////////////////////////////////////////
+//
+void OCTOPUS::SetHumidity(Float_t H)
+  Humidity = H;
 }
 
 //////////////////////////////////////////////////////////////////////

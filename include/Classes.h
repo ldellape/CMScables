@@ -134,6 +134,8 @@ template <typename T> std::vector<T> PSPP1::FilterChannel(TString option, TStrin
         void SetResistence(std::vector<double> &resistenceChannels);
         void SetStatus(std::vector<Bool_t> &statusChannel);
         void FillModulesParameter();
+        TString GetName();
+        TString GetPath();
         Float_t GetBundleLength(TString module);
         Float_t GetBranchLength(TString module);
         TH1F* FillResistenceLengthDifference(TString title, TString option); // histograms that comupute measu
