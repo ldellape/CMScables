@@ -627,7 +627,7 @@ void OCTOPUS::SetTemperature(Float_t T){
 
 //////////////////////////////////////////////////////////////////////
 //
-void OCTOPUS::SetHumidity(Float_t H)
+void OCTOPUS::SetHumidity(Float_t H){
   Humidity = H;
 }
 

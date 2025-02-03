@@ -17,6 +17,7 @@
 #include "./include/Classes.h"
 #include "./include/plotting.h"
 
+
 // ***************** SERIALE **********************
 // PS-PP1 ---------> OT_LIC_30208X                *
 // PP1-PP0 --------> OT_MSC_30208X_X              *
@@ -27,7 +28,6 @@
 int main(int argc, char* argv[]){
 
 if(argc<2) printlogo();
-
 
 // ****************************************************************************************** //
 // INPUT                                                                                      //

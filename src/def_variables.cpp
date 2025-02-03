@@ -37,7 +37,7 @@ std::string sOutputReport;
 
 #ifdef DB
  std::string Name;
- const std::string sInputTestDir = "/home/ldellape/cableDB/static/data/";
+ const std::string sInputTestDir = "/cableDB/static/data/";
  std::string sOutputROOT;
  const std::string sOutputRootLocal = std::string(WORKDIR) + "/output/rootFiles/";
 #else 

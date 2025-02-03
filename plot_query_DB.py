@@ -10,7 +10,7 @@ fInputIsolation = "/home/ldellape/CMScables/stat/isolation_rdf.root"
 rdf_Continuity = ROOT.RDataFrame("df_Continuity", fInputContinuity)
 rdf_Isolation = ROOT.RDataFrame("df_Isolation", fInputIsolation)
 
-output_dir = "/home/ldellape/cableDB/static"
+output_dir = "./../cableDB/static"
 
 ROOT.gErrorIgnoreLevel = ROOT.kError
 def PlotHistogram(type, variable, condition, title, WriteFile=False):
@@ -38,7 +38,7 @@ def PlotHistogram(type, variable, condition, title, WriteFile=False):
     print(output_image)
 
     if WriteFile:  
-        output_data = f"{output_dir}/data.txt"
+        output_data = f"{output_dir}/rawdata_{condition}.txt"
         with open(output_data, "w") as file:
             Entries = rdf.Count().GetValue()
             columns = rdf.GetColumnNames()

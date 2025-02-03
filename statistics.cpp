@@ -36,8 +36,8 @@ void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
     Bool_t channelLV_Con, channelLV_Ins;
     Bool_t channelHV_Con, channelHV_Ins, channelPH_Con, channelTsensor_Con;
     Bool_t statusCon, statusIns, channelPH_Ins, channelTsensor_Ins;
-    Bool_t pspp1_test_Con, fullchain_test_Con;
-    Bool_t pspp1_test_Ins, fullchain_test_Ins;
+    Bool_t pspp1_test_Con, fullchain_test_Con, octopus_test_Con;
+    Bool_t pspp1_test_Ins, fullchain_test_Ins, octopus_test_Ins;
     std::string channelName_Con;
     std::string channelName_Ins;
 
@@ -50,6 +50,7 @@ void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
     TestResultContinuity->Branch("channelTsensor_Con", &channelTsensor_Con, "channelTsensor_Con/O");
     TestResultContinuity->Branch("pspp1_test_Con", &pspp1_test_Con, "pspp1_test_Con/O");
     TestResultContinuity->Branch("fullchain_test_Con", &fullchain_test_Con, "fullchain_test_Con/O");
+    TestResultContinuity->Branch("octopus_test_Con", &octopus_test_Con, "octopus_test_Con/O");
 
     TestResultIsolation->Branch("channelName_Ins", &channelName_Ins);
     TestResultIsolation->Branch("resistenceIns", &resistenceIns, "resistenceIns/F");
@@ -60,6 +61,8 @@ void ReadOutput(const std::string TestNameFile, Int_t file, TString option) {
     TestResultIsolation->Branch("channelTsensor_Ins", &channelTsensor_Ins, "channelTsensor_Ins/O");
     TestResultIsolation->Branch("pspp1_test_Ins", &pspp1_test_Ins, "pspp1_test_Ins/O");
     TestResultIsolation->Branch("fullchain_test_Ins", &fullchain_test_Ins, "fullchain_test_Ins/O");
+    TestResultContinuity->Branch("octopus_test_Ins", &octopus_test_Ins, "octopus_test_Ins/O");
+
 
     std::ifstream inputFile(TestNameFile);
     std::string line;
@@ -321,7 +324,7 @@ else{
 
 
 
-//--------- output root files ------------------------- //
+// --------- output root files ------------------------- //
 TChain inputChain_continuity("TestResultContinuity");
 TChain inputChain_isolation("TestResultIsolation");
 ROOT::RDataFrame df_Continuity(inputChain_continuity);
@@ -329,7 +332,7 @@ ROOT::RDataFrame df_Isolation(inputChain_isolation);
 
 inputChain_continuity.Add("./stat_root/*.root");
 inputChain_isolation.Add("./stat_root/*.root");
-//----------------------------------------------------- //
+// ----------------------------------------------------- //
 
 
 // ********************************************************************* //
@@ -339,6 +342,7 @@ std::vector<TString> CableName;
 
 df_Continuity.Foreach([&FULLCHAIN_statistics](const Bool_t fc){ if(fc == true){ FULLCHAIN_statistics = true;  return;}}, {"fullchain_test_Con"});
 df_Continuity.Foreach([&PS_PP1_statistics](const Bool_t ps){if(ps == true){ PS_PP1_statistics = true; return;}}, {"pspp1_test_Con"});
+df_Continuity.Foreach([&OCTOPUS_statistics](const Bool_t oct){if(oct == true){ OCTOPUS_statistics = true; return;}}, {"octopus_test_Con"});
 if(PS_PP1_statistics ) CableName.push_back("pspp1");
 if(FULLCHAIN_statistics) CableName.push_back("fullchain");
 
@@ -380,7 +384,7 @@ std::string isolationRoot = "./stat/isolation_rdf.root";
 
 
 
-//-------------- saving the files ---------------------- //
+// -------------- saving the files ---------------------- //
 df_Isolation.Snapshot("df_Isolation", isolationRoot);
 df_Continuity2.Snapshot("df_Continuity", continuityRoot);
 f_StatOut->Close(); 
