@@ -6,10 +6,12 @@ DEPDIR = .deps
 WORKDIR = $(PWD) 
 TARGET = $(PREFIX)/CMScables
 TARGET_STAT = $(PREFIX)/statistics
+TARGET_QUERY= $(PREFIX)/plot_query_DB
 
 CXX = g++
 CXXFLAGS = -Wall -I include -I src $(shell root-config --cflags) -DPREFIX='"$(PREFIX)"' -DWORKDIR='"$(PWD)"' $(if $(filter DB,$(OPTION)),-DDB)
 CXXFLAGS_STAT = -Wall $(shell root-config --cflags) -DWORKDIR='"$(PWD)"' $(if $(filter DB,$(OPTION)),-DDB)
+CXXFLAGS_QUERY= -Wall $(shell root-config --cflags) -DWORKDIR='"$(PWD)"'
 
 SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SOURCES))
@@ -37,6 +39,15 @@ $(TARGET_STAT): $(OBJDIR)/statistics.o
 $(OBJDIR)/statistics.o : statistics.cpp 
 	@mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS_STAT) -c $< -o $@
+
+$(TARGET_QUERY): $(OBJDIR)/plot_query_DB.o
+	@mkdir -p $(OBJDIR)
+	$(CXX) $(CXXFLAGS_QUERY) $^ -o $@ $(LDFLAGS)
+
+$(OBJDIR)/plot_query_DB.o : plot_query_DB.cpp
+	@mkdir -p $(OBJDIR)
+	$(CXX) $(CXXFLAGS_QUERY) -c $< -o $@
+
 
 ifneq ($(MAKECMDGOALS),statistics)
 -include $(DEPS)
